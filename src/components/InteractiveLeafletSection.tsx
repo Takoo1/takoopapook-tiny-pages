@@ -32,6 +32,13 @@ const InteractiveLeafletSection = () => {
             Discover the breathtaking destinations across the Land of the Rising Sun. 
             Click on any location to learn more about its unique attractions and experiences.
           </p>
+          {locations.length === 0 && (
+            <div className="mt-8 p-6 bg-yellow-50 border border-yellow-200 rounded-lg max-w-md mx-auto">
+              <p className="text-yellow-800">
+                No locations are currently available. Please check back later or contact the administrator.
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto">
@@ -42,7 +49,7 @@ const InteractiveLeafletSection = () => {
                 locations={locations}
                 selectedLocation={selectedLocation}
                 onLocationSelect={setSelectedLocation}
-                mapSettings={mapSettings}
+                mapSettings={mapSettings || undefined}
               />
             </div>
           </div>
