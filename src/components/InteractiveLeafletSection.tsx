@@ -30,7 +30,7 @@ const InteractiveLeafletSection = () => {
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Discover the breathtaking destinations across the Land of the Rising Sun. 
-            Click on any location to learn more about its unique attractions and experiences.
+            Click on any location marker to learn more about its unique attractions and experiences.
           </p>
           {locations.length === 0 && (
             <div className="mt-8 p-6 bg-yellow-50 border border-yellow-200 rounded-lg max-w-md mx-auto">
@@ -41,21 +41,29 @@ const InteractiveLeafletSection = () => {
           )}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto">
-          {/* Map Container */}
-          <div className="order-1 lg:order-2">
-            <div className="bg-white rounded-2xl shadow-xl p-6 h-[500px] lg:h-[600px]">
-              <LeafletMap
-                locations={locations}
-                selectedLocation={selectedLocation}
-                onLocationSelect={setSelectedLocation}
-                mapSettings={mapSettings || undefined}
-              />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          {/* Map Container - Takes 2 columns */}
+          <div className="lg:col-span-2 order-1">
+            <div className="bg-white rounded-2xl shadow-xl p-6 h-[600px]">
+              <div className="mb-4">
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">Interactive Tourism Map</h3>
+                <p className="text-sm text-gray-600">
+                  Click on the markers to explore different locations
+                </p>
+              </div>
+              <div className="h-[500px]">
+                <LeafletMap
+                  locations={locations}
+                  selectedLocation={selectedLocation}
+                  onLocationSelect={setSelectedLocation}
+                  mapSettings={mapSettings || undefined}
+                />
+              </div>
             </div>
           </div>
 
-          {/* Details Container */}
-          <div className="order-2 lg:order-1">
+          {/* Details Container - Takes 1 column */}
+          <div className="lg:col-span-1 order-2">
             <LocationDetails location={selectedLocation} />
           </div>
         </div>

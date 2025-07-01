@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Location } from '@/types/database';
-import { ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
+import { ChevronLeft, ChevronRight, MapPin, Camera, Info } from 'lucide-react';
 
 interface LocationDetailsProps {
   location: Location | null;
@@ -12,15 +12,15 @@ const LocationDetails = ({ location }: LocationDetailsProps) => {
 
   if (!location) {
     return (
-      <div className="bg-white rounded-2xl shadow-xl p-8 h-[500px] lg:h-[600px] flex items-center justify-center">
+      <div className="bg-white rounded-2xl shadow-xl p-8 h-[600px] flex items-center justify-center">
         <div className="text-center">
-          <MapPin className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-2xl font-bold text-gray-800 mb-2">
-            Explore Arunachal Pradesh
+          <MapPin className="h-20 w-20 text-gray-300 mx-auto mb-6" />
+          <h3 className="text-2xl font-bold text-gray-800 mb-4">
+            Select a Location
           </h3>
-          <p className="text-gray-600 max-w-md">
-            Click on any location marker on the map to discover detailed information, 
-            stunning images, and unique experiences that await you.
+          <p className="text-gray-600 max-w-sm leading-relaxed">
+            Click on any marker on the map to explore detailed information, 
+            stunning images, and unique experiences of that tourism destination.
           </p>
         </div>
       </div>
@@ -28,39 +28,47 @@ const LocationDetails = ({ location }: LocationDetailsProps) => {
   }
 
   const nextImage = () => {
-    setCurrentImageIndex((prev) => 
-      prev === location.images.length - 1 ? 0 : prev + 1
-    );
+    if (location.images.length > 0) {
+      setCurrentImageIndex((prev) => 
+        prev === location.images.length - 1 ? 0 : prev + 1
+      );
+    }
   };
 
   const prevImage = () => {
-    setCurrentImageIndex((prev) => 
-      prev === 0 ? location.images.length - 1 : prev - 1
-    );
+    if (location.images.length > 0) {
+      setCurrentImageIndex((prev) => 
+        prev === 0 ? location.images.length - 1 : prev - 1
+      );
+    }
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-xl overflow-hidden h-[500px] lg:h-[600px] flex flex-col animate-fade-in">
+    <div className="bg-white rounded-2xl shadow-xl overflow-hidden h-[600px] flex flex-col animate-fade-in">
       {/* Image Carousel */}
-      {location.images.length > 0 && (
-        <div className="relative h-64 bg-gray-200 overflow-hidden">
+      {location.images && location.images.length > 0 ? (
+        <div className="relative h-80 bg-gray-200 overflow-hidden">
           <img
             src={location.images[currentImageIndex]}
             alt={location.name}
             className="w-full h-full object-cover transition-all duration-500"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = 'https://images.unsplash.com/photo-1426604966848-d7adac402bff?w=800&q=80';
+            }}
           />
           
           {location.images.length > 1 && (
             <>
               <button
                 onClick={prevImage}
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-200"
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-3 rounded-full transition-all duration-200 backdrop-blur-sm"
               >
                 <ChevronLeft className="h-5 w-5" />
               </button>
               <button
                 onClick={nextImage}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all duration-200"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-3 rounded-full transition-all duration-200 backdrop-blur-sm"
               >
                 <ChevronRight className="h-5 w-5" />
               </button>
@@ -71,7 +79,7 @@ const LocationDetails = ({ location }: LocationDetailsProps) => {
                   <button
                     key={index}
                     onClick={() => setCurrentImageIndex(index)}
-                    className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                    className={`w-3 h-3 rounded-full transition-all duration-200 ${
                       index === currentImageIndex ? 'bg-white' : 'bg-white/50'
                     }`}
                   />
@@ -79,31 +87,57 @@ const LocationDetails = ({ location }: LocationDetailsProps) => {
               </div>
             </>
           )}
+
+          {/* Image counter */}
+          {location.images.length > 1 && (
+            <div className="absolute top-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm">
+              <Camera className="h-4 w-4 inline mr-1" />
+              {currentImageIndex + 1} / {location.images.length}
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="h-80 bg-gradient-to-br from-emerald-400 to-blue-500 flex items-center justify-center">
+          <div className="text-center text-white">
+            <MapPin className="h-16 w-16 mx-auto mb-4 opacity-80" />
+            <h3 className="text-2xl font-bold">{location.name}</h3>
+          </div>
         </div>
       )}
 
       {/* Content */}
       <div className="flex-1 p-6 flex flex-col">
-        <div className="flex items-center space-x-2 mb-4">
-          <MapPin className="h-5 w-5 text-emerald-500" />
+        <div className="flex items-center space-x-3 mb-4">
+          <div className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center">
+            <MapPin className="h-4 w-4 text-white" />
+          </div>
           <h3 className="text-2xl font-bold text-gray-800">{location.name}</h3>
         </div>
 
-        <p className="text-gray-600 mb-6 leading-relaxed flex-grow">
-          {location.description}
-        </p>
+        {location.description && (
+          <div className="mb-6">
+            <div className="flex items-center space-x-2 mb-3">
+              <Info className="h-5 w-5 text-gray-500" />
+              <h4 className="text-lg font-semibold text-gray-800">About</h4>
+            </div>
+            <p className="text-gray-600 leading-relaxed">
+              {location.description}
+            </p>
+          </div>
+        )}
 
-        {/* Bullet Points */}
-        {location.bullet_points.length > 0 && (
-          <div>
-            <h4 className="text-lg font-semibold text-gray-800 mb-3">
-              Key Highlights
+        {/* Key Highlights */}
+        {location.bullet_points && location.bullet_points.length > 0 && (
+          <div className="flex-1">
+            <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center space-x-2">
+              <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+              <span>Key Highlights</span>
             </h4>
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {location.bullet_points.map((point, index) => (
                 <li key={index} className="flex items-start space-x-3">
                   <div className="w-2 h-2 bg-emerald-500 rounded-full mt-2 flex-shrink-0" />
-                  <span className="text-gray-700">{point}</span>
+                  <span className="text-gray-700 leading-relaxed">{point}</span>
                 </li>
               ))}
             </ul>
