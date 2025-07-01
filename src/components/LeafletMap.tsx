@@ -1,8 +1,7 @@
-
 import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Location } from '@/types/database';
+import { Location, MapSettings } from '@/types/database';
 
 interface LeafletMapProps {
   locations: Location[];
@@ -10,6 +9,7 @@ interface LeafletMapProps {
   onLocationSelect: (location: Location) => void;
   isAdminMode?: boolean;
   onMapClick?: (x: number, y: number) => void;
+  mapSettings?: MapSettings;
 }
 
 const LeafletMap = ({ 
@@ -17,15 +17,19 @@ const LeafletMap = ({
   selectedLocation, 
   onLocationSelect, 
   isAdminMode = false,
-  onMapClick 
+  onMapClick,
+  mapSettings 
 }: LeafletMapProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const markersRef = useRef<L.Marker[]>([]);
 
-  // Image dimensions - adjust these to match your actual image size
+  // Use mapSettings or fallback to defaults
   const imageWidth = 2000;
   const imageHeight = 1200;
+  const minZoom = mapSettings?.min_zoom || -2;
+  const maxZoom = mapSettings?.max_zoom || 2;
+  const initialZoom = mapSettings?.initial_zoom || 1;
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -33,8 +37,8 @@ const LeafletMap = ({
     // Initialize map with CRS.Simple
     const map = L.map(mapRef.current, {
       crs: L.CRS.Simple,
-      minZoom: -2,
-      maxZoom: 2,
+      minZoom: minZoom,
+      maxZoom: maxZoom,
       zoomControl: true,
       attributionControl: false,
     });
@@ -45,8 +49,9 @@ const LeafletMap = ({
     // Add the image overlay
     L.imageOverlay('/lovable-uploads/85ee2b76-d8ce-4074-93bb-76db5001d131.png', bounds).addTo(map);
     
-    // Set map view
+    // Set map view with settings from database
     map.fitBounds(bounds);
+    map.setView([imageHeight/2, imageWidth/2], initialZoom);
     map.setMaxBounds(bounds);
 
     mapInstanceRef.current = map;
@@ -65,9 +70,8 @@ const LeafletMap = ({
     return () => {
       map.remove();
     };
-  }, [isAdminMode, onMapClick, imageHeight, imageWidth]);
+  }, [isAdminMode, onMapClick, imageHeight, imageWidth, minZoom, maxZoom, initialZoom]);
 
-  // Update markers when locations change
   useEffect(() => {
     const map = mapInstanceRef.current;
     if (!map) return;

@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { useLocations } from '@/hooks/useLocations';
+import { useLocations, useMapSettings } from '@/hooks/useLocations';
 import LeafletMap from './LeafletMap';
 import LocationDetails from './LocationDetails';
 import { Location } from '@/types/database';
@@ -8,8 +8,9 @@ import { Location } from '@/types/database';
 const InteractiveLeafletSection = () => {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const { data: locations = [], isLoading: locationsLoading } = useLocations();
+  const { data: mapSettings, isLoading: settingsLoading } = useMapSettings();
 
-  if (locationsLoading) {
+  if (locationsLoading || settingsLoading) {
     return (
       <div className="container mx-auto px-4 py-16">
         <div className="text-center">
@@ -41,6 +42,7 @@ const InteractiveLeafletSection = () => {
                 locations={locations}
                 selectedLocation={selectedLocation}
                 onLocationSelect={setSelectedLocation}
+                mapSettings={mapSettings}
               />
             </div>
           </div>

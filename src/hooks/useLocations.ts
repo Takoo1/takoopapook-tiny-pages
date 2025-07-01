@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Location, MapSettings } from '@/types/database';
@@ -26,10 +25,10 @@ export const useMapSettings = () => {
       const { data, error } = await supabase
         .from('map_settings')
         .select('*')
-        .single();
+        .maybeSingle();
       
       if (error) throw error;
-      return data as MapSettings;
+      return data as MapSettings | null;
     },
   });
 };

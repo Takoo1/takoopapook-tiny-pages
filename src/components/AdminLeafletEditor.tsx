@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useLocations, useCreateLocation, useUpdateLocation } from '@/hooks/useLocations';
+import { useLocations, useCreateLocation, useUpdateLocation, useMapSettings } from '@/hooks/useLocations';
 import { Location } from '@/types/database';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { MapPin, Save, Plus, Edit, Eye } from 'lucide-react';
+import { MapPin, Save, Plus, Edit, Eye, Settings } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import LeafletMap from './LeafletMap';
 
@@ -25,12 +25,23 @@ const AdminLeafletEditor = () => {
   });
 
   const { data: locations = [] } = useLocations();
+  const { data: mapSettings } = useMapSettings();
   const createLocation = useCreateLocation();
   const updateLocation = useUpdateLocation();
   const { toast } = useToast();
 
   const handleMapClick = (x: number, y: number) => {
     if (!isCreating) return;
+    
+    // Validate coordinates are within bounds
+    if (x < 0 || x > 2000 || y < 0 || y > 1200) {
+      toast({
+        title: 'Invalid coordinates',
+        description: 'Coordinates must be within the map bounds (0-2000, 0-1200)',
+        variant: 'destructive'
+      });
+      return;
+    }
     
     setFormData(prev => ({
       ...prev,
@@ -46,6 +57,17 @@ const AdminLeafletEditor = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate coordinates
+    if (formData.coordinates_x < 0 || formData.coordinates_x > 2000 || 
+        formData.coordinates_y < 0 || formData.coordinates_y > 1200) {
+      toast({
+        title: 'Invalid coordinates',
+        description: 'Coordinates must be within the map bounds (X: 0-2000, Y: 0-1200)',
+        variant: 'destructive'
+      });
+      return;
+    }
     
     try {
       const locationData = {
@@ -126,6 +148,14 @@ const AdminLeafletEditor = () => {
           <p className="text-xl text-gray-600">
             Manage locations on the interactive Arunachal Pradesh map using pixel coordinates
           </p>
+          {mapSettings && (
+            <div className="mt-4 p-4 bg-blue-50 rounded-lg inline-block">
+              <div className="flex items-center space-x-2 text-sm text-blue-700">
+                <Settings className="h-4 w-4" />
+                <span>Map Settings: Zoom {mapSettings.min_zoom} to {mapSettings.max_zoom} | Center: ({mapSettings.center_x}, {mapSettings.center_y})</span>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -154,9 +184,9 @@ const AdminLeafletEditor = () => {
                 </Button>
               </div>
               {isCreating && (
-                <p className="text-sm text-blue-600">
-                  Click on the map to set location coordinates
-                </p>
+                <div className="text-sm text-blue-600 bg-blue-50 p-2 rounded">
+                  Click on the map to set location coordinates (Valid range: X: 0-2000, Y: 0-1200)
+                </div>
               )}
             </CardHeader>
             <CardContent className="h-[480px] p-2">
@@ -166,6 +196,7 @@ const AdminLeafletEditor = () => {
                 onLocationSelect={editLocation}
                 isAdminMode={isCreating}
                 onMapClick={handleMapClick}
+                mapSettings={mapSettings}
               />
             </CardContent>
           </Card>
@@ -192,20 +223,24 @@ const AdminLeafletEditor = () => {
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="x">X Coordinate (px)</Label>
+                      <Label htmlFor="x">X Coordinate (0-2000 px)</Label>
                       <Input
                         id="x"
                         type="number"
+                        min="0"
+                        max="2000"
                         value={formData.coordinates_x}
                         onChange={(e) => setFormData(prev => ({ ...prev, coordinates_x: parseFloat(e.target.value) }))}
                         required
                       />
                     </div>
                     <div>
-                      <Label htmlFor="y">Y Coordinate (px)</Label>
+                      <Label htmlFor="y">Y Coordinate (0-1200 px)</Label>
                       <Input
                         id="y"
                         type="number"
+                        min="0"
+                        max="1200"
                         value={formData.coordinates_y}
                         onChange={(e) => setFormData(prev => ({ ...prev, coordinates_y: parseFloat(e.target.value) }))}
                         required
@@ -278,6 +313,9 @@ const AdminLeafletEditor = () => {
                   <Eye className="h-16 w-16 text-gray-300 mx-auto mb-4" />
                   <p className="text-gray-600">
                     Click on existing locations to edit them, or click "Add Location" to create new ones.
+                  </p>
+                  <p className="text-sm text-gray-500 mt-2">
+                    Valid coordinates: X (0-2000), Y (0-1200)
                   </p>
                 </div>
               )}
