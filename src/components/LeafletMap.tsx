@@ -69,7 +69,13 @@ const LeafletMap = ({
     const lng = centerX;
     
     map.setView([lat, lng], initialZoom);
-    map.setMaxBounds(bounds.map(bound => [bound[0] - 100, bound[1] - 100]) as L.LatLngBoundsExpression);
+    
+    // Set max bounds with padding
+    const paddedBounds: L.LatLngBoundsExpression = [
+      [-100, -100], 
+      [imageHeight + 100, imageWidth + 100]
+    ];
+    map.setMaxBounds(paddedBounds);
 
     mapInstanceRef.current = map;
     setIsMapReady(true);
