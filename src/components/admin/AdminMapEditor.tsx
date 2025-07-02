@@ -1,4 +1,5 @@
 
+
 import { useState } from 'react';
 import { useAllLocations, useCreateLocation, useUpdateLocation, useDeleteLocation, useMapSettings, useUpdateMapSettings } from '@/hooks/useLocations';
 import { Location } from '@/types/database';
@@ -41,6 +42,8 @@ const AdminMapEditor = () => {
   const handleMapClick = (x: number, y: number) => {
     if (!isAddingLocation) return;
     
+    console.log('Map clicked with coordinates:', { x, y });
+    
     const validation = validateCoordinates(x, y);
     if (!validation.isValid) {
       toast({
@@ -51,16 +54,30 @@ const AdminMapEditor = () => {
       return;
     }
     
-    setClickCoordinates({ x, y });
+    // Ensure coordinates are integers and within bounds
+    const safeX = Math.max(0, Math.min(2000, Math.round(x)));
+    const safeY = Math.max(0, Math.min(1200, Math.round(y)));
+    
+    console.log('Setting safe coordinates:', { safeX, safeY });
+    
+    setClickCoordinates({ x: safeX, y: safeY });
     setIsAddingLocation(false);
     toast({
       title: 'Marker placed!',
-      description: `Location marker set at coordinates (${x}, ${y}). Fill in the details below.`,
+      description: `Location marker set at coordinates (${safeX}, ${safeY}). Fill in the details below.`,
     });
   };
 
   const handleSubmitLocation = async (formData: LocationFormData) => {
-    const validation = validateCoordinates(formData.coordinates_x, formData.coordinates_y);
+    // Ensure coordinates are safe integers
+    const safeCoordinates = {
+      coordinates_x: Math.max(0, Math.min(2000, Math.round(formData.coordinates_x))),
+      coordinates_y: Math.max(0, Math.min(1200, Math.round(formData.coordinates_y)))
+    };
+    
+    console.log('Submitting location with safe coordinates:', safeCoordinates);
+    
+    const validation = validateCoordinates(safeCoordinates.coordinates_x, safeCoordinates.coordinates_y);
     if (!validation.isValid) {
       toast({
         title: 'Invalid coordinates',
@@ -71,18 +88,24 @@ const AdminMapEditor = () => {
     }
     
     try {
+      const locationData = {
+        ...formData,
+        ...safeCoordinates
+      };
+      
       if (selectedLocation) {
-        await updateLocation.mutateAsync({ id: selectedLocation.id, ...formData });
+        await updateLocation.mutateAsync({ id: selectedLocation.id, ...locationData });
         toast({ title: 'Location updated successfully!' });
       } else {
-        await createLocation.mutateAsync(formData);
+        await createLocation.mutateAsync(locationData);
         toast({ title: 'Location created successfully!' });
       }
       resetForm();
     } catch (error) {
+      console.error('Error saving location:', error);
       toast({ 
         title: 'Error saving location', 
-        description: 'Please try again later.',
+        description: 'Please check coordinates and try again.',
         variant: 'destructive' 
       });
     }
@@ -136,13 +159,23 @@ const AdminMapEditor = () => {
 
   const handleSaveViewport = async () => {
     try {
+      // Ensure all values are safe numbers for the database
+      const safeViewport = {
+        x: Math.max(0, Math.min(2000, Math.round(viewport.x))),
+        y: Math.max(0, Math.min(1200, Math.round(viewport.y))),
+        width: Math.max(100, Math.min(2000, Math.round(viewport.width))),
+        height: Math.max(100, Math.min(1200, Math.round(viewport.height)))
+      };
+      
       const settings = {
-        center_x: viewport.x + viewport.width / 2,
-        center_y: viewport.y + viewport.height / 2,
-        initial_zoom: Math.min(800 / viewport.width, 480 / viewport.height),
+        center_x: Math.round(safeViewport.x + safeViewport.width / 2),
+        center_y: Math.round(safeViewport.y + safeViewport.height / 2),
+        initial_zoom: Math.min(800 / safeViewport.width, 480 / safeViewport.height),
         min_zoom: mapSettings?.min_zoom || 0.5,
         max_zoom: mapSettings?.max_zoom || 3
       };
+      
+      console.log('Saving viewport settings:', settings);
       
       await updateMapSettings.mutateAsync(settings);
       toast({ 
@@ -150,6 +183,7 @@ const AdminMapEditor = () => {
         description: 'Users will now see this area by default.'
       });
     } catch (error) {
+      console.error('Error saving viewport:', error);
       toast({ 
         title: 'Error saving viewport',
         description: 'Please try again later.',
@@ -330,3 +364,4 @@ const AdminMapEditor = () => {
 };
 
 export default AdminMapEditor;
+

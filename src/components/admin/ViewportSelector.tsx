@@ -1,4 +1,5 @@
 
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,21 +16,21 @@ const ViewportSelector = ({ viewport, onViewportChange, onSave }: ViewportSelect
   const handleInputChange = (field: keyof typeof viewport, value: string) => {
     const numValue = Math.max(0, parseInt(value) || 0);
     
-    // Apply constraints
+    // Apply constraints and ensure integers
     let constrainedValue = numValue;
     if (field === 'x') {
       constrainedValue = Math.min(numValue, 2000 - viewport.width);
     } else if (field === 'y') {
       constrainedValue = Math.min(numValue, 1200 - viewport.height);
     } else if (field === 'width') {
-      constrainedValue = Math.min(numValue, 2000 - viewport.x);
+      constrainedValue = Math.max(100, Math.min(numValue, 2000 - viewport.x));
     } else if (field === 'height') {
-      constrainedValue = Math.min(numValue, 1200 - viewport.y);
+      constrainedValue = Math.max(100, Math.min(numValue, 1200 - viewport.y));
     }
     
     onViewportChange({
       ...viewport,
-      [field]: constrainedValue
+      [field]: Math.round(constrainedValue) // Ensure integer values
     });
   };
 
@@ -58,7 +59,7 @@ const ViewportSelector = ({ viewport, onViewportChange, onSave }: ViewportSelect
                 type="number"
                 min="0"
                 max={2000 - viewport.width}
-                value={viewport.x}
+                value={Math.round(viewport.x)}
                 onChange={(e) => handleInputChange('x', e.target.value)}
               />
             </div>
@@ -69,7 +70,7 @@ const ViewportSelector = ({ viewport, onViewportChange, onSave }: ViewportSelect
                 type="number"
                 min="0"
                 max={1200 - viewport.height}
-                value={viewport.y}
+                value={Math.round(viewport.y)}
                 onChange={(e) => handleInputChange('y', e.target.value)}
               />
             </div>
@@ -81,9 +82,9 @@ const ViewportSelector = ({ viewport, onViewportChange, onSave }: ViewportSelect
               <Input
                 id="viewport-width"
                 type="number"
-                min="200"
+                min="100"
                 max={2000 - viewport.x}
-                value={viewport.width}
+                value={Math.round(viewport.width)}
                 onChange={(e) => handleInputChange('width', e.target.value)}
               />
             </div>
@@ -92,9 +93,9 @@ const ViewportSelector = ({ viewport, onViewportChange, onSave }: ViewportSelect
               <Input
                 id="viewport-height"
                 type="number"
-                min="150"
+                min="100"
                 max={1200 - viewport.y}
-                value={viewport.height}
+                value={Math.round(viewport.height)}
                 onChange={(e) => handleInputChange('height', e.target.value)}
               />
             </div>
@@ -120,8 +121,8 @@ const ViewportSelector = ({ viewport, onViewportChange, onSave }: ViewportSelect
 
         <div className="space-y-3 pt-4 border-t">
           <div className="text-sm text-gray-600 space-y-1">
-            <p><strong>Current Area:</strong> {viewport.width} × {viewport.height}px</p>
-            <p><strong>Position:</strong> ({viewport.x}, {viewport.y})</p>
+            <p><strong>Current Area:</strong> {Math.round(viewport.width)} × {Math.round(viewport.height)}px</p>
+            <p><strong>Position:</strong> ({Math.round(viewport.x)}, {Math.round(viewport.y)})</p>
             <p><strong>Coverage:</strong> {((viewport.width * viewport.height) / (2000 * 1200) * 100).toFixed(1)}% of map</p>
           </div>
           
@@ -147,3 +148,4 @@ const ViewportSelector = ({ viewport, onViewportChange, onSave }: ViewportSelect
 };
 
 export default ViewportSelector;
+

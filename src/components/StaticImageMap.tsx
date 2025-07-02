@@ -1,4 +1,5 @@
 
+
 import { useState, useRef, useEffect } from 'react';
 import { Location, MapSettings } from '@/types/database';
 import { MapPin, ZoomIn, ZoomOut } from 'lucide-react';
@@ -112,12 +113,13 @@ const StaticImageMap = ({
       const clickX = e.clientX - rect.left;
       const clickY = e.clientY - rect.top;
       
-      // Convert screen coordinates to map coordinates
+      // Convert screen coordinates to map coordinates (0-2000, 0-1200)
       const mapX = Math.round((clickX - pan.x) / zoom);
       const mapY = Math.round((clickY - pan.y) / zoom);
       
-      // Ensure coordinates are within bounds
+      // Ensure coordinates are within bounds and reasonable for database
       if (mapX >= 0 && mapX <= 2000 && mapY >= 0 && mapY <= 1200) {
+        console.log('Map clicked at:', { mapX, mapY });
         onMapClick(mapX, mapY);
       }
     }
@@ -141,8 +143,8 @@ const StaticImageMap = ({
       
       onViewportChange({
         ...viewport,
-        x: newX,
-        y: newY
+        x: Math.round(newX),
+        y: Math.round(newY)
       });
     }
   };
@@ -202,7 +204,7 @@ const StaticImageMap = ({
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
         onClick={handleMapClick}
-        style={{ touchAction: 'none' }} // Prevent passive touch events
+        style={{ touchAction: 'none' }}
       >
         {/* Map Image */}
         <div
@@ -263,6 +265,7 @@ const StaticImageMap = ({
           {/* Location Markers */}
           {locations.filter(loc => loc.is_active).map((location) => {
             const isSelected = selectedLocation?.id === location.id;
+            console.log('Rendering marker for location:', location.name, 'at:', location.coordinates_x, location.coordinates_y);
             return (
               <div
                 key={location.id}
@@ -324,3 +327,4 @@ const StaticImageMap = ({
 };
 
 export default StaticImageMap;
+
