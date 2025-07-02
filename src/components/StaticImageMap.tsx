@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from 'react';
 import { Location, MapSettings } from '@/types/database';
 import { MapPin, ZoomIn, ZoomOut } from 'lucide-react';
@@ -50,10 +51,8 @@ const StaticImageMap = ({
       
       let fitZoom;
       if (containerAspectRatio > imageAspectRatio) {
-        // Container is wider than image - fit to height
         fitZoom = containerRect.height / 1200;
       } else {
-        // Container is taller than image - fit to width
         fitZoom = containerRect.width / 2000;
       }
       
@@ -68,7 +67,7 @@ const StaticImageMap = ({
   const handleWheel = (e: React.WheelEvent) => {
     if (isViewportMode) return;
     
-    e.preventDefault();
+    // Don't use preventDefault here to avoid passive listener issues
     const delta = e.deltaY > 0 ? -0.1 : 0.1;
     const newZoom = Math.max(minZoom, Math.min(maxZoom, zoom + delta));
     
@@ -162,7 +161,7 @@ const StaticImageMap = ({
     <div className="relative w-full h-full bg-gray-100 overflow-hidden rounded-lg">
       {/* Zoom Controls - Hide in viewport mode */}
       {!isViewportMode && (
-        <div className="absolute top-4 right-4 z-20 flex flex-col space-y-2">
+        <div className="absolute top-4 right-4 z-30 flex flex-col space-y-2">
           <Button
             onClick={zoomIn}
             size="sm"
@@ -185,7 +184,7 @@ const StaticImageMap = ({
       )}
 
       {/* Zoom Level Indicator */}
-      <div className="absolute top-4 left-4 z-20 bg-black/60 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm">
+      <div className="absolute top-4 left-4 z-30 bg-black/60 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm">
         Zoom: {Math.round(zoom * 100)}%
       </div>
 
@@ -203,6 +202,7 @@ const StaticImageMap = ({
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
         onClick={handleMapClick}
+        style={{ touchAction: 'none' }} // Prevent passive touch events
       >
         {/* Map Image */}
         <div
@@ -211,7 +211,8 @@ const StaticImageMap = ({
             transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
             transformOrigin: '0 0',
             width: '2000px',
-            height: '1200px'
+            height: '1200px',
+            zIndex: 1
           }}
         >
           <img
@@ -220,11 +221,23 @@ const StaticImageMap = ({
             className="w-full h-full object-contain pointer-events-none"
             draggable={false}
           />
-          
+        </div>
+        
+        {/* Map Overlays Container - Higher z-index than map image */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+            transformOrigin: '0 0',
+            width: '2000px',
+            height: '1200px',
+            zIndex: 10
+          }}
+        >
           {/* Viewport Rectangle Overlay */}
           {isViewportMode && viewport && (
             <div
-              className="absolute border-4 border-blue-500 bg-blue-200/30 cursor-move"
+              className="absolute border-4 border-blue-500 bg-blue-200/30 cursor-move pointer-events-auto"
               style={{
                 left: `${viewport.x}px`,
                 top: `${viewport.y}px`,
@@ -253,10 +266,11 @@ const StaticImageMap = ({
             return (
               <div
                 key={location.id}
-                className="absolute cursor-pointer transform -translate-x-1/2 -translate-y-full z-10"
+                className="absolute transform -translate-x-1/2 -translate-y-full pointer-events-auto cursor-pointer"
                 style={{
                   left: `${location.coordinates_x}px`,
                   top: `${location.coordinates_y}px`,
+                  zIndex: 20
                 }}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -294,14 +308,14 @@ const StaticImageMap = ({
 
       {/* Admin Mode Instructions */}
       {isAddingLocation && (
-        <div className="absolute bottom-4 left-4 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm">
+        <div className="absolute bottom-4 left-4 z-30 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm">
           📍 Click on the map to place a marker for the new location
         </div>
       )}
 
       {/* Viewport Mode Instructions */}
       {isViewportMode && (
-        <div className="absolute bottom-4 left-4 bg-green-600 text-white px-4 py-2 rounded-lg text-sm">
+        <div className="absolute bottom-4 left-4 z-30 bg-green-600 text-white px-4 py-2 rounded-lg text-sm">
           🔧 Drag the blue rectangle to set the default user view area
         </div>
       )}
