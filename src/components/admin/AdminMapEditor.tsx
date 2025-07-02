@@ -4,19 +4,22 @@ import { useAllLocations, useCreateLocation, useUpdateLocation, useDeleteLocatio
 import { Location } from '@/types/database';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { MapPin, Plus } from 'lucide-react';
+import { MapPin, Plus, Settings, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import StaticImageMap from '../StaticImageMap';
 import LocationForm, { LocationFormData } from './LocationForm';
 import LocationsList from './LocationsList';
-import AdminMapControls from './AdminMapControls';
+import ViewportSelector from './ViewportSelector';
 import { validateCoordinates } from '@/utils/coordinateValidation';
+
+type AdminMode = 'map' | 'viewport' | 'locations';
 
 const AdminMapEditor = () => {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
+  const [isAddingLocation, setIsAddingLocation] = useState(false);
   const [clickCoordinates, setClickCoordinates] = useState({ x: 0, y: 0 });
+  const [adminMode, setAdminMode] = useState<AdminMode>('map');
+  const [viewport, setViewport] = useState({ x: 400, y: 200, width: 800, height: 480 });
 
   const { data: locations = [] } = useAllLocations();
   const { data: mapSettings } = useMapSettings();
@@ -26,8 +29,17 @@ const AdminMapEditor = () => {
   const updateMapSettings = useUpdateMapSettings();
   const { toast } = useToast();
 
+  const handleAddLocationClick = () => {
+    setIsAddingLocation(true);
+    setSelectedLocation(null);
+    toast({
+      title: 'Click on the map',
+      description: 'Click anywhere on the map to place a marker for the new location.',
+    });
+  };
+
   const handleMapClick = (x: number, y: number) => {
-    if (!isCreating) return;
+    if (!isAddingLocation) return;
     
     const validation = validateCoordinates(x, y);
     if (!validation.isValid) {
@@ -40,9 +52,10 @@ const AdminMapEditor = () => {
     }
     
     setClickCoordinates({ x, y });
+    setIsAddingLocation(false);
     toast({
-      title: 'Location marker placed',
-      description: `Coordinates set: (${x}, ${y})`,
+      title: 'Marker placed!',
+      description: `Location marker set at coordinates (${x}, ${y}). Fill in the details below.`,
     });
   };
 
@@ -58,7 +71,7 @@ const AdminMapEditor = () => {
     }
     
     try {
-      if (isEditing && selectedLocation) {
+      if (selectedLocation) {
         await updateLocation.mutateAsync({ id: selectedLocation.id, ...formData });
         toast({ title: 'Location updated successfully!' });
       } else {
@@ -77,15 +90,13 @@ const AdminMapEditor = () => {
 
   const resetForm = () => {
     setSelectedLocation(null);
-    setIsEditing(false);
-    setIsCreating(false);
+    setIsAddingLocation(false);
     setClickCoordinates({ x: 0, y: 0 });
   };
 
   const editLocation = (location: Location) => {
     setSelectedLocation(location);
-    setIsEditing(true);
-    setIsCreating(false);
+    setIsAddingLocation(false);
     setClickCoordinates({ x: location.coordinates_x, y: location.coordinates_y });
   };
 
@@ -123,18 +134,31 @@ const AdminMapEditor = () => {
     }
   };
 
-  const handleUpdateMapSettings = async (settings: any) => {
+  const handleSaveViewport = async () => {
     try {
+      const settings = {
+        center_x: viewport.x + viewport.width / 2,
+        center_y: viewport.y + viewport.height / 2,
+        initial_zoom: Math.min(800 / viewport.width, 480 / viewport.height),
+        min_zoom: mapSettings?.min_zoom || 0.5,
+        max_zoom: mapSettings?.max_zoom || 3
+      };
+      
       await updateMapSettings.mutateAsync(settings);
-      toast({ title: 'Map settings updated successfully!' });
+      toast({ 
+        title: 'Viewport settings saved!',
+        description: 'Users will now see this area by default.'
+      });
     } catch (error) {
       toast({ 
-        title: 'Error updating map settings',
+        title: 'Error saving viewport',
         description: 'Please try again later.',
         variant: 'destructive' 
       });
     }
   };
+
+  const isFormVisible = selectedLocation || clickCoordinates.x > 0 || clickCoordinates.y > 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-6">
@@ -148,90 +172,158 @@ const AdminMapEditor = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 mb-8">
-          {/* Map Section - Takes 2 columns on xl screens */}
-          <div className="xl:col-span-2">
-            <Card className="h-[700px]">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <MapPin className="h-5 w-5 text-blue-600" />
-                    <span>Interactive Map Editor</span>
-                  </div>
-                  <div className="flex space-x-2">
+        {/* Mode Selector */}
+        <div className="flex justify-center mb-8">
+          <div className="bg-white rounded-lg p-2 shadow-lg flex space-x-2">
+            <Button
+              onClick={() => setAdminMode('map')}
+              variant={adminMode === 'map' ? 'default' : 'outline'}
+              size="sm"
+              className="flex items-center space-x-2"
+            >
+              <MapPin className="h-4 w-4" />
+              <span>Manage Locations</span>
+            </Button>
+            <Button
+              onClick={() => setAdminMode('viewport')}
+              variant={adminMode === 'viewport' ? 'default' : 'outline'}
+              size="sm"
+              className="flex items-center space-x-2"
+            >
+              <Eye className="h-4 w-4" />
+              <span>Set Default View</span>
+            </Button>
+            <Button
+              onClick={() => setAdminMode('locations')}
+              variant={adminMode === 'locations' ? 'default' : 'outline'}
+              size="sm"
+              className="flex items-center space-x-2"
+            >
+              <Settings className="h-4 w-4" />
+              <span>All Locations</span>
+            </Button>
+          </div>
+        </div>
+
+        {/* Map Management Mode */}
+        {adminMode === 'map' && (
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            {/* Map Section */}
+            <div className="xl:col-span-2">
+              <Card className="h-[700px]">
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <MapPin className="h-5 w-5 text-blue-600" />
+                      <span>Map Editor</span>
+                    </div>
+                    <div className="flex space-x-2">
+                      <Button
+                        onClick={handleAddLocationClick}
+                        className="bg-green-600 hover:bg-green-700"
+                        size="sm"
+                        disabled={isAddingLocation}
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        {isAddingLocation ? 'Click on Map' : 'Add Location'}
+                      </Button>
+                      <Button
+                        onClick={resetForm}
+                        variant="outline"
+                        size="sm"
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="h-[600px] p-4">
+                  <StaticImageMap
+                    locations={locations}
+                    selectedLocation={selectedLocation}
+                    onLocationSelect={editLocation}
+                    isAdminMode={true}
+                    isAddingLocation={isAddingLocation}
+                    onMapClick={handleMapClick}
+                    mapSettings={mapSettings || undefined}
+                  />
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Location Form */}
+            <div className="xl:col-span-1">
+              <LocationForm
+                location={selectedLocation}
+                isEditing={!!selectedLocation}
+                isCreating={isFormVisible && !selectedLocation}
+                coordinates={clickCoordinates}
+                onSubmit={handleSubmitLocation}
+                onCancel={resetForm}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Viewport Selection Mode */}
+        {adminMode === 'viewport' && (
+          <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+            <div className="xl:col-span-3">
+              <Card className="h-[700px]">
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Eye className="h-5 w-5 text-green-600" />
+                      <span>Set Default User View</span>
+                    </div>
                     <Button
-                      onClick={() => {
-                        setIsCreating(true);
-                        setIsEditing(false);
-                        setSelectedLocation(null);
-                      }}
+                      onClick={handleSaveViewport}
                       className="bg-green-600 hover:bg-green-700"
                       size="sm"
                     >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Location
+                      Save Viewport
                     </Button>
-                    <Button
-                      onClick={resetForm}
-                      variant="outline"
-                      size="sm"
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </CardTitle>
-                {isCreating && (
-                  <div className="text-sm text-blue-700 bg-blue-50 p-4 rounded-lg border border-blue-200">
-                    <strong>📍 Click on the map</strong> to place a marker at the desired tourism location. 
-                    The coordinates will be automatically captured.
-                  </div>
-                )}
-              </CardHeader>
-              <CardContent className="h-[600px] p-4">
-                <StaticImageMap
-                  locations={locations}
-                  selectedLocation={selectedLocation}
-                  onLocationSelect={editLocation}
-                  isAdminMode={isCreating}
-                  onMapClick={handleMapClick}
-                  mapSettings={mapSettings || undefined}
-                />
-              </CardContent>
-            </Card>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="h-[600px] p-4">
+                  <StaticImageMap
+                    locations={locations}
+                    selectedLocation={null}
+                    onLocationSelect={() => {}}
+                    isAdminMode={true}
+                    isViewportMode={true}
+                    viewport={viewport}
+                    onViewportChange={setViewport}
+                    mapSettings={mapSettings || undefined}
+                  />
+                </CardContent>
+              </Card>
+            </div>
+            <div className="xl:col-span-1">
+              <ViewportSelector
+                viewport={viewport}
+                onViewportChange={setViewport}
+                onSave={handleSaveViewport}
+              />
+            </div>
           </div>
+        )}
 
-          {/* Location Form - Takes 1 column */}
-          <div className="xl:col-span-1">
-            <LocationForm
-              location={selectedLocation}
-              isEditing={isEditing}
-              isCreating={isCreating}
-              coordinates={clickCoordinates}
-              onSubmit={handleSubmitLocation}
-              onCancel={resetForm}
+        {/* Locations List Mode */}
+        {adminMode === 'locations' && (
+          <div className="grid grid-cols-1">
+            <LocationsList
+              locations={locations}
+              onEditLocation={(location) => {
+                setAdminMode('map');
+                editLocation(location);
+              }}
+              onDeleteLocation={handleDeleteLocation}
+              onToggleActive={toggleLocationActive}
+              selectedLocationId={selectedLocation?.id}
             />
           </div>
-
-          {/* Map Settings - Takes 1 column */}
-          <div className="xl:col-span-1">
-            <AdminMapControls
-              mapSettings={mapSettings || undefined}
-              onUpdateSettings={handleUpdateMapSettings}
-              isUpdating={updateMapSettings.isPending}
-            />
-          </div>
-        </div>
-
-        {/* Locations List - Full width */}
-        <div className="grid grid-cols-1">
-          <LocationsList
-            locations={locations}
-            onEditLocation={editLocation}
-            onDeleteLocation={handleDeleteLocation}
-            onToggleActive={toggleLocationActive}
-            selectedLocationId={selectedLocation?.id}
-          />
-        </div>
+        )}
       </div>
     </div>
   );

@@ -1,12 +1,12 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Location } from '@/types/database';
-import { Plus, Save, X, Image, List } from 'lucide-react';
+import { Plus, Save, X, Image, List, MapPin } from 'lucide-react';
 
 interface LocationFormProps {
   location?: Location | null;
@@ -37,6 +37,17 @@ const LocationForm = ({ location, isEditing, isCreating, coordinates, onSubmit, 
     images: location?.images?.length ? location.images : [''],
     is_active: location?.is_active ?? true,
   }));
+
+  // Update coordinates when they change
+  useEffect(() => {
+    if (coordinates.x > 0 || coordinates.y > 0) {
+      setFormData(prev => ({
+        ...prev,
+        coordinates_x: coordinates.x,
+        coordinates_y: coordinates.y
+      }));
+    }
+  }, [coordinates]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,24 +90,44 @@ const LocationForm = ({ location, isEditing, isCreating, coordinates, onSubmit, 
     return (
       <Card className="h-full">
         <CardContent className="flex items-center justify-center h-full">
-          <div className="text-center text-gray-500">
-            <List className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-            <p className="text-lg font-medium mb-2">No Location Selected</p>
-            <p className="text-sm">Click on a location marker to edit it, or click "Add Location" to create a new one.</p>
+          <div className="text-center text-gray-500 space-y-4">
+            <MapPin className="h-16 w-16 mx-auto text-gray-300" />
+            <div>
+              <p className="text-lg font-medium mb-2">Ready to Add Locations</p>
+              <p className="text-sm">Click "Add Location" to start placing markers on the map.</p>
+            </div>
           </div>
         </CardContent>
       </Card>
     );
   }
 
+  const hasValidCoordinates = formData.coordinates_x > 0 && formData.coordinates_y > 0;
+
   return (
     <Card className="h-full overflow-auto">
       <CardHeader>
-        <CardTitle>
-          {isEditing ? 'Edit Location' : 'Create New Location'}
+        <CardTitle className="flex items-center space-x-2">
+          <MapPin className="h-5 w-5 text-blue-600" />
+          <span>
+            {isEditing ? `Edit: ${location?.name}` : 'New Location Details'}
+          </span>
         </CardTitle>
+        {hasValidCoordinates && (
+          <div className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
+            📍 Marker placed at: ({formData.coordinates_x}, {formData.coordinates_y})
+          </div>
+        )}
       </CardHeader>
       <CardContent>
+        {!hasValidCoordinates && isCreating && (
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-blue-800 text-sm">
+              <strong>Step 1:</strong> Click "Add Location" button, then click on the map to place a marker.
+            </p>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <Label htmlFor="name">Location Name *</Label>
@@ -104,14 +135,14 @@ const LocationForm = ({ location, isEditing, isCreating, coordinates, onSubmit, 
               id="name"
               value={formData.name}
               onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              placeholder="Enter location name"
+              placeholder="Enter location name (e.g., Tawang Monastery)"
               required
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="x">X Coordinate (0-2000px)</Label>
+              <Label htmlFor="x">X Coordinate</Label>
               <Input
                 id="x"
                 type="number"
@@ -120,10 +151,11 @@ const LocationForm = ({ location, isEditing, isCreating, coordinates, onSubmit, 
                 value={formData.coordinates_x}
                 onChange={(e) => setFormData(prev => ({ ...prev, coordinates_x: parseFloat(e.target.value) || 0 }))}
                 required
+                disabled={!isEditing}
               />
             </div>
             <div>
-              <Label htmlFor="y">Y Coordinate (0-1200px)</Label>
+              <Label htmlFor="y">Y Coordinate</Label>
               <Input
                 id="y"
                 type="number"
@@ -132,6 +164,7 @@ const LocationForm = ({ location, isEditing, isCreating, coordinates, onSubmit, 
                 value={formData.coordinates_y}
                 onChange={(e) => setFormData(prev => ({ ...prev, coordinates_y: parseFloat(e.target.value) || 0 }))}
                 required
+                disabled={!isEditing}
               />
             </div>
           </div>
@@ -142,14 +175,14 @@ const LocationForm = ({ location, isEditing, isCreating, coordinates, onSubmit, 
               id="description"
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              placeholder="Enter location description"
-              rows={3}
+              placeholder="Describe this beautiful location, its significance, and what visitors can experience here..."
+              rows={4}
             />
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-2">
-              <Label>Key Points</Label>
+              <Label>Key Highlights</Label>
               <Button type="button" onClick={addBulletPoint} variant="outline" size="sm">
                 <Plus className="h-4 w-4 mr-1" />
                 Add Point
@@ -165,7 +198,7 @@ const LocationForm = ({ location, isEditing, isCreating, coordinates, onSubmit, 
                       newPoints[index] = e.target.value;
                       setFormData(prev => ({ ...prev, bullet_points: newPoints }));
                     }}
-                    placeholder={`Key point ${index + 1}`}
+                    placeholder={`Highlight ${index + 1} (e.g., Ancient Buddhist monastery)`}
                   />
                   {formData.bullet_points.length > 1 && (
                     <Button 
@@ -184,10 +217,10 @@ const LocationForm = ({ location, isEditing, isCreating, coordinates, onSubmit, 
 
           <div>
             <div className="flex items-center justify-between mb-2">
-              <Label>Images (URLs)</Label>
+              <Label>Images/Videos (URLs)</Label>
               <Button type="button" onClick={addImage} variant="outline" size="sm">
                 <Image className="h-4 w-4 mr-1" />
-                Add Image
+                Add Media
               </Button>
             </div>
             <div className="space-y-2">
@@ -200,7 +233,7 @@ const LocationForm = ({ location, isEditing, isCreating, coordinates, onSubmit, 
                       newImages[index] = e.target.value;
                       setFormData(prev => ({ ...prev, images: newImages }));
                     }}
-                    placeholder={`Image URL ${index + 1}`}
+                    placeholder={`Media URL ${index + 1} (image or video link)`}
                     type="url"
                   />
                   {formData.images.length > 1 && (
@@ -226,13 +259,17 @@ const LocationForm = ({ location, isEditing, isCreating, coordinates, onSubmit, 
               onChange={(e) => setFormData(prev => ({ ...prev, is_active: e.target.checked }))}
               className="rounded border-gray-300"
             />
-            <Label htmlFor="isActive">Location is active</Label>
+            <Label htmlFor="isActive">Make this location visible to users</Label>
           </div>
 
           <div className="flex space-x-4 pt-4">
-            <Button type="submit" className="flex-1 bg-emerald-500 hover:bg-emerald-600">
+            <Button 
+              type="submit" 
+              className="flex-1 bg-emerald-500 hover:bg-emerald-600"
+              disabled={!hasValidCoordinates || !formData.name.trim()}
+            >
               <Save className="h-4 w-4 mr-2" />
-              {isEditing ? 'Update Location' : 'Create Location'}
+              {isEditing ? 'Update Location' : 'Add This Location'}
             </Button>
             <Button type="button" onClick={onCancel} variant="outline" className="flex-1">
               Cancel
