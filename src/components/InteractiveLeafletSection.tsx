@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useLocations, useMapSettings } from '@/hooks/useLocations';
-import LeafletMap from './LeafletMap';
+import StaticImageMap from './StaticImageMap';
 import LocationDetails from './LocationDetails';
 import { Location } from '@/types/database';
 
@@ -48,11 +48,11 @@ const InteractiveLeafletSection = () => {
               <div className="mb-4">
                 <h3 className="text-xl font-semibold text-gray-800 mb-2">Interactive Tourism Map</h3>
                 <p className="text-sm text-gray-600">
-                  Click on the markers to explore different locations
+                  Click on the markers to explore different locations. Use mouse wheel to zoom and drag to pan.
                 </p>
               </div>
               <div className="h-[500px]">
-                <LeafletMap
+                <StaticImageMap
                   locations={locations}
                   selectedLocation={selectedLocation}
                   onLocationSelect={setSelectedLocation}

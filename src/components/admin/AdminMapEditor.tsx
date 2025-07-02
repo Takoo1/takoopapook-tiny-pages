@@ -4,9 +4,9 @@ import { useAllLocations, useCreateLocation, useUpdateLocation, useDeleteLocatio
 import { Location } from '@/types/database';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { MapPin, Plus, Settings } from 'lucide-react';
+import { MapPin, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import LeafletMap from '../LeafletMap';
+import StaticImageMap from '../StaticImageMap';
 import LocationForm, { LocationFormData } from './LocationForm';
 import LocationsList from './LocationsList';
 import AdminMapControls from './AdminMapControls';
@@ -188,7 +188,7 @@ const AdminMapEditor = () => {
                 )}
               </CardHeader>
               <CardContent className="h-[600px] p-4">
-                <LeafletMap
+                <StaticImageMap
                   locations={locations}
                   selectedLocation={selectedLocation}
                   onLocationSelect={editLocation}
