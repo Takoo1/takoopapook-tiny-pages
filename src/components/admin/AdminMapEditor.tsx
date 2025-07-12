@@ -97,6 +97,7 @@ const AdminMapEditor = () => {
         reviews_count: formData.reviews.filter(r => r.trim() !== '').length,
         reviews: formData.reviews.filter(r => r.trim() !== ''),
         packages_included: formData.packages_included || [],
+        categories: formData.categories || [],
         is_active: formData.is_active,
         ...safeCoordinates
       };

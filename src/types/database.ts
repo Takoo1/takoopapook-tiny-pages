@@ -11,6 +11,7 @@ export interface Location {
   reviews_count: number;
   reviews: string[];
   packages_included: string[];
+  categories: string[];
   is_active: boolean | null;
   created_at: string | null;
   updated_at: string | null;

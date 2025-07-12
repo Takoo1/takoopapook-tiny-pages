@@ -17,6 +17,7 @@ export type Database = {
       locations: {
         Row: {
           bullet_points: string[] | null
+          categories: string[] | null
           coordinates_x: number
           coordinates_y: number
           created_at: string | null
@@ -33,6 +34,7 @@ export type Database = {
         }
         Insert: {
           bullet_points?: string[] | null
+          categories?: string[] | null
           coordinates_x: number
           coordinates_y: number
           created_at?: string | null
@@ -49,6 +51,7 @@ export type Database = {
         }
         Update: {
           bullet_points?: string[] | null
+          categories?: string[] | null
           coordinates_x?: number
           coordinates_y?: number
           created_at?: string | null

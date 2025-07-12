@@ -27,9 +27,9 @@ const DestinationCard = ({ location }: DestinationCardProps) => {
   const defaultImage = "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=250&fit=crop";
 
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 w-full max-w-sm">
+    <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 group hover:-translate-y-2 w-full max-w-sm h-[420px] flex flex-col">
       {/* Image/Video Carousel */}
-      <div className="relative h-48 overflow-hidden">
+      <div className="relative h-64 overflow-hidden flex-shrink-0">
         {hasMedia ? (
           <>
             <img
@@ -70,34 +70,38 @@ const DestinationCard = ({ location }: DestinationCardProps) => {
       </div>
 
       {/* Card Content */}
-      <div className="p-4">
-        <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-1">
+      <div className="p-6 flex-1 flex flex-col">
+        <h3 className="text-xl font-bold text-gray-800 mb-2 line-clamp-1 group-hover:text-emerald-600 transition-colors">
           {location.name}
         </h3>
         
-        {/* Key Points/Highlights */}
-        {location.bullet_points && location.bullet_points.length > 0 && (
-          <div className="space-y-1">
-            {location.bullet_points.slice(0, 3).map((point, index) => (
-              <div key={index} className="flex items-start space-x-2 text-sm text-gray-600">
-                <div className="w-1 h-1 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
-                <span className="line-clamp-1">{point}</span>
-              </div>
-            ))}
-            {location.bullet_points.length > 3 && (
-              <div className="text-xs text-gray-400 mt-1">
-                +{location.bullet_points.length - 3} more highlights
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Description fallback if no bullet points */}
-        {(!location.bullet_points || location.bullet_points.length === 0) && location.description && (
-          <p className="text-sm text-gray-600 line-clamp-2">
-            {location.description}
-          </p>
-        )}
+        {/* Content Area with Fixed Height */}
+        <div className="flex-1 min-h-[80px]">
+          {/* Key Points/Highlights */}
+          {location.bullet_points && location.bullet_points.length > 0 ? (
+            <div className="space-y-1">
+              {location.bullet_points.slice(0, 3).map((point, index) => (
+                <div key={index} className="flex items-start space-x-2 text-sm text-gray-600">
+                  <div className="w-1 h-1 bg-emerald-500 rounded-full mt-2 flex-shrink-0" />
+                  <span className="line-clamp-1">{point}</span>
+                </div>
+              ))}
+              {location.bullet_points.length > 3 && (
+                <div className="text-xs text-gray-400 mt-1">
+                  +{location.bullet_points.length - 3} more highlights
+                </div>
+              )}
+            </div>
+          ) : location.description ? (
+            <p className="text-sm text-gray-600 line-clamp-3">
+              {location.description}
+            </p>
+          ) : (
+            <div className="text-sm text-gray-400 italic">
+              Discover this amazing destination
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

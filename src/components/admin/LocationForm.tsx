@@ -31,11 +31,14 @@ export interface LocationFormData {
   reviews_count: number;
   reviews: string[];
   packages_included: string[];
+  categories: string[];
   is_active: boolean;
 }
 
 const LocationForm = ({ location, isEditing, isCreating, coordinates, onSubmit, onCancel }: LocationFormProps) => {
   const { data: packages = [] } = usePackages();
+  const categoryOptions = ['Nature', 'Adventure', 'Cultural', 'Pilgrims'];
+  
   const [formData, setFormData] = useState<LocationFormData>(() => ({
     name: location?.name || '',
     coordinates_x: location?.coordinates_x || coordinates.x,
@@ -47,6 +50,7 @@ const LocationForm = ({ location, isEditing, isCreating, coordinates, onSubmit, 
     reviews_count: location?.reviews_count || 0,
     reviews: location?.reviews?.length ? location.reviews : [''],
     packages_included: location?.packages_included || [],
+    categories: location?.categories || [],
     is_active: location?.is_active ?? true,
   }));
 
@@ -283,6 +287,38 @@ const LocationForm = ({ location, isEditing, isCreating, coordinates, onSubmit, 
                       <X className="h-4 w-4" />
                     </Button>
                   )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <Label>Categories</Label>
+            <div className="grid grid-cols-2 gap-3 p-3 bg-gray-50 rounded-lg">
+              {categoryOptions.map((category) => (
+                <div key={category} className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id={`category-${category}`}
+                    checked={formData.categories.includes(category)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setFormData(prev => ({
+                          ...prev,
+                          categories: [...prev.categories, category]
+                        }));
+                      } else {
+                        setFormData(prev => ({
+                          ...prev,
+                          categories: prev.categories.filter(c => c !== category)
+                        }));
+                      }
+                    }}
+                    className="rounded border-gray-300"
+                  />
+                  <Label htmlFor={`category-${category}`} className="text-sm font-medium">
+                    {category}
+                  </Label>
                 </div>
               ))}
             </div>

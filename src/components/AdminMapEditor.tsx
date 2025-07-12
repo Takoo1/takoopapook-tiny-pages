@@ -51,6 +51,7 @@ const AdminMapEditor = () => {
         bullet_points: formData.bullet_points.filter(point => point.trim() !== ''),
         images: formData.images.filter(img => img.trim() !== ''),
         packages_included: [],
+        categories: [],
         rating: 0,
         reviews: [],
         reviews_count: 0,
