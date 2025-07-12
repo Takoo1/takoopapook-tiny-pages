@@ -4,16 +4,16 @@ export interface Location {
   name: string;
   coordinates_x: number;
   coordinates_y: number;
-  description: string;
-  bullet_points: string[];
-  images: string[];
+  description: string | null;
+  bullet_points: string[] | null;
+  images: string[] | null;
   rating: number;
   reviews_count: number;
   reviews: string[];
   packages_included: string[];
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
+  is_active: boolean | null;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 export interface Package {
@@ -40,17 +40,17 @@ export interface PlannedLocation {
   location_id: string;
   user_session: string;
   planned_at: string;
-  notes?: string;
+  notes?: string | null;
 }
 
 export interface MapSettings {
   id: string;
-  initial_zoom: number;
-  center_x: number;
-  center_y: number;
-  min_zoom: number;
-  max_zoom: number;
-  updated_at: string;
+  initial_zoom: number | null;
+  center_x: number | null;
+  center_y: number | null;
+  min_zoom: number | null;
+  max_zoom: number | null;
+  updated_at: string | null;
 }
 
 export interface Database {
