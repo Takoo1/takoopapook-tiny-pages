@@ -29,18 +29,69 @@ const FileUploadInput = ({
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
+    // Check if adding these files would exceed maxFiles limit
+    if (value.length + files.length > maxFiles) {
+      toast.error(`You can only upload up to ${maxFiles} files total. Currently have ${value.length} files.`);
+      return;
+    }
+
     setIsUploading(true);
     
     try {
       const uploadPromises = files.map(async (file) => {
-        const fileExt = file.name.split('.').pop();
+        // Convert AVIF to JPEG if needed, or handle other unsupported formats
+        let fileToUpload = file;
+        let fileExt = file.name.split('.').pop()?.toLowerCase();
+        
+        // Handle AVIF files by converting to JPEG
+        if (fileExt === 'avif') {
+          try {
+            // Create a canvas to convert AVIF to JPEG
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = document.createElement('img');
+            
+            await new Promise((resolve, reject) => {
+              img.onload = resolve;
+              img.onerror = reject;
+              img.src = URL.createObjectURL(file);
+            });
+            
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx?.drawImage(img, 0, 0);
+            
+            const blob = await new Promise<Blob>((resolve) => {
+              canvas.toBlob((blob) => {
+                resolve(blob!);
+              }, 'image/jpeg', 0.8);
+            });
+            
+            fileToUpload = new File([blob], file.name.replace('.avif', '.jpg'), {
+              type: 'image/jpeg'
+            });
+            fileExt = 'jpg';
+            
+            URL.revokeObjectURL(img.src);
+          } catch (convertError) {
+            console.warn('Failed to convert AVIF, uploading as-is:', convertError);
+            // Fall back to original file
+          }
+        }
+        
         const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
         
         const { data, error } = await supabase.storage
           .from('location-media')
-          .upload(fileName, file);
+          .upload(fileName, fileToUpload, {
+            cacheControl: '3600',
+            upsert: false
+          });
           
-        if (error) throw error;
+        if (error) {
+          console.error('Upload error details:', error);
+          throw new Error(`Upload failed: ${error.message}`);
+        }
         
         // Get public URL
         const { data: { publicUrl } } = supabase.storage
@@ -51,13 +102,14 @@ const FileUploadInput = ({
       });
       
       const uploadedUrls = await Promise.all(uploadPromises);
-      const updatedUrls = [...value, ...uploadedUrls].slice(0, maxFiles);
+      const updatedUrls = [...value, ...uploadedUrls];
       onChange(updatedUrls);
       
       toast.success(`Successfully uploaded ${files.length} file(s)`);
     } catch (error) {
       console.error('Upload error:', error);
-      toast.error('Failed to upload files. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown upload error';
+      toast.error(`Upload failed: ${errorMessage}`);
     } finally {
       setIsUploading(false);
       // Reset file input
@@ -124,7 +176,12 @@ const FileUploadInput = ({
           placeholder="Or paste image/video URL..."
           value={urlInput}
           onChange={(e) => setUrlInput(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && handleUrlAdd()}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              handleUrlAdd();
+            }
+          }}
           disabled={value.length >= maxFiles}
         />
         <Button
