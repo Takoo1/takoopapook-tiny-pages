@@ -5,8 +5,11 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { X, Plus } from 'lucide-react';
 import { Package, generatePackageCode } from '@/hooks/usePackages';
+import { useLocations } from '@/hooks/useLocations';
 
 interface PackageFormProps {
   package?: Package;
@@ -17,6 +20,8 @@ interface PackageFormProps {
 }
 
 const PackageForm = ({ package: editPackage, existingCodes, onSubmit, onCancel, isLoading }: PackageFormProps) => {
+  const { data: locations = [] } = useLocations();
+  
   const [formData, setFormData] = useState({
     package_code: '',
     title: '',
@@ -31,10 +36,11 @@ const PackageForm = ({ package: editPackage, existingCodes, onSubmit, onCancel, 
     locations_included: [] as string[],
     reviews: [] as string[],
     is_active: true,
+    is_editable: true,
   });
 
   const [newFeature, setNewFeature] = useState('');
-  const [newLocation, setNewLocation] = useState('');
+  const [selectedLocationId, setSelectedLocationId] = useState('');
   const [newReview, setNewReview] = useState('');
 
   useEffect(() => {
@@ -53,6 +59,7 @@ const PackageForm = ({ package: editPackage, existingCodes, onSubmit, onCancel, 
         locations_included: editPackage.locations_included,
         reviews: editPackage.reviews,
         is_active: editPackage.is_active,
+        is_editable: editPackage.is_editable || true,
       });
     } else {
       setFormData(prev => ({
@@ -67,13 +74,26 @@ const PackageForm = ({ package: editPackage, existingCodes, onSubmit, onCancel, 
     onSubmit(formData);
   };
 
-  const addArrayItem = (field: 'features' | 'locations_included' | 'reviews', value: string, setter: React.Dispatch<React.SetStateAction<string>>) => {
+  const addArrayItem = (field: 'features' | 'reviews', value: string, setter: React.Dispatch<React.SetStateAction<string>>) => {
     if (value.trim()) {
       setFormData(prev => ({
         ...prev,
         [field]: [...prev[field], value.trim()]
       }));
       setter('');
+    }
+  };
+
+  const addLocationToPackage = () => {
+    if (selectedLocationId) {
+      const location = locations.find(loc => loc.id === selectedLocationId);
+      if (location && !formData.locations_included.includes(location.name)) {
+        setFormData(prev => ({
+          ...prev,
+          locations_included: [...prev.locations_included, location.name]
+        }));
+        setSelectedLocationId('');
+      }
     }
   };
 
@@ -181,6 +201,16 @@ const PackageForm = ({ package: editPackage, existingCodes, onSubmit, onCancel, 
             </div>
           </div>
 
+          {/* Editable Checkbox */}
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="is_editable"
+              checked={formData.is_editable}
+              onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_editable: !!checked }))}
+            />
+            <Label htmlFor="is_editable">Editable</Label>
+          </div>
+
           <div>
             <Label htmlFor="image_url">Image URL</Label>
             <Input
@@ -227,16 +257,25 @@ const PackageForm = ({ package: editPackage, existingCodes, onSubmit, onCancel, 
           <div>
             <Label>Locations Included</Label>
             <div className="flex gap-2 mb-2">
-              <Input
-                value={newLocation}
-                onChange={(e) => setNewLocation(e.target.value)}
-                placeholder="Add location"
-                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addArrayItem('locations_included', newLocation, setNewLocation))}
-              />
+              <Select value={selectedLocationId} onValueChange={setSelectedLocationId}>
+                <SelectTrigger className="flex-1">
+                  <SelectValue placeholder="Select a destination to add" />
+                </SelectTrigger>
+                <SelectContent>
+                  {locations
+                    .filter(location => !formData.locations_included.includes(location.name))
+                    .map((location) => (
+                      <SelectItem key={location.id} value={location.id}>
+                        {location.name}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
               <Button 
                 type="button" 
-                onClick={() => addArrayItem('locations_included', newLocation, setNewLocation)}
+                onClick={addLocationToPackage}
                 size="sm"
+                disabled={!selectedLocationId}
               >
                 <Plus className="h-4 w-4" />
               </Button>

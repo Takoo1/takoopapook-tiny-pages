@@ -107,6 +107,7 @@ export type Database = {
           id: string
           image_url: string
           is_active: boolean
+          is_editable: boolean
           location: string
           locations_included: string[]
           package_code: string
@@ -125,6 +126,7 @@ export type Database = {
           id?: string
           image_url: string
           is_active?: boolean
+          is_editable?: boolean
           location: string
           locations_included?: string[]
           package_code: string
@@ -143,6 +145,7 @@ export type Database = {
           id?: string
           image_url?: string
           is_active?: boolean
+          is_editable?: boolean
           location?: string
           locations_included?: string[]
           package_code?: string

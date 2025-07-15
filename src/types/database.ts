@@ -32,6 +32,7 @@ export interface Package {
   locations_included: string[];
   reviews: string[];
   is_active: boolean;
+  is_editable: boolean;
   created_at: string;
   updated_at: string;
 }
