@@ -97,7 +97,9 @@ const StaticImageMap = ({
   const handleWheel = (e: React.WheelEvent) => {
     // Disable mouse wheel zooming on desktop to prevent page scroll interference
     // Only allow zooming via +/- buttons
-    e.preventDefault();
+    if (e.cancelable) {
+      e.preventDefault();
+    }
     return;
   };
 
