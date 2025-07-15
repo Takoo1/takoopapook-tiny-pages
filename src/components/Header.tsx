@@ -6,11 +6,11 @@ import { Link, useLocation } from 'react-router-dom';
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isExploreDropdownOpen, setIsExploreDropdownOpen] = useState(false);
+  const [isPackagesDropdownOpen, setIsPackagesDropdownOpen] = useState(false);
   const location = useLocation();
 
   const navItems = [
     { name: 'Home', path: '/' },
-    { name: 'Packages', path: '/packages' },
     { name: 'My Tour', path: '/my-tour' },
     { name: 'Our Services', path: '/services' },
     { name: 'About Us', path: '/about' },
@@ -22,6 +22,14 @@ const Header = () => {
     { name: 'Adventure', path: '/explore?category=Adventure' },
     { name: 'Cultural', path: '/explore?category=Cultural' },
     { name: 'Pilgrims', path: '/explore?category=Pilgrims' },
+  ];
+
+  const packageCategories = [
+    { name: 'All Packages', path: '/packages' },
+    { name: 'Nature', path: '/packages?category=nature' },
+    { name: 'Adventure', path: '/packages?category=adventure' },
+    { name: 'Cultural', path: '/packages?category=cultural' },
+    { name: 'Pilgrims', path: '/packages?category=pilgrims' },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -95,6 +103,40 @@ const Header = () => {
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"></div>
               )}
             </div>
+            
+            {/* Packages Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setIsPackagesDropdownOpen(!isPackagesDropdownOpen)}
+                className={`flex items-center space-x-1 px-3 py-2 text-sm font-medium transition-all duration-300 hover:text-emerald-600 ${
+                  location.pathname.startsWith('/packages')
+                    ? 'text-emerald-600'
+                    : 'text-gray-700 hover:text-emerald-600'
+                }`}
+              >
+                <span>Packages</span>
+                <ChevronDown className={`h-4 w-4 transition-transform ${isPackagesDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {isPackagesDropdownOpen && (
+                <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border z-50">
+                  {packageCategories.map((category) => (
+                    <Link
+                      key={category.name}
+                      to={category.path}
+                      onClick={() => setIsPackagesDropdownOpen(false)}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-600 first:rounded-t-lg last:rounded-b-lg"
+                    >
+                      {category.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+              
+              {location.pathname.startsWith('/packages') && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"></div>
+              )}
+            </div>
           </nav>
 
           {/* Login Button & Mobile Menu Toggle */}
@@ -132,6 +174,23 @@ const Header = () => {
                   {item.name}
                 </Link>
               ))}
+              
+              {/* Mobile Packages Submenu */}
+              <div className="space-y-1">
+                <div className="px-4 py-2 text-sm font-medium text-gray-800 border-b border-gray-200">
+                  Packages
+                </div>
+                {packageCategories.map((category) => (
+                  <Link
+                    key={category.name}
+                    to={category.path}
+                    onClick={() => setIsMenuOpen(false)}
+                    className="block px-6 py-2 text-sm text-gray-600 hover:bg-emerald-50 hover:text-emerald-600 rounded-lg"
+                  >
+                    {category.name}
+                  </Link>
+                ))}
+              </div>
               
               {/* Mobile Explore Submenu */}
               <div className="space-y-1">
