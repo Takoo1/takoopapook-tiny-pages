@@ -206,38 +206,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-20 px-6">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-16 text-foreground">
-            Why Choose Fortune Bridge?
-          </h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center p-6 rounded-lg bg-card/50 border border-border/30">
-              <Shield className="w-12 h-12 text-lottery-gold mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2 text-foreground">Secure & Transparent</h3>
-              <p className="text-muted-foreground">
-                All draws are conducted transparently with verifiable results and secure payment processing.
-              </p>
-            </div>
-            <div className="text-center p-6 rounded-lg bg-card/50 border border-border/30">
-              <Trophy className="w-12 h-12 text-lottery-gold mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2 text-foreground">Premium Prizes</h3>
-              <p className="text-muted-foreground">
-                Win big with our carefully curated lottery games featuring attractive prizes and great odds.
-              </p>
-            </div>
-            <div className="text-center p-6 rounded-lg bg-card/50 border border-border/30">
-              <Zap className="w-12 h-12 text-lottery-gold mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2 text-foreground">Instant Results</h3>
-              <p className="text-muted-foreground">
-                Get instant notifications and results. Your winnings are processed immediately.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Lottery Games Section */}
       <section id="games" className="py-20 px-6 bg-card/20">
         <div className="max-w-6xl mx-auto">
@@ -336,6 +304,38 @@ export default function Home() {
               ))}
             </div>
           )}
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 px-6">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-4xl font-bold text-center mb-16 text-foreground">
+            Why Choose Fortune Bridge?
+          </h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="text-center p-6 rounded-lg bg-card/50 border border-border/30">
+              <Shield className="w-12 h-12 text-lottery-gold mx-auto mb-4" />
+              <h3 className="text-xl font-semibold mb-2 text-foreground">Secure & Transparent</h3>
+              <p className="text-muted-foreground">
+                All draws are conducted transparently with verifiable results and secure payment processing.
+              </p>
+            </div>
+            <div className="text-center p-6 rounded-lg bg-card/50 border border-border/30">
+              <Trophy className="w-12 h-12 text-lottery-gold mx-auto mb-4" />
+              <h3 className="text-xl font-semibold mb-2 text-foreground">Premium Prizes</h3>
+              <p className="text-muted-foreground">
+                Win big with our carefully curated lottery games featuring attractive prizes and great odds.
+              </p>
+            </div>
+            <div className="text-center p-6 rounded-lg bg-card/50 border border-border/30">
+              <Zap className="w-12 h-12 text-lottery-gold mx-auto mb-4" />
+              <h3 className="text-xl font-semibold mb-2 text-foreground">Instant Results</h3>
+              <p className="text-muted-foreground">
+                Get instant notifications and results. Your winnings are processed immediately.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
