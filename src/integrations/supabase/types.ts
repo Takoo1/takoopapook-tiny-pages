@@ -10,251 +10,300 @@ export type Database = {
   // Allows to automatically instanciate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12.2.12 (cd3cf9e)"
+    PostgrestVersion: "12.2.3 (519615d)"
   }
   public: {
     Tables: {
-      fortune_counter_resets: {
+      bookings: {
         Row: {
+          booking_date: string
           created_at: string
           id: string
-          lottery_game_id: string
-          requested_by_admin_id: string | null
-          reset_by_user_id: string | null
-          reset_date: string
-          ticket_count: number
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          lottery_game_id: string
-          requested_by_admin_id?: string | null
-          reset_by_user_id?: string | null
-          reset_date?: string
-          ticket_count: number
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          lottery_game_id?: string
-          requested_by_admin_id?: string | null
-          reset_by_user_id?: string | null
-          reset_date?: string
-          ticket_count?: number
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "fortune_counter_resets_lottery_game_id_fkey"
-            columns: ["lottery_game_id"]
-            isOneToOne: false
-            referencedRelation: "lottery_games"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      lottery_books: {
-        Row: {
-          book_name: string
-          created_at: string
-          first_ticket_number: number
-          id: string
-          is_online_available: boolean
-          last_ticket_number: number
-          lottery_game_id: string
-          updated_at: string
-        }
-        Insert: {
-          book_name: string
-          created_at?: string
-          first_ticket_number: number
-          id?: string
-          is_online_available?: boolean
-          last_ticket_number: number
-          lottery_game_id: string
-          updated_at?: string
-        }
-        Update: {
-          book_name?: string
-          created_at?: string
-          first_ticket_number?: number
-          id?: string
-          is_online_available?: boolean
-          last_ticket_number?: number
-          lottery_game_id?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "lottery_books_lottery_game_id_fkey"
-            columns: ["lottery_game_id"]
-            isOneToOne: false
-            referencedRelation: "lottery_games"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      lottery_games: {
-        Row: {
-          created_at: string
-          description: string | null
-          game_code: string | null
-          game_date: string
-          game_password: string | null
-          id: string
-          last_ticket_number: number | null
-          organising_group_name: string | null
-          starting_ticket_number: number | null
-          ticket_image_url: string | null
-          ticket_price: number | null
-          title: string
-          total_tickets: number
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          description?: string | null
-          game_code?: string | null
-          game_date: string
-          game_password?: string | null
-          id?: string
-          last_ticket_number?: number | null
-          organising_group_name?: string | null
-          starting_ticket_number?: number | null
-          ticket_image_url?: string | null
-          ticket_price?: number | null
-          title: string
-          total_tickets?: number
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          description?: string | null
-          game_code?: string | null
-          game_date?: string
-          game_password?: string | null
-          id?: string
-          last_ticket_number?: number | null
-          organising_group_name?: string | null
-          starting_ticket_number?: number | null
-          ticket_image_url?: string | null
-          ticket_price?: number | null
-          title?: string
-          total_tickets?: number
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      lottery_tickets: {
-        Row: {
-          book_id: string | null
-          booked_at: string | null
-          booked_by_address: string | null
-          booked_by_email: string | null
-          booked_by_name: string | null
-          booked_by_phone: string | null
-          booked_by_user_id: string | null
-          created_at: string
-          id: string
-          lottery_game_id: string
+          package_duration: string
+          package_id: string
+          package_image_url: string
+          package_location: string
+          package_price: string
+          package_title: string
           status: string
-          ticket_number: number
+          total_price: number
+          tourists: Json
+          updated_at: string
         }
         Insert: {
-          book_id?: string | null
-          booked_at?: string | null
-          booked_by_address?: string | null
-          booked_by_email?: string | null
-          booked_by_name?: string | null
-          booked_by_phone?: string | null
-          booked_by_user_id?: string | null
+          booking_date?: string
           created_at?: string
           id?: string
-          lottery_game_id: string
+          package_duration: string
+          package_id: string
+          package_image_url: string
+          package_location: string
+          package_price: string
+          package_title: string
           status?: string
-          ticket_number: number
+          total_price: number
+          tourists: Json
+          updated_at?: string
         }
         Update: {
-          book_id?: string | null
-          booked_at?: string | null
-          booked_by_address?: string | null
-          booked_by_email?: string | null
-          booked_by_name?: string | null
-          booked_by_phone?: string | null
-          booked_by_user_id?: string | null
+          booking_date?: string
           created_at?: string
           id?: string
-          lottery_game_id?: string
+          package_duration?: string
+          package_id?: string
+          package_image_url?: string
+          package_location?: string
+          package_price?: string
+          package_title?: string
           status?: string
-          ticket_number?: number
+          total_price?: number
+          tourists?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      locations: {
+        Row: {
+          bullet_points: string[] | null
+          categories: string[] | null
+          coordinates_x: number
+          coordinates_y: number
+          created_at: string | null
+          description: string | null
+          id: string
+          images: string[] | null
+          is_active: boolean | null
+          name: string
+          packages_included: string[]
+          rating: number
+          reviews: string[]
+          reviews_count: number
+          updated_at: string | null
+        }
+        Insert: {
+          bullet_points?: string[] | null
+          categories?: string[] | null
+          coordinates_x: number
+          coordinates_y: number
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          is_active?: boolean | null
+          name: string
+          packages_included?: string[]
+          rating?: number
+          reviews?: string[]
+          reviews_count?: number
+          updated_at?: string | null
+        }
+        Update: {
+          bullet_points?: string[] | null
+          categories?: string[] | null
+          coordinates_x?: number
+          coordinates_y?: number
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          is_active?: boolean | null
+          name?: string
+          packages_included?: string[]
+          rating?: number
+          reviews?: string[]
+          reviews_count?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      map_settings: {
+        Row: {
+          center_x: number | null
+          center_y: number | null
+          id: string
+          initial_zoom: number | null
+          max_zoom: number | null
+          min_zoom: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          center_x?: number | null
+          center_y?: number | null
+          id?: string
+          initial_zoom?: number | null
+          max_zoom?: number | null
+          min_zoom?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          center_x?: number | null
+          center_y?: number | null
+          id?: string
+          initial_zoom?: number | null
+          max_zoom?: number | null
+          min_zoom?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      packages: {
+        Row: {
+          created_at: string
+          duration: string
+          features: string[]
+          group_size: string
+          id: string
+          image_url: string
+          is_active: boolean
+          is_editable: boolean
+          location: string
+          locations_included: string[]
+          package_code: string
+          price: string
+          rating: number
+          reviews: string[]
+          reviews_count: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          duration: string
+          features?: string[]
+          group_size: string
+          id?: string
+          image_url: string
+          is_active?: boolean
+          is_editable?: boolean
+          location: string
+          locations_included?: string[]
+          package_code: string
+          price: string
+          rating?: number
+          reviews?: string[]
+          reviews_count?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          duration?: string
+          features?: string[]
+          group_size?: string
+          id?: string
+          image_url?: string
+          is_active?: boolean
+          is_editable?: boolean
+          location?: string
+          locations_included?: string[]
+          package_code?: string
+          price?: string
+          rating?: number
+          reviews?: string[]
+          reviews_count?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      planned_locations: {
+        Row: {
+          id: string
+          location_id: string
+          notes: string | null
+          planned_at: string
+          user_session: string
+        }
+        Insert: {
+          id?: string
+          location_id: string
+          notes?: string | null
+          planned_at?: string
+          user_session: string
+        }
+        Update: {
+          id?: string
+          location_id?: string
+          notes?: string | null
+          planned_at?: string
+          user_session?: string
         }
         Relationships: [
           {
-            foreignKeyName: "lottery_tickets_book_id_fkey"
-            columns: ["book_id"]
+            foreignKeyName: "planned_locations_location_id_fkey"
+            columns: ["location_id"]
             isOneToOne: false
-            referencedRelation: "lottery_books"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "lottery_tickets_lottery_game_id_fkey"
-            columns: ["lottery_game_id"]
-            isOneToOne: false
-            referencedRelation: "lottery_games"
+            referencedRelation: "locations"
             referencedColumns: ["id"]
           },
         ]
       }
-      profiles: {
+      planned_packages: {
         Row: {
-          created_at: string | null
-          email: string
-          full_name: string | null
           id: string
-          role: string | null
-          updated_at: string | null
-          user_id: string
+          notes: string | null
+          package_id: string
+          planned_at: string
+          user_session: string
         }
         Insert: {
-          created_at?: string | null
-          email: string
-          full_name?: string | null
           id?: string
-          role?: string | null
-          updated_at?: string | null
-          user_id: string
+          notes?: string | null
+          package_id: string
+          planned_at?: string
+          user_session: string
         }
         Update: {
-          created_at?: string | null
-          email?: string
-          full_name?: string | null
           id?: string
-          role?: string | null
-          updated_at?: string | null
-          user_id?: string
+          notes?: string | null
+          package_id?: string
+          planned_at?: string
+          user_session?: string
         }
         Relationships: []
       }
-      user_roles: {
+      reviews: {
         Row: {
-          created_at: string | null
+          created_at: string
+          detailed_review: string
+          experience_summary: string
           id: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
+          images: string[] | null
+          is_published: boolean | null
+          item_id: string
+          item_type: string
+          rating: number | null
+          reviewer_name: string
+          updated_at: string
+          videos: string[] | null
         }
         Insert: {
-          created_at?: string | null
+          created_at?: string
+          detailed_review: string
+          experience_summary: string
           id?: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
+          images?: string[] | null
+          is_published?: boolean | null
+          item_id: string
+          item_type: string
+          rating?: number | null
+          reviewer_name: string
+          updated_at?: string
+          videos?: string[] | null
         }
         Update: {
-          created_at?: string | null
+          created_at?: string
+          detailed_review?: string
+          experience_summary?: string
           id?: string
-          role?: Database["public"]["Enums"]["app_role"]
-          user_id?: string
+          images?: string[] | null
+          is_published?: boolean | null
+          item_id?: string
+          item_type?: string
+          rating?: number | null
+          reviewer_name?: string
+          updated_at?: string
+          videos?: string[] | null
         }
         Relationships: []
       }
@@ -263,39 +312,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      generate_lottery_tickets: {
-        Args:
-          | { game_id: string; num_tickets: number }
-          | { game_id: string; start_num: number; end_num: number }
-        Returns: undefined
-      }
-      generate_lottery_tickets_for_book: {
-        Args: {
-          game_id: string
-          book_id: string
-          start_num: number
-          end_num: number
-        }
-        Returns: undefined
-      }
-      generate_random_code: {
-        Args: { length: number }
-        Returns: string
-      }
-      get_fortune_counter: {
-        Args: { game_id: string }
-        Returns: number
-      }
-      has_role: {
-        Args: {
-          _user_id: string
-          _role: Database["public"]["Enums"]["app_role"]
-        }
-        Returns: boolean
-      }
+      [_ in never]: never
     }
     Enums: {
-      app_role: "admin" | "user" | "organiser"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -422,8 +442,6 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {
-      app_role: ["admin", "user", "organiser"],
-    },
+    Enums: {},
   },
 } as const
