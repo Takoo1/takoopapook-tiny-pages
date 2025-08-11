@@ -191,7 +191,7 @@ export default function TicketBuying() {
     }
   };
 
-  const totalPrice = selectedTickets.length * 10; // Assuming $10 per ticket, you may want to get actual price
+  const totalPriceRs = selectedTickets.length * 200; // Rs 200 per ticket (example)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-background/50 py-8">
@@ -227,9 +227,17 @@ export default function TicketBuying() {
                 <span>Tickets ({selectedTickets.length}):</span>
                 <span>{selectedTickets.map(t => `#${t.number}`).join(', ')}</span>
               </div>
+              <div className="flex justify-between text-sm mb-1">
+                <span>Subtotal:</span>
+                <span>Rs {totalPriceRs}</span>
+              </div>
+              <div className="flex justify-between text-sm mb-1">
+                <span>Discount:</span>
+                <span>- Rs {discountApplied ? suggestedDiscountRs : 0}</span>
+              </div>
               <div className="flex justify-between font-bold">
-                <span>Total:</span>
-                <span className="text-lottery-gold">${totalPrice}</span>
+                <span>Payable:</span>
+                <span className="text-lottery-gold">Rs {discountApplied ? (totalPriceRs - suggestedDiscountRs) : totalPriceRs}</span>
               </div>
             </div>
 
@@ -322,7 +330,7 @@ export default function TicketBuying() {
               className="w-full bg-lottery-gold hover:bg-lottery-gold/90 text-primary-foreground"
               size="lg"
             >
-              {loading ? "Processing..." : `Buy Tickets - $${totalPrice}`}
+              {loading ? "Processing..." : `Buy Tickets - Rs ${discountApplied ? (totalPriceRs - suggestedDiscountRs) : totalPriceRs}`}
             </Button>
           </CardContent>
         </Card>

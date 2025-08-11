@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { LogIn, LogOut, User } from "lucide-react";
 import type { User as SupabaseUser } from '@supabase/supabase-js';
+import fcCoin from "@/assets/fc-coin.png";
 
 export function AuthButton() {
   const [user, setUser] = useState<SupabaseUser | null>(null);
@@ -17,13 +18,21 @@ export function AuthButton() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const { toast } = useToast();
+  const [fcBalance, setFcBalance] = useState<number | null>(null);
+  const [referralCode, setReferralCode] = useState<string | null>(null);
+  const [copying, setCopying] = useState(false);
+
 
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       setLoading(false);
+      if (session?.user) {
+        setTimeout(() => loadFcData(session.user!.id), 0);
+      }
     });
+
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -35,6 +44,7 @@ export function AuthButton() {
         if (event === 'SIGNED_IN' && session?.user) {
           setTimeout(async () => {
             await createUserProfile(session.user);
+            await loadFcData(session.user.id);
           }, 0);
         }
       }
@@ -58,6 +68,32 @@ export function AuthButton() {
       }
     } catch (error) {
       console.error('Error creating profile:', error);
+    }
+  };
+
+  const loadFcData = async (uid: string) => {
+    try { await supabase.rpc('ensure_fc_setup'); } catch {}
+    try {
+      const { data } = await supabase.from('fc_balances').select('balance').eq('user_id', uid).maybeSingle();
+      setFcBalance(data?.balance ?? 0);
+    } catch {}
+    try {
+      const { data } = await supabase.from('profiles').select('referral_code').eq('user_id', uid).maybeSingle();
+      setReferralCode((data as any)?.referral_code ?? null);
+    } catch {}
+  };
+
+  const copyReferralLink = async () => {
+    if (!referralCode) return;
+    try {
+      setCopying(true);
+      const url = `${window.location.origin}/?ref=${referralCode}`;
+      await navigator.clipboard.writeText(url);
+      toast({ title: 'Referral link copied', description: 'Share it and earn 100 FC when your referral buys their first ticket.' });
+    } catch (error: any) {
+      toast({ title: 'Copy failed', description: error.message, variant: 'destructive' });
+    } finally {
+      setCopying(false);
     }
   };
 
@@ -157,11 +193,26 @@ export function AuthButton() {
 
   if (user) {
     return (
-      <div className="flex items-center gap-2">
-        <div className="flex items-center gap-2 text-sm">
+      <div className="flex items-center gap-3">
+        <div className="hidden sm:flex items-center gap-2 text-sm">
           <User className="w-4 h-4" />
-          <span className="hidden sm:inline">{user.email}</span>
+          <span>{user.email}</span>
         </div>
+        <div className="flex items-center gap-1 px-2 py-1 rounded-md border border-border/40 bg-card/50">
+          <img src={fcCoin} alt="Fortune Coin" className="w-4 h-4" />
+          <span className="text-sm font-medium">{fcBalance ?? '—'} FC</span>
+        </div>
+        {referralCode && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={copyReferralLink}
+            disabled={copying}
+            className="gap-2"
+          >
+            {copying ? 'Copying…' : 'Copy Referral'}
+          </Button>
+        )}
         <Button 
           variant="outline" 
           size="sm" 
