@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      booking_cancellations: {
+        Row: {
+          booking_id: string
+          created_at: string
+          details: string | null
+          id: string
+          reason: string
+          status: string
+          updated_at: string
+          user_session: string | null
+        }
+        Insert: {
+          booking_id: string
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason: string
+          status?: string
+          updated_at?: string
+          user_session?: string | null
+        }
+        Update: {
+          booking_id?: string
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason?: string
+          status?: string
+          updated_at?: string
+          user_session?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_cancellations_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bookings: {
         Row: {
           booking_date: string
@@ -29,6 +70,7 @@ export type Database = {
           total_price: number
           tourists: Json
           updated_at: string
+          user_session: string | null
         }
         Insert: {
           booking_date?: string
@@ -44,6 +86,7 @@ export type Database = {
           total_price: number
           tourists: Json
           updated_at?: string
+          user_session?: string | null
         }
         Update: {
           booking_date?: string
@@ -59,6 +102,55 @@ export type Database = {
           total_price?: number
           tourists?: Json
           updated_at?: string
+          user_session?: string | null
+        }
+        Relationships: []
+      }
+      fc_balances: {
+        Row: {
+          balance: number
+          created_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      fc_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          metadata: Json | null
+          type: Database["public"]["Enums"]["fc_tx_type"]
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          type: Database["public"]["Enums"]["fc_tx_type"]
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          type?: Database["public"]["Enums"]["fc_tx_type"]
+          user_id?: string
         }
         Relationships: []
       }
@@ -260,6 +352,47 @@ export type Database = {
           planned_at?: string
           user_session?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "planned_packages_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "packages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          referral_code: string | null
+          referred_by_user_id: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+          referral_code?: string | null
+          referred_by_user_id?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          referral_code?: string | null
+          referred_by_user_id?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+        }
         Relationships: []
       }
       reviews: {
@@ -312,10 +445,35 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      award_purchase_bonus: {
+        Args: { ticket_prices: number[] }
+        Returns: number
+      }
+      award_referrer_bonus_if_applicable: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      ensure_fc_setup: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      redeem_fc_by_rupees: {
+        Args: { discount_rupees: number }
+        Returns: {
+          used_fc: number
+          new_balance: number
+        }[]
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
+      fc_tx_type:
+        | "earn"
+        | "redeem"
+        | "signup_bonus"
+        | "purchase_bonus"
+        | "referral_bonus"
+        | "adjust"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -442,6 +600,16 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+      fc_tx_type: [
+        "earn",
+        "redeem",
+        "signup_bonus",
+        "purchase_bonus",
+        "referral_bonus",
+        "adjust",
+      ],
+    },
   },
 } as const

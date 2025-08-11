@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, ShoppingCart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import fcCoin from "@/assets/fc-coin.png";
 
 interface SelectedTicket {
   id: string;
@@ -28,6 +29,13 @@ export default function TicketBuying() {
     optionalContact: ''
   });
   const [loading, setLoading] = useState(false);
+
+  const [fcBalance, setFcBalance] = useState<number | null>(null);
+  const [suggestedDiscountRs, setSuggestedDiscountRs] = useState(0);
+  const [suggestedFcToUse, setSuggestedFcToUse] = useState(0);
+  const [discountApplied, setDiscountApplied] = useState(false);
+  const [applyingDiscount, setApplyingDiscount] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     // Get selected tickets from location state
@@ -51,6 +59,73 @@ export default function TicketBuying() {
     }));
   };
 
+  // Initialize FC for signed-in user and capture referral
+  useEffect(() => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      const uid = session?.user?.id ?? null;
+      setUserId(uid);
+      if (!uid) return;
+
+      try { await supabase.rpc('ensure_fc_setup'); } catch {}
+
+      try {
+        const { data } = await supabase
+          .from('fc_balances')
+          .select('balance')
+          .eq('user_id', uid)
+          .maybeSingle();
+        setFcBalance(data?.balance ?? 0);
+      } catch {}
+
+      try {
+        const ref = localStorage.getItem('ref_code');
+        if (ref) {
+          const { data: referrer } = await supabase
+            .from('profiles')
+            .select('user_id')
+            .eq('referral_code', ref)
+            .maybeSingle();
+          if (referrer && referrer.user_id !== uid) {
+            await supabase
+              .from('profiles')
+              .update({ referred_by_user_id: referrer.user_id })
+              .eq('user_id', uid);
+          }
+        }
+      } catch {}
+    });
+  }, []);
+
+  // Suggest discount based on 3 FC = Rs 1
+  useEffect(() => {
+    const totalRs = selectedTickets.length * 200; // Assume Rs 200 per ticket (example)
+    if (fcBalance !== null) {
+      const maxDiscount = Math.min(Math.floor(fcBalance / 3), totalRs);
+      setSuggestedDiscountRs(maxDiscount);
+      setSuggestedFcToUse(maxDiscount * 3);
+    }
+  }, [selectedTickets, fcBalance]);
+
+  const handleApplyDiscount = async () => {
+    if (!userId) {
+      toast({ title: "Sign in required", description: "Please sign in to redeem Fortune Coins.", variant: "destructive" });
+      return;
+    }
+    if (!suggestedDiscountRs || suggestedDiscountRs <= 0) return;
+    setApplyingDiscount(true);
+    try {
+      const { data, error } = await supabase.rpc('redeem_fc_by_rupees', { discount_rupees: suggestedDiscountRs });
+      if (error) throw error;
+      const newBal = Array.isArray(data) && data.length ? (data as any)[0].new_balance : (fcBalance ?? 0) - suggestedFcToUse;
+      setFcBalance(newBal);
+      setDiscountApplied(true);
+      toast({ title: "Discount applied", description: `Used ${suggestedFcToUse} FC for Rs ${suggestedDiscountRs} discount.` });
+    } catch (error: any) {
+      toast({ title: "Unable to apply discount", description: error.message, variant: "destructive" });
+    } finally {
+      setApplyingDiscount(false);
+    }
+  };
   const handleBuyTickets = async () => {
     if (!formData.name || !formData.address || !formData.contactNumber) {
       toast({
@@ -92,6 +167,16 @@ export default function TicketBuying() {
         title: "Success!",
         description: `${selectedTickets.length} ticket(s) booked successfully!`,
       });
+
+      try {
+        if (userId) {
+          const prices = selectedTickets.map(() => 200);
+          await supabase.rpc('award_purchase_bonus', { ticket_prices: prices });
+          await supabase.rpc('award_referrer_bonus_if_applicable');
+        }
+      } catch (e) {
+        console.error('FC award error', e);
+      }
 
       navigate(`/lottery/${gameId}`);
     } catch (error) {
@@ -146,6 +231,32 @@ export default function TicketBuying() {
                 <span>Total:</span>
                 <span className="text-lottery-gold">${totalPrice}</span>
               </div>
+            </div>
+
+            {/* FC Tip and Discount */}
+            <div className="bg-card/50 border border-border/30 p-4 rounded-lg">
+              <div className="flex items-center gap-3">
+                <img src={fcCoin} alt="Fortune Coin (FC) icon" className="w-6 h-6" />
+                <div className="text-sm">
+                  {!userId && (
+                    <p className="text-muted-foreground">Sign in to earn and redeem Fortune Coins (FC).</p>
+                  )}
+                  {userId && fcBalance === null && (
+                    <p className="text-muted-foreground">Checking your FC balance...</p>
+                  )}
+                  {userId && fcBalance !== null && (
+                    <p>You have <span className="font-semibold">{fcBalance}</span> FC. Use <span className="font-semibold">{suggestedFcToUse}</span> for instant <span className="font-semibold">Rs {suggestedDiscountRs}</span> discount.</p>
+                  )}
+                </div>
+              </div>
+              {userId && suggestedDiscountRs > 0 && !discountApplied && (
+                <Button size="sm" className="mt-3" onClick={handleApplyDiscount} disabled={applyingDiscount}>
+                  {applyingDiscount ? 'Applying...' : `Apply Rs ${suggestedDiscountRs} discount`}
+                </Button>
+              )}
+              {discountApplied && (
+                <p className="text-xs text-muted-foreground mt-2">Discount applied using FC.</p>
+              )}
             </div>
 
             {/* Form Fields */}
