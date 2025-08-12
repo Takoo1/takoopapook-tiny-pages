@@ -55,12 +55,20 @@ export function AuthButton() {
 
   const createUserProfile = async (user: SupabaseUser) => {
     try {
+      // Store referral code from localStorage in user metadata if it exists
+      const refCode = localStorage.getItem('ref_code');
+      if (refCode) {
+        await supabase.auth.updateUser({
+          data: { ref_code: refCode }
+        });
+        localStorage.removeItem('ref_code'); // Clean up
+      }
+
       const { error } = await supabase
         .from('profiles')
         .upsert({
-          user_id: user.id,
-          email: user.email!,
-          full_name: fullName || user.user_metadata?.full_name || user.email?.split('@')[0],
+          id: user.id,
+          display_name: fullName || user.user_metadata?.full_name || user.email?.split('@')[0],
         });
 
       if (error && !error.message.includes('duplicate')) {
@@ -78,8 +86,8 @@ export function AuthButton() {
       setFcBalance(data?.balance ?? 0);
     } catch {}
     try {
-      const { data } = await supabase.from('profiles').select('referral_code').eq('user_id', uid).maybeSingle();
-      setReferralCode((data as any)?.referral_code ?? null);
+      const { data } = await supabase.from('profiles').select('referral_code').eq('id', uid).maybeSingle();
+      setReferralCode(data?.referral_code ?? null);
     } catch {}
   };
 

@@ -77,22 +77,7 @@ export default function TicketBuying() {
         setFcBalance(data?.balance ?? 0);
       } catch {}
 
-      try {
-        const ref = localStorage.getItem('ref_code');
-        if (ref) {
-          const { data: referrer } = await supabase
-            .from('profiles')
-            .select('user_id')
-            .eq('referral_code', ref)
-            .maybeSingle();
-          if (referrer && referrer.user_id !== uid) {
-            await supabase
-              .from('profiles')
-              .update({ referred_by_user_id: referrer.user_id })
-              .eq('user_id', uid);
-          }
-        }
-      } catch {}
+      // Referral handling is now done automatically in ensure_fc_setup function
     });
   }, []);
 
