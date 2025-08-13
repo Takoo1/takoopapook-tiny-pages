@@ -106,6 +106,54 @@ export type Database = {
         }
         Relationships: []
       }
+      fc_balances: {
+        Row: {
+          balance: number
+          created_at: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      fc_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          metadata: Json | null
+          type: Database["public"]["Enums"]["fc_tx_type"]
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          type: Database["public"]["Enums"]["fc_tx_type"]
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          type?: Database["public"]["Enums"]["fc_tx_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       locations: {
         Row: {
           bullet_points: string[] | null
@@ -320,6 +368,8 @@ export type Database = {
           created_at: string
           display_name: string | null
           id: string
+          referral_code: string | null
+          referred_by_user_id: string | null
           role: Database["public"]["Enums"]["app_role"]
           updated_at: string
         }
@@ -328,6 +378,8 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id: string
+          referral_code?: string | null
+          referred_by_user_id?: string | null
           role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string
         }
@@ -336,6 +388,8 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          referral_code?: string | null
+          referred_by_user_id?: string | null
           role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string
         }
@@ -391,10 +445,35 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      award_purchase_bonus: {
+        Args: { ticket_prices: number[] }
+        Returns: number
+      }
+      award_referrer_bonus_if_applicable: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      ensure_fc_setup: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      redeem_fc_by_rupees: {
+        Args: { discount_rupees: number }
+        Returns: {
+          used_fc: number
+          new_balance: number
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "user"
+      fc_tx_type:
+        | "earn"
+        | "redeem"
+        | "signup_bonus"
+        | "purchase_bonus"
+        | "referral_bonus"
+        | "adjust"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -523,6 +602,14 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      fc_tx_type: [
+        "earn",
+        "redeem",
+        "signup_bonus",
+        "purchase_bonus",
+        "referral_bonus",
+        "adjust",
+      ],
     },
   },
 } as const

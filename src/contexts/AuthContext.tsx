@@ -37,6 +37,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         // Handle post-verification and OAuth redirect
         if (event === 'SIGNED_IN' && session?.user) {
+          // Call ensure_fc_setup for new or returning users
+          setTimeout(async () => {
+            try {
+              await supabase.rpc('ensure_fc_setup');
+            } catch (error) {
+              console.error('Error setting up FC:', error);
+            }
+          }, 100);
+
           // Show success toast for Google sign-in
           setTimeout(() => {
             const toastEvent = new CustomEvent('auth-success', {
