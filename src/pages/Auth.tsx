@@ -116,17 +116,35 @@ const Auth = () => {
       
       const { error } = await signInWithGoogle();
       if (error) {
-        toast({
-          title: "Google Sign In Failed",
-          description: error.message,
-          variant: "destructive",
-        });
+        console.error('Google sign-in error:', error);
+        
+        // Check for specific error types
+        if (error.message?.includes('provider not enabled') || error.message?.includes('oauth')) {
+          toast({
+            title: "Google Sign In Not Available",
+            description: "Google authentication is not properly configured. Please use email/password or contact support.",
+            variant: "destructive",
+          });
+        } else if (error.message?.includes('redirect') || error.message?.includes('url')) {
+          toast({
+            title: "Redirect Configuration Error",
+            description: "Please check your site URL configuration in Supabase settings.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Google Sign In Failed",
+            description: error.message || "Please try again or use email/password.",
+            variant: "destructive",
+          });
+        }
       }
       // Don't show success toast here - it will be shown after redirect in AuthContext
     } catch (error) {
+      console.error('Unexpected error during Google sign-in:', error);
       toast({
         title: "An error occurred",
-        description: "Please try again later.",
+        description: "Please try email/password sign-in instead.",
         variant: "destructive",
       });
     } finally {
