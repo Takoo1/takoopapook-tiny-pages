@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import logo from '@/assets/logo.png';
 
 const Auth = () => {
@@ -114,7 +115,15 @@ const Auth = () => {
         localStorage.setItem('returnUrl', returnUrl);
       }
       
-      const { error } = await signInWithGoogle();
+      // Add returnUrl to OAuth redirect URL as well
+      const redirectUrl = `${window.location.origin}/${returnUrl ? `?returnUrl=${encodeURIComponent(returnUrl)}` : ''}`;
+      
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: redirectUrl
+        }
+      });
       if (error) {
         console.error('Google sign-in error:', error);
         

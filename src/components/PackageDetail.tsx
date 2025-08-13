@@ -145,22 +145,22 @@ const PackageDetail = () => {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 mb-8 lg:mb-12">
         {/* Left Column - Description */}
-        <div className="space-y-6">
+        <div className="space-y-4 lg:space-y-6 order-2 lg:order-1">
           <Card>
-            <CardHeader>
-              <CardTitle>Package Details</CardTitle>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg lg:text-xl">Package Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center">
-                  <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
-                  <span className="text-sm">Duration: {packageData.duration}</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:gap-4">
+                <div className="flex items-center p-3 bg-muted/50 rounded-lg">
+                  <Clock className="h-4 w-4 mr-2 text-muted-foreground flex-shrink-0" />
+                  <span className="text-sm font-medium">Duration: {packageData.duration}</span>
                 </div>
-                <div className="flex items-center">
-                  <Users className="h-4 w-4 mr-2 text-muted-foreground" />
-                  <span className="text-sm">Group Size: {packageData.group_size}</span>
+                <div className="flex items-center p-3 bg-muted/50 rounded-lg">
+                  <Users className="h-4 w-4 mr-2 text-muted-foreground flex-shrink-0" />
+                  <span className="text-sm font-medium">Group Size: {packageData.group_size}</span>
                 </div>
               </div>
               
@@ -192,7 +192,7 @@ const PackageDetail = () => {
         </div>
 
         {/* Right Column - Image Gallery */}
-        <div className="space-y-4">
+        <div className="space-y-4 order-1 lg:order-2">
           <div className="relative">
             <div 
               className="aspect-[4/3] rounded-2xl overflow-hidden shadow-xl cursor-pointer group"
@@ -271,23 +271,23 @@ const PackageDetail = () => {
       )}
 
       {/* Price and Action Buttons */}
-      <Card className="mb-12">
-        <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div>
-              <div className="text-3xl font-bold text-primary mb-1">{packageData.price}</div>
-              <div className="text-muted-foreground">Total package price</div>
+      <Card className="mb-8 lg:mb-12">
+        <CardContent className="p-4 lg:p-6">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="text-center sm:text-left">
+              <div className="text-2xl lg:text-3xl font-bold text-primary mb-1">{packageData.price}</div>
+              <div className="text-muted-foreground text-sm lg:text-base">Total package price</div>
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
               {packageData.is_editable && (
-                <Button variant="outline" asChild>
+                <Button variant="outline" asChild className="w-full sm:w-auto">
                   <Link to={`/admin/map-editor`}>
                     <Edit className="h-4 w-4 mr-2" />
                     Edit Package
                   </Link>
                 </Button>
               )}
-              <BookingButton packageId={packageData.id} />
+              <BookingButton packageId={packageData.id} className="w-full sm:w-auto" />
             </div>
           </div>
         </CardContent>

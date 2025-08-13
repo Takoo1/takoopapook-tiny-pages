@@ -72,9 +72,9 @@ const DestinationDetail = () => {
         </Button>
 
         {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 mb-6 lg:mb-8">
           {/* Left Column - Images */}
-          <div className="space-y-4">
+          <div className="space-y-4 order-1 lg:order-1">
             <div className="relative">
               <div 
                 className="aspect-[4/3] rounded-2xl overflow-hidden shadow-xl cursor-pointer group"
@@ -135,26 +135,26 @@ const DestinationDetail = () => {
           </div>
 
           {/* Right Column - Details */}
-          <div className="space-y-6">
+          <div className="space-y-4 lg:space-y-6 order-2 lg:order-2">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
                 {destination.name}
               </h1>
               
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center space-x-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
                   <div className="flex items-center space-x-1">
-                    <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                    <span className="font-semibold text-gray-700">
+                    <Star className="h-4 w-4 lg:h-5 lg:w-5 fill-yellow-400 text-yellow-400" />
+                    <span className="font-semibold text-gray-700 text-sm lg:text-base">
                       {reviewStats ? reviewStats.averageRating.toFixed(1) : '0.0'}
                     </span>
-                    <span className="text-gray-500">
+                    <span className="text-gray-500 text-sm">
                       ({reviewStats ? reviewStats.totalReviews : 0} reviews)
                     </span>
                   </div>
-                  <Badge variant="secondary" className="flex items-center space-x-1">
+                  <Badge variant="secondary" className="flex items-center space-x-1 self-start sm:self-auto">
                     <MapPin className="h-3 w-3" />
-                    <span>Arunachal Pradesh</span>
+                    <span className="text-xs lg:text-sm">Arunachal Pradesh</span>
                   </Badge>
                 </div>
                 <PlanButton 
@@ -193,19 +193,19 @@ const DestinationDetail = () => {
 
         {/* Packages Available Section */}
         {destinationPackages.length > 0 && (
-          <div className="mb-12">
-            <div className="flex items-center justify-between mb-8">
+          <div className="mb-8 lg:mb-12">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 lg:mb-8">
               <div>
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Our All Available Packages For {destination.name}</h2>
-                <p className="text-gray-600">Explore curated packages that include this destination</p>
+                <h2 className="text-xl lg:text-2xl font-bold text-gray-800 mb-2">Available Packages for {destination.name}</h2>
+                <p className="text-gray-600 text-sm lg:text-base">Explore curated packages that include this destination</p>
               </div>
-              <Badge variant="outline" className="flex items-center space-x-1">
+              <Badge variant="outline" className="flex items-center space-x-1 self-start sm:self-auto">
                 <PackageIcon className="h-3 w-3" />
-                <span>{destinationPackages.length} packages</span>
+                <span className="text-sm">{destinationPackages.length} packages</span>
               </Badge>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
               {destinationPackages.map((pkg) => (
                 <Card key={pkg.id} className="h-full flex flex-col group hover:shadow-lg transition-all duration-300">
                   <div className="relative overflow-hidden rounded-t-lg">

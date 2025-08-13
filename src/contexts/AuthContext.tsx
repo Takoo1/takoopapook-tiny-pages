@@ -46,21 +46,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
           }, 100);
 
-          // Show success toast for Google sign-in
+          // Show success toast for sign-in
           setTimeout(() => {
             const toastEvent = new CustomEvent('auth-success', {
-              detail: { message: 'You have successfully signed in with Google.' }
+              detail: { message: 'You have successfully signed in.' }
             });
             window.dispatchEvent(toastEvent);
           }, 100);
           
+          // Handle redirect after sign-in
           const returnUrl = localStorage.getItem('returnUrl');
           if (returnUrl) {
             localStorage.removeItem('returnUrl');
-            // Use setTimeout to ensure navigation happens after component updates
             setTimeout(() => {
               window.location.href = returnUrl;
-            }, 100);
+            }, 200);
+          } else {
+            // Check URL params for returnUrl as fallback
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlReturnUrl = urlParams.get('returnUrl');
+            if (urlReturnUrl) {
+              setTimeout(() => {
+                window.location.href = decodeURIComponent(urlReturnUrl);
+              }, 200);
+            }
           }
         }
       }
