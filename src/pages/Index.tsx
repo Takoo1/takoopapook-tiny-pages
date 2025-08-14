@@ -7,14 +7,19 @@ import { useNavigate } from 'react-router-dom';
 import { Star, Eye, Heart, Users } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { useEffect, useState } from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Index = () => {
   const navigate = useNavigate();
   const [isNativeApp, setIsNativeApp] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     setIsNativeApp(Capacitor.isNativePlatform());
   }, []);
+
+  // Hide founder section on mobile (both native and web)
+  const shouldHideFounderSection = isNativeApp || isMobile;
 
   return (
     <AppLayout>
@@ -25,7 +30,7 @@ const Index = () => {
       <DestinationCarousel />
 
       {/* Founder Section - Hidden on mobile/native */}
-      {!isNativeApp && (
+      {!shouldHideFounderSection && (
       <section className="section-padding bg-gradient-to-br from-muted/30 to-accent/20">
         <div className="container mx-auto container-padding">
           <div className="max-w-6xl mx-auto">
