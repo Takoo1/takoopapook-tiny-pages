@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Capacitor } from '@capacitor/core';
 import Header from '@/components/Header';
@@ -18,12 +19,11 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, className = '' }) => {
   const useMobileLayout = isNativeApp || isMobile;
 
   return (
-    <div className={`min-h-screen font-sans ${useMobileLayout ? 'pb-24' : ''} ${className}`}>
+    <div className={`min-h-screen font-sans ${useMobileLayout ? 'pb-20' : ''} ${className}`}>
       <Header />
-      <main className={`${useMobileLayout ? 'pt-32' : 'pt-16 sm:pt-20'}`}>
+      <main className={`${isNativeApp ? 'pt-safe-area-top' : ''}`}>
         {children}
       </main>
-      {!useMobileLayout && <Footer />}
       {useMobileLayout && <BottomNavigation />}
     </div>
   );

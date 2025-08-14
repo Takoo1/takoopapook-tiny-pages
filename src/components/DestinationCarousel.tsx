@@ -1,3 +1,4 @@
+
 import { useAllLocations } from '@/hooks/useLocations';
 import DestinationCard from './DestinationCard';
 import { MapPin } from 'lucide-react';
@@ -40,9 +41,6 @@ const DestinationCarousel = () => {
               <span className="text-primary"> Destinations</span>
             </h2>
             <div className="w-16 sm:w-20 lg:w-24 h-1 bg-primary mx-auto rounded-full mb-4 sm:mb-6" />
-            <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Discover amazing places and create unforgettable memories
-            </p>
           </div>
           <div className="flex justify-center">
             <div className="animate-pulse flex space-x-4">
@@ -82,11 +80,6 @@ const DestinationCarousel = () => {
             <span className="text-primary"> Destinations</span>
           </h2>
           <div className="w-16 sm:w-20 lg:w-24 h-1 bg-primary mx-auto rounded-full mb-4 sm:mb-6" />
-          {!isNativeApp && (
-            <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Discover amazing places and create unforgettable memories with our carefully curated destinations
-            </p>
-          )}
         </div>
 
         {activeLocations.length === 0 ? (

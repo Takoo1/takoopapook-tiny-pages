@@ -1,7 +1,7 @@
-import { MapPin, Clock, Users, Star, ArrowRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import PlanButton from './PlanButton';
-import { usePackages } from '@/hooks/usePackages';
+
+import { useAllPackages } from '@/hooks/usePackages';
+import PackageCard from './PackageCard';
+import { Package } from 'lucide-react';
 import {
   Carousel,
   CarouselContent,
@@ -14,15 +14,14 @@ import Autoplay from "embla-carousel-autoplay";
 import * as React from "react";
 
 const PackageCarousel = () => {
-  const { data: allPackages = [], isLoading } = usePackages();
-  const navigate = useNavigate();
+  const { data: packages = [], isLoading, error } = useAllPackages();
   const isMobile = useIsMobile();
   const isNativeApp = Capacitor.isNativePlatform();
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
 
-  // Limit to 6 packages only
-  const packages = allPackages.slice(0, 6);
+  // Filter only active packages and limit to 9
+  const activePackages = packages.filter(pkg => pkg.is_active).slice(0, 9);
 
   React.useEffect(() => {
     if (!api) return;
@@ -34,26 +33,37 @@ const PackageCarousel = () => {
 
   if (isLoading) {
     return (
-      <section className="section-padding-lg bg-background">
+      <section className="section-padding-lg bg-muted/30">
         <div className="container mx-auto container-padding">
-          <div className="text-center">
-            <div className="text-lg text-muted-foreground">Loading packages...</div>
+          <div className="text-center mb-8 sm:mb-12 lg:mb-16">
+            <h2 className="mb-4 sm:mb-6">
+              Featured
+              <span className="text-primary"> Packages</span>
+            </h2>
+            <div className="w-16 sm:w-20 lg:w-24 h-1 bg-primary mx-auto rounded-full mb-4 sm:mb-6" />
+          </div>
+          <div className="flex justify-center">
+            <div className="animate-pulse flex space-x-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-muted rounded-xl w-80 h-80"></div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
     );
   }
 
-  if (packages.length === 0) {
+  if (error) {
     return (
-      <section className="section-padding-lg bg-background">
+      <section className="section-padding-lg bg-muted/30">
         <div className="container mx-auto container-padding">
           <div className="text-center">
             <h2 className="mb-4 sm:mb-6">
-              Popular Tour
+              Featured
               <span className="text-primary"> Packages</span>
             </h2>
-            <p className="text-xl text-muted-foreground">No packages available at the moment.</p>
+            <p className="text-destructive">Failed to load packages. Please try again later.</p>
           </div>
         </div>
       </section>
@@ -61,150 +71,73 @@ const PackageCarousel = () => {
   }
 
   return (
-    <section className="section-padding-lg bg-background">
+    <section className="section-padding-lg bg-muted/30">
       <div className="container mx-auto container-padding">
         {/* Section Header */}
         <div className="text-center mb-8 sm:mb-12 lg:mb-16 animate-fade-in">
           <h2 className="mb-4 sm:mb-6">
-            Popular Tour
+            Featured
             <span className="text-primary"> Packages</span>
           </h2>
           <div className="w-16 sm:w-20 lg:w-24 h-1 bg-primary mx-auto rounded-full mb-4 sm:mb-6" />
-          {!isNativeApp && (
-            <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Discover handcrafted journeys that showcase the best of Arunachal Pradesh's natural beauty, 
-              rich culture, and adventurous spirit.
+        </div>
+
+        {activePackages.length === 0 ? (
+          <div className="text-center py-8 sm:py-12 lg:py-16">
+            <Package className="h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground/50 mx-auto mb-4 sm:mb-6" />
+            <h3 className="text-lg sm:text-xl font-semibold text-muted-foreground mb-2">
+              No Packages Available Yet
+            </h3>
+            <p className="text-sm sm:text-base text-muted-foreground/70 max-w-md mx-auto">
+              We're working on creating amazing travel packages for you. 
+              Check back soon for exciting new adventures!
             </p>
-          )}
-        </div>
-
-        {/* Carousel */}
-        <div className="relative">
-          <Carousel
-            setApi={setApi}
-            plugins={[
-              Autoplay({
-                delay: 3000,
-              }) as any,
-            ]}
-            opts={{
-              align: "start",
-              slidesToScroll: 1,
-              skipSnaps: false,
-              dragFree: false,
-              loop: true,
-            }}
-            className="w-full"
-          >
-            <CarouselContent className="-ml-2 md:-ml-4">
-              {packages.map((pkg) => (
-                <CarouselItem 
-                  key={pkg.id} 
-                  className={`pl-2 md:pl-4 ${isMobile ? 'basis-full' : 'basis-1/3'}`}
-                >
-                  <div 
-                    className="bg-card border border-border rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden group hover:-translate-y-2 h-full cursor-pointer backdrop-blur-sm"
-                    onClick={() => navigate(`/my-tour/package/${pkg.id}`)}
-                  >
-                    {/* Image */}
-                    <div className="relative h-48 sm:h-56 lg:h-64 overflow-hidden">
-                      <img 
-                        src={pkg.image_url} 
-                        alt={pkg.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                        onError={(e) => {
-                          e.currentTarget.src = '/placeholder.svg';
-                        }}
-                      />
-                      <div className="absolute top-2 sm:top-4 right-2 sm:right-4 bg-primary/90 text-primary-foreground px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
-                        {pkg.price}
-                      </div>
-                      <div className="absolute top-2 sm:top-4 left-2 sm:left-4">
-                        <PlanButton 
-                          itemId={pkg.id} 
-                          itemType="package"
-                          itemName={pkg.title}
-                          variant="compact"
-                        />
-                      </div>
-                      <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 flex flex-wrap gap-1">
-                        {pkg.features.slice(0, 2).map((feature, index) => (
-                          <span key={index} className="bg-primary/90 text-primary-foreground px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md text-xs font-medium">
-                            {feature}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Content */}
-                    <div className="p-4 sm:p-6">
-                      <div className="flex items-center justify-between mb-2 sm:mb-3">
-                        <div className="flex items-center text-amber-500">
-                          <Star className="h-3 w-3 sm:h-4 sm:w-4 fill-current" />
-                          <span className="text-xs sm:text-sm font-medium ml-1">{pkg.rating}</span>
-                          <span className="text-muted-foreground text-xs sm:text-sm ml-1">({pkg.reviews_count})</span>
-                        </div>
-                        <div className="flex items-center text-muted-foreground text-xs sm:text-sm">
-                          <Users className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                          {pkg.group_size}
-                        </div>
-                      </div>
-
-                      <h3 className="text-base sm:text-lg lg:text-xl font-bold text-foreground mb-1 sm:mb-2 group-hover:text-primary transition-colors line-clamp-2">
-                        {pkg.title}
-                      </h3>
-
-                      <div className="flex items-center text-muted-foreground mb-1 sm:mb-2">
-                        <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1 text-primary" />
-                        <span className="text-xs sm:text-sm line-clamp-1">{pkg.location}</span>
-                      </div>
-
-                      <div className="flex items-center text-muted-foreground mb-3 sm:mb-4">
-                        <Clock className="h-3 w-3 sm:h-4 sm:w-4 mr-1 text-primary" />
-                        <span className="text-xs sm:text-sm">{pkg.duration}</span>
-                      </div>
-
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/my-tour/package/${pkg.id}`);
-                        }}
-                        className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-1.5 sm:py-2 rounded-xl text-sm sm:text-base font-semibold hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 group/btn flex items-center justify-center space-x-1 sm:space-x-2 hover:scale-105 shadow-lg hover:shadow-xl"
-                      >
-                        <span>Book Now</span>
-                        <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 group-hover/btn:translate-x-1 transition-transform" />
-                      </button>
-                    </div>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-          </Carousel>
-          
-          {/* Navigation Dots */}
-          <div className="flex justify-center space-x-2 mt-6">
-            {packages.map((_, index) => (
-              <button
-                key={index}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  index === current ? 'bg-primary w-6' : 'bg-muted-foreground/30'
-                }`}
-                onClick={() => api?.scrollTo(index)}
-              />
-            ))}
           </div>
-        </div>
-
-        {/* View All Button */}
-        <div className="text-center mt-12 animate-fade-in">
-          <button 
-            onClick={() => navigate('/packages')}
-            className="group bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-6 py-2.5 rounded-xl font-semibold text-base hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 hover:scale-105 flex items-center space-x-2 mx-auto shadow-lg hover:shadow-xl"
-          >
-            <span>View All Packages</span>
-            <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-          </button>
-        </div>
+        ) : (
+          /* Carousel */
+          <div className="relative">
+            <Carousel
+              setApi={setApi}
+              plugins={[
+                Autoplay({
+                  delay: 3000,
+                }) as any,
+              ]}
+              opts={{
+                align: "start",
+                slidesToScroll: 1,
+                skipSnaps: false,
+                dragFree: false,
+                loop: true,
+              }}
+              className="w-full"
+            >
+              <CarouselContent className="-ml-2 md:-ml-4">
+                {activePackages.map((pkg) => (
+                  <CarouselItem 
+                    key={pkg.id} 
+                    className={`pl-2 md:pl-4 ${isMobile ? 'basis-full' : 'basis-1/3'}`}
+                  >
+                    <PackageCard package={pkg} />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
+            
+            {/* Navigation Dots */}
+            <div className="flex justify-center space-x-2 mt-6">
+              {activePackages.map((_, index) => (
+                <button
+                  key={index}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    index === current ? 'bg-primary w-6' : 'bg-muted-foreground/30'
+                  }`}
+                  onClick={() => api?.scrollTo(index)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
