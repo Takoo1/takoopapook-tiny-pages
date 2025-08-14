@@ -25,6 +25,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, className = '' }) => {
         {children}
       </main>
       {useMobileLayout && <BottomNavigation />}
+      {!useMobileLayout && <Footer />}
     </div>
   );
 };

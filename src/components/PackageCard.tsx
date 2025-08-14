@@ -59,47 +59,47 @@ const PackageCard = ({ package: pkg }: PackageCardProps) => {
         </div>
       </div>
       
-      <CardContent className="flex-1 p-4">
-        <h3 className="font-semibold text-lg mb-2 line-clamp-2 group-hover:text-primary transition-colors">{pkg.title}</h3>
+      <CardContent className="flex-1 p-3">
+        <h3 className="font-semibold text-base mb-1.5 line-clamp-2 group-hover:text-primary transition-colors">{pkg.title}</h3>
         
-        <div className="flex items-center text-muted-foreground text-sm mb-2">
-          <MapPin className="h-4 w-4 mr-1 text-primary" />
+        <div className="flex items-center text-muted-foreground text-xs mb-1.5">
+          <MapPin className="h-3 w-3 mr-1 text-primary" />
           <span>{pkg.location}</span>
         </div>
         
-        <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
+        <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
           <div className="flex items-center">
-            <Clock className="h-4 w-4 mr-1 text-primary" />
+            <Clock className="h-3 w-3 mr-1 text-primary" />
             <span>{pkg.duration}</span>
           </div>
           <div className="flex items-center">
-            <Users className="h-4 w-4 mr-1 text-primary" />
+            <Users className="h-3 w-3 mr-1 text-primary" />
             <span>{pkg.group_size}</span>
           </div>
         </div>
         
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-2">
           <div className="flex items-center">
-            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400 mr-1" />
-            <span className="font-medium">{pkg.rating.toFixed(1)}</span>
-            <span className="text-muted-foreground text-sm ml-1">
-              ({pkg.reviews_count} reviews)
+            <Star className="h-3 w-3 fill-yellow-400 text-yellow-400 mr-1" />
+            <span className="font-medium text-xs">{pkg.rating.toFixed(1)}</span>
+            <span className="text-muted-foreground text-xs ml-1">
+              ({pkg.reviews_count})
             </span>
           </div>
-          <span className="font-bold text-lg text-primary">{pkg.price}</span>
+          <span className="font-bold text-base text-primary">{pkg.price}</span>
         </div>
         
         {pkg.features.length > 0 && (
-          <div className="mb-3">
+          <div className="mb-2">
             <div className="flex flex-wrap gap-1">
-              {pkg.features.slice(0, 3).map((feature, index) => (
-                <Badge key={index} variant="outline" className="text-xs">
+              {pkg.features.slice(0, 2).map((feature, index) => (
+                <Badge key={index} variant="outline" className="text-xs px-1.5 py-0.5">
                   {feature}
                 </Badge>
               ))}
-              {pkg.features.length > 3 && (
-                <Badge variant="outline" className="text-xs">
-                  +{pkg.features.length - 3} more
+              {pkg.features.length > 2 && (
+                <Badge variant="outline" className="text-xs px-1.5 py-0.5">
+                  +{pkg.features.length - 2}
                 </Badge>
               )}
             </div>
@@ -107,16 +107,16 @@ const PackageCard = ({ package: pkg }: PackageCardProps) => {
         )}
         
         {pkg.locations_included.length > 0 && (
-          <div className="text-sm text-muted-foreground">
-            <span className="font-medium">Includes:</span> {pkg.locations_included.slice(0, 2).join(', ')}
-            {pkg.locations_included.length > 2 && ` +${pkg.locations_included.length - 2} more`}
+          <div className="text-xs text-muted-foreground">
+            <span className="font-medium">Includes:</span> {pkg.locations_included.slice(0, 1).join(', ')}
+            {pkg.locations_included.length > 1 && ` +${pkg.locations_included.length - 1} more`}
           </div>
         )}
       </CardContent>
       
-      <CardFooter className="p-4 pt-0">
+      <CardFooter className="p-3 pt-0">
         <Button 
-          className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl" 
+          className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl text-xs py-2" 
           onClick={handleButtonClick}
         >
           View Details

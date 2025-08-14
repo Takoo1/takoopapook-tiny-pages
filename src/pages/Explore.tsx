@@ -49,8 +49,8 @@ const Explore = () => {
             <h1 className={`mb-4 sm:mb-6 leading-tight ${isNativeApp ? 'text-2xl' : ''}`}>
               {getCategoryTitle()}
             </h1>
-            <p className={`text-base sm:text-lg lg:text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed ${isNativeApp ? 'text-sm' : ''}`}>
-              Discover the breathtaking beauty and rich culture of Arunachal Pradesh through our curated destinations
+            <p className={`text-muted-foreground max-w-4xl mx-auto leading-relaxed ${isNativeApp ? 'text-xs' : 'text-base sm:text-lg lg:text-xl'}`}>
+              Breathtaking beauty and rich culture of Arunachal Pradesh
             </p>
             <div className="w-16 sm:w-20 lg:w-24 h-1 bg-gradient-to-r from-emerald-500 to-teal-500 mx-auto mt-6 sm:mt-8 rounded-full" />
           </div>
@@ -75,8 +75,8 @@ const Explore = () => {
 
                   {/* Category Filters */}
                   {!categoryFilter && (
-                    <div className="space-y-3">
-                      <h3 className="text-lg font-semibold text-foreground">Categories</h3>
+                     <div className="space-y-3">
+                       <h3 className={`font-semibold text-foreground ${isNativeApp ? 'text-sm' : 'text-lg'}`}>Categories</h3>
                       <div className={`space-y-2 ${isNativeApp ? 'grid grid-cols-2 gap-2' : ''}`}>
                         {categories.map((category) => {
                           const categoryCount = locations.filter(loc => 
@@ -87,16 +87,16 @@ const Explore = () => {
                             <button
                               key={category}
                               onClick={() => handleCategoryClick(category)}
-                              className="w-full bg-white/90 backdrop-blur-sm dark:bg-gray-900/90 px-4 py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group text-left border border-white/20"
+                              className={`w-full bg-white/90 backdrop-blur-sm dark:bg-gray-900/90 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group text-left border border-white/20 ${isNativeApp ? 'px-3 py-2' : 'px-4 py-3'}`}
                             >
-                              <div className="flex justify-between items-center">
-                                <span className="text-base font-medium text-foreground group-hover:text-emerald-600 transition-colors duration-300">
-                                  {category}
-                                </span>
-                                <span className="text-sm text-muted-foreground">
-                                  {categoryCount}
-                                </span>
-                              </div>
+                               <div className="flex justify-between items-center">
+                                 <span className={`font-medium text-foreground group-hover:text-emerald-600 transition-colors duration-300 ${isNativeApp ? 'text-xs' : 'text-base'}`}>
+                                   {category}
+                                 </span>
+                                 <span className={`text-muted-foreground ${isNativeApp ? 'text-xs' : 'text-sm'}`}>
+                                   {categoryCount}
+                                 </span>
+                               </div>
                             </button>
                           );
                         })}
@@ -130,7 +130,7 @@ const Explore = () => {
           {!isLoading && filteredLocations.length > 0 && (
             <div className="mb-8">
               {!isNativeApp && filteredLocations.length > 2 && (
-                <h3 className="text-xl font-semibold text-foreground mb-6">More Destinations</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-4">More Destinations</h3>
               )}
               <div className={`grid gap-8 ${isNativeApp ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}>
                 {(isNativeApp ? filteredLocations : filteredLocations.slice(2)).map((location) => (

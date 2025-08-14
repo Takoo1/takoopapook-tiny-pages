@@ -53,8 +53,8 @@ const Packages = () => {
             <h1 className={`mb-4 sm:mb-6 ${isNativeApp ? 'text-2xl' : ''}`}>
               {getCategoryTitle()}
             </h1>
-            <p className={`text-base sm:text-lg text-gray-600 max-w-3xl mx-auto ${isNativeApp ? 'text-sm' : ''}`}>
-              Discover curated travel experiences crafted for unforgettable journeys
+            <p className={`text-muted-foreground max-w-3xl mx-auto ${isNativeApp ? 'text-xs leading-relaxed' : 'text-base sm:text-lg'}`}>
+              Curated travel experiences for unforgettable journeys
             </p>
           </div>
 
@@ -78,23 +78,23 @@ const Packages = () => {
 
                   {/* Category Filters */}
                   {categoryFilter === 'all' && (
-                    <div className="space-y-3">
-                      <h3 className="text-lg font-semibold text-gray-800">Categories</h3>
+                   <div className="space-y-3">
+                       <h3 className={`font-semibold text-foreground ${isNativeApp ? 'text-sm' : 'text-lg'}`}>Categories</h3>
                       <div className={`space-y-2 ${isNativeApp ? 'grid grid-cols-2 gap-2' : ''}`}>
                         {categories.slice(1).map((category) => (
                           <button
                             key={category.id}
                             onClick={() => handleCategoryClick(category.id)}
-                            className="w-full bg-white px-4 py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group text-left border border-gray-100"
+                            className={`w-full bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 group text-left border border-gray-100 ${isNativeApp ? 'px-3 py-2' : 'px-4 py-3'}`}
                           >
-                            <div className="flex justify-between items-center">
-                              <span className="text-base font-medium text-gray-800 group-hover:text-emerald-600 transition-colors duration-300">
-                                {category.name}
-                              </span>
-                              <span className="text-sm text-gray-500">
-                                {category.count}
-                              </span>
-                            </div>
+                             <div className="flex justify-between items-center">
+                               <span className={`font-medium text-foreground group-hover:text-emerald-600 transition-colors duration-300 ${isNativeApp ? 'text-xs' : 'text-base'}`}>
+                                 {category.name}
+                               </span>
+                               <span className={`text-muted-foreground ${isNativeApp ? 'text-xs' : 'text-sm'}`}>
+                                 {category.count}
+                               </span>
+                             </div>
                           </button>
                         ))}
                       </div>
@@ -127,7 +127,7 @@ const Packages = () => {
           {!isLoading && filteredPackages.length > 0 && (
             <div className="mb-8">
               {!isNativeApp && filteredPackages.length > 2 && (
-                <h3 className="text-xl font-semibold text-gray-800 mb-6">More Packages</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-4">More Packages</h3>
               )}
               <div className={`grid gap-6 ${isNativeApp ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'}`}>
                 {(isNativeApp ? filteredPackages : filteredPackages.slice(2)).map((pkg) => (

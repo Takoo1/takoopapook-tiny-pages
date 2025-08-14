@@ -7,7 +7,7 @@ const BottomNavigation = () => {
 
   const navItems = [
     { name: 'Home', path: '/', icon: Home },
-    { name: 'My Tour', path: '/my-tour', icon: Package },
+    { name: 'Account', path: '/my-tour', icon: Package },
     { name: 'Packages', path: '/packages', icon: MapPin },
     { name: 'Explore', path: '/explore', icon: Compass },
   ];

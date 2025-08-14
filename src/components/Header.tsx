@@ -36,7 +36,7 @@ const Header = () => {
 
   const navItems = [
     { name: 'Home', path: '/' },
-    { name: 'My Tour', path: '/my-tour' },
+    { name: 'Account', path: '/my-tour' },
     { name: 'About Us', path: '/about' },
   ];
 
@@ -281,7 +281,7 @@ const Header = () => {
                 <Link
                   to="/auth"
                   onClick={() => setIsMenuOpen(false)}
-                  className="flex items-center justify-center space-x-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-4 py-3 rounded-lg mt-4"
+                  className="flex items-center justify-center space-x-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-4 py-3 rounded-lg mt-4 mb-4"
                 >
                   <User className="h-4 w-4" />
                   <span>Login</span>

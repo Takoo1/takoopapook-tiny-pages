@@ -44,11 +44,11 @@ const DestinationCard = ({ location, onClick }: DestinationCardProps) => {
 
   return (
     <div 
-      className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 group hover:-translate-y-2 w-full max-w-sm h-[420px] flex flex-col cursor-pointer"
+      className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 group hover:-translate-y-2 w-full max-w-sm h-[380px] flex flex-col cursor-pointer"
       onClick={handleClick}
     >
       {/* Image/Video Carousel */}
-      <div className="relative h-64 overflow-hidden flex-shrink-0">
+      <div className="relative h-48 overflow-hidden flex-shrink-0">
         {hasMedia ? (
           <>
             <img
@@ -91,42 +91,42 @@ const DestinationCard = ({ location, onClick }: DestinationCardProps) => {
         </div>
         
         {/* Rating Overlay */}
-        <div className="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm text-white px-2 py-1 rounded-lg flex items-center space-x-1 text-sm">
-          <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+        <div className="absolute bottom-2 right-2 bg-black/70 backdrop-blur-sm text-white px-1.5 py-0.5 rounded-lg flex items-center space-x-1 text-xs">
+          <Star className="h-2.5 w-2.5 fill-yellow-400 text-yellow-400" />
           <span className="font-medium">{location.rating || 0}</span>
           <span className="text-gray-300">({location.reviews_count || 0})</span>
         </div>
       </div>
 
       {/* Card Content */}
-      <div className="p-6 flex-1 flex flex-col">
-        <h3 className="text-xl font-bold text-gray-800 mb-2 line-clamp-1 group-hover:text-emerald-600 transition-colors">
+      <div className="p-4 flex-1 flex flex-col">
+        <h3 className="text-base font-bold text-gray-800 mb-1.5 line-clamp-1 group-hover:text-emerald-600 transition-colors">
           {location.name}
         </h3>
         
         {/* Content Area with Fixed Height */}
-        <div className="flex-1 min-h-[80px]">
+        <div className="flex-1 min-h-[60px]">
           {/* Key Points/Highlights */}
           {location.bullet_points && location.bullet_points.length > 0 ? (
-            <div className="space-y-1">
-              {location.bullet_points.slice(0, 3).map((point, index) => (
-                <div key={index} className="flex items-start space-x-2 text-sm text-gray-600">
-                  <div className="w-1 h-1 bg-emerald-500 rounded-full mt-2 flex-shrink-0" />
+            <div className="space-y-0.5">
+              {location.bullet_points.slice(0, 2).map((point, index) => (
+                <div key={index} className="flex items-start space-x-1.5 text-xs text-gray-600">
+                  <div className="w-1 h-1 bg-emerald-500 rounded-full mt-1.5 flex-shrink-0" />
                   <span className="line-clamp-1">{point}</span>
                 </div>
               ))}
-              {location.bullet_points.length > 3 && (
-                <div className="text-xs text-gray-400 mt-1">
-                  +{location.bullet_points.length - 3} more highlights
+              {location.bullet_points.length > 2 && (
+                <div className="text-xs text-gray-400 mt-0.5">
+                  +{location.bullet_points.length - 2} more
                 </div>
               )}
             </div>
           ) : location.description ? (
-            <p className="text-sm text-gray-600 line-clamp-3">
+            <p className="text-xs text-gray-600 line-clamp-2">
               {location.description}
             </p>
           ) : (
-            <div className="text-sm text-gray-400 italic">
+            <div className="text-xs text-gray-400 italic">
               Discover this amazing destination
             </div>
           )}
