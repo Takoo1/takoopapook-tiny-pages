@@ -16,62 +16,64 @@ import BookingButton from '@/components/BookingButton';
 import PlanButton from '@/components/PlanButton';
 import AppLayout from '@/components/AppLayout';
 import { Capacitor } from '@capacitor/core';
-
 const PackageDetail = () => {
-  const { id } = useParams<{ id: string }>();
+  const {
+    id
+  } = useParams<{
+    id: string;
+  }>();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [showImageLightbox, setShowImageLightbox] = useState(false);
   const [selectedDestination, setSelectedDestination] = useState<Location | null>(null);
   const isNativeApp = Capacitor.isNativePlatform();
 
   // Fetch package data
-  const { data: packageData, isLoading: packageLoading } = usePackage(id || '');
-  
+  const {
+    data: packageData,
+    isLoading: packageLoading
+  } = usePackage(id || '');
+
   // Fetch real review statistics
-  const { data: reviewStats } = useReviewStatistics('package', id || '');
+  const {
+    data: reviewStats
+  } = useReviewStatistics('package', id || '');
 
   // Fetch included locations
-  const { data: includedLocations, isLoading: locationsLoading } = useQuery({
+  const {
+    data: includedLocations,
+    isLoading: locationsLoading
+  } = useQuery({
     queryKey: ['package-locations', packageData?.locations_included],
     queryFn: async () => {
       if (!packageData?.locations_included.length) return [];
-      
       console.log('Fetching locations for package:', packageData.locations_included);
-      
-      const { data, error } = await supabase
-        .from('locations')
-        .select('*')
-        .in('name', packageData.locations_included)
-        .eq('is_active', true);
-
+      const {
+        data,
+        error
+      } = await supabase.from('locations').select('*').in('name', packageData.locations_included).eq('is_active', true);
       if (error) {
         console.error('Error fetching package locations:', error);
         throw error;
       }
-      
       console.log('Fetched package locations:', data);
       return data as Location[];
     },
-    enabled: !!packageData?.locations_included.length,
+    enabled: !!packageData?.locations_included.length
   });
-
   const handlePreviousImage = () => {
     const imageUrl = packageData?.image_url;
     if (imageUrl) {
       setSelectedImageIndex(prev => prev === 0 ? 0 : prev - 1);
     }
   };
-
   const handleNextImage = () => {
     const imageUrl = packageData?.image_url;
     if (imageUrl) {
       setSelectedImageIndex(prev => prev === 0 ? 0 : prev + 1);
     }
   };
-
   if (packageLoading) {
-    return (
-      <div className="container mx-auto px-4 py-8">
+    return <div className="container mx-auto px-4 py-8">
         <div className="animate-pulse">
           <div className="h-8 bg-muted rounded w-1/3 mb-6"></div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
@@ -79,26 +81,20 @@ const PackageDetail = () => {
             <div className="h-64 bg-muted rounded"></div>
           </div>
         </div>
-      </div>
-    );
+      </div>;
   }
-
   if (!packageData) {
-    return (
-      <div className="container mx-auto px-4 py-8 text-center">
+    return <div className="container mx-auto px-4 py-8 text-center">
         <h1 className="text-2xl font-bold mb-4">Package not found</h1>
         <Link to="/packages" className="text-primary hover:underline">
           Back to Packages
         </Link>
-      </div>
-    );
+      </div>;
   }
 
   // Enhanced images array - can include multiple images from package data
   const images = packageData?.image_url ? [packageData.image_url] : [];
-
-  return (
-    <AppLayout>
+  return <AppLayout>
     <div className={`${isNativeApp ? 'mobile-container mobile-section' : 'container mx-auto px-4 py-8'}`}>
       {/* Package Header */}
       <div className={`${isNativeApp ? 'mb-4' : 'mb-8'}`}>
@@ -107,15 +103,7 @@ const PackageDetail = () => {
             {packageData.title}
           </h1>
           
-          <div className={`flex items-center justify-center gap-3 text-muted-foreground ${isNativeApp ? 'text-xs' : 'text-sm'}`}>
-            <div className="flex items-center">
-              <MapPin className={`${isNativeApp ? 'h-3 w-3' : 'h-4 w-4'} mr-1`} />
-              <span>{packageData.location}</span>
-            </div>
-            <Badge variant="secondary" className={`${isNativeApp ? 'text-xs px-2 py-0.5' : ''}`}>
-              {packageData.package_code}
-            </Badge>
-          </div>
+          
           
           <div className="flex items-center justify-center gap-4">
             <div className={`${isNativeApp ? 'text-lg' : 'text-2xl'} font-bold text-primary`}>
@@ -130,12 +118,7 @@ const PackageDetail = () => {
                 ({reviewStats ? reviewStats.totalReviews : 0})
               </span>
             </div>
-            <PlanButton 
-              itemId={packageData.id} 
-              itemType="package" 
-              itemName={packageData.title}
-              labelMode="liked"
-            />
+            <PlanButton itemId={packageData.id} itemType="package" itemName={packageData.title} labelMode="liked" />
           </div>
         </div>
       </div>
@@ -170,19 +153,15 @@ const PackageDetail = () => {
               </div>
 
               {/* Key Highlights */}
-              {packageData.features.length > 0 && (
-                <div>
+              {packageData.features.length > 0 && <div>
                   <h4 className={`font-semibold mb-3 ${isNativeApp ? 'text-sm' : ''}`}>Key Highlights</h4>
                   <div className={`grid grid-cols-1 md:grid-cols-2 ${isNativeApp ? 'gap-2' : 'gap-3'}`}>
-                    {packageData.features.map((feature, index) => (
-                      <div key={index} className={`flex items-center ${isNativeApp ? 'p-2' : 'p-3'} bg-muted/50 rounded-lg`}>
+                    {packageData.features.map((feature, index) => <div key={index} className={`flex items-center ${isNativeApp ? 'p-2' : 'p-3'} bg-muted/50 rounded-lg`}>
                         <div className={`${isNativeApp ? 'w-1.5 h-1.5' : 'w-2 h-2'} bg-primary rounded-full mr-3 flex-shrink-0`}></div>
                         <span className={`${isNativeApp ? 'text-xs' : 'text-sm'}`}>{feature}</span>
-                      </div>
-                    ))}
+                      </div>)}
                   </div>
-                </div>
-              )}
+                </div>}
             </CardContent>
           </Card>
         </div>
@@ -190,18 +169,10 @@ const PackageDetail = () => {
         {/* Right Column - Image Gallery */}
         <div className="space-y-4 order-1 lg:order-2">
           <div className="relative">
-            <div 
-              className="aspect-[4/3] rounded-2xl overflow-hidden shadow-xl cursor-pointer group"
-              onClick={() => setShowImageLightbox(true)}
-            >
-              <img
-                src={images[selectedImageIndex] || '/placeholder.svg'}
-                alt={packageData.title}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                onError={(e) => {
-                  e.currentTarget.src = '/placeholder.svg';
-                }}
-              />
+            <div className="aspect-[4/3] rounded-2xl overflow-hidden shadow-xl cursor-pointer group" onClick={() => setShowImageLightbox(true)}>
+              <img src={images[selectedImageIndex] || '/placeholder.svg'} alt={packageData.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" onError={e => {
+                e.currentTarget.src = '/placeholder.svg';
+              }} />
               <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                 <div className="bg-white/90 rounded-full p-3">
                   <Eye className="h-6 w-6 text-gray-800" />
@@ -210,61 +181,30 @@ const PackageDetail = () => {
             </div>
             
             {/* Image thumbnails - For future enhancement when multiple images are available */}
-            {images.length > 1 && (
-              <div 
-                className="flex gap-3 mt-4 overflow-x-auto pb-2 scrollbar-hide"
-                onClick={(e) => e.stopPropagation()} // Prevent parent lightbox trigger
-              >
-                {images.map((image, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setSelectedImageIndex(index);
-                    }}
-                    className={`flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 transition-all duration-300 hover:scale-105 ${
-                      index === selectedImageIndex 
-                        ? 'border-emerald-500 shadow-lg ring-2 ring-emerald-200' 
-                        : 'border-gray-200 hover:border-emerald-300 hover:shadow-md'
-                    }`}
-                  >
-                    <img
-                      src={image}
-                      alt={`${packageData.title} view ${index + 1}`}
-                      className={`w-full h-full object-cover transition-all duration-300 ${
-                        index === selectedImageIndex ? 'opacity-100' : 'opacity-70 hover:opacity-90'
-                      }`}
-                      onError={(e) => {
-                        e.currentTarget.src = '/placeholder.svg';
-                      }}
-                      draggable={false}
-                    />
-                  </button>
-                ))}
-              </div>
-            )}
+            {images.length > 1 && <div className="flex gap-3 mt-4 overflow-x-auto pb-2 scrollbar-hide" onClick={e => e.stopPropagation()} // Prevent parent lightbox trigger
+            >
+                {images.map((image, index) => <button key={index} type="button" onClick={e => {
+                e.preventDefault();
+                e.stopPropagation();
+                setSelectedImageIndex(index);
+              }} className={`flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 transition-all duration-300 hover:scale-105 ${index === selectedImageIndex ? 'border-emerald-500 shadow-lg ring-2 ring-emerald-200' : 'border-gray-200 hover:border-emerald-300 hover:shadow-md'}`}>
+                    <img src={image} alt={`${packageData.title} view ${index + 1}`} className={`w-full h-full object-cover transition-all duration-300 ${index === selectedImageIndex ? 'opacity-100' : 'opacity-70 hover:opacity-90'}`} onError={e => {
+                  e.currentTarget.src = '/placeholder.svg';
+                }} draggable={false} />
+                  </button>)}
+              </div>}
           </div>
         </div>
       </div>
 
 
       {/* Locations Included */}
-      {includedLocations && includedLocations.length > 0 && (
-        <div className={`${isNativeApp ? 'mb-6' : 'mb-12'}`}>
+      {includedLocations && includedLocations.length > 0 && <div className={`${isNativeApp ? 'mb-6' : 'mb-12'}`}>
           <h2 className={`${isNativeApp ? 'text-lg' : 'text-2xl'} font-bold ${isNativeApp ? 'mb-3' : 'mb-6'}`}>Destinations Included</h2>
           <div className={`grid grid-cols-1 ${isNativeApp ? 'gap-3' : 'md:grid-cols-2 lg:grid-cols-3 gap-6'}`}>
-            {includedLocations.map((location) => (
-              <DestinationCard 
-                key={location.id} 
-                location={location}
-                onClick={() => setSelectedDestination(location)}
-              />
-            ))}
+            {includedLocations.map(location => <DestinationCard key={location.id} location={location} onClick={() => setSelectedDestination(location)} />)}
           </div>
-        </div>
-      )}
+        </div>}
 
       {/* Price and Action Buttons */}
       <Card className={`${isNativeApp ? 'mb-6' : 'mb-8 lg:mb-12'}`}>
@@ -275,14 +215,12 @@ const PackageDetail = () => {
               <div className={`text-muted-foreground ${isNativeApp ? 'text-xs' : 'text-sm lg:text-base'}`}>Total package price</div>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-              {packageData.is_editable && (
-                <Button variant="outline" asChild className={`w-full sm:w-auto ${isNativeApp ? 'h-7 text-xs px-2' : ''}`}>
+              {packageData.is_editable && <Button variant="outline" asChild className={`w-full sm:w-auto ${isNativeApp ? 'h-7 text-xs px-2' : ''}`}>
                   <Link to={`/admin/map-editor`}>
                     <Edit className={`${isNativeApp ? 'h-3 w-3' : 'h-4 w-4'} mr-1`} />
                     Edit Package
                   </Link>
-                </Button>
-              )}
+                </Button>}
               <BookingButton packageId={packageData.id} className={`w-full sm:w-auto ${isNativeApp ? 'h-7 text-xs px-2' : ''}`} />
             </div>
           </div>
@@ -291,31 +229,16 @@ const PackageDetail = () => {
 
 
       {/* Image Lightbox */}
-      {showImageLightbox && (
-        <div 
-          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
-          onClick={() => setShowImageLightbox(false)}
-        >
+      {showImageLightbox && <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4" onClick={() => setShowImageLightbox(false)}>
           <div className="relative max-w-4xl max-h-full">
-            <img
-              src={images[selectedImageIndex] || '/placeholder.svg'}
-              alt={packageData.title}
-              className="max-w-full max-h-full object-contain rounded-lg"
-              onError={(e) => {
-                e.currentTarget.src = '/placeholder.svg';
-              }}
-            />
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute top-4 right-4 text-white hover:bg-white/20"
-              onClick={() => setShowImageLightbox(false)}
-            >
+            <img src={images[selectedImageIndex] || '/placeholder.svg'} alt={packageData.title} className="max-w-full max-h-full object-contain rounded-lg" onError={e => {
+            e.currentTarget.src = '/placeholder.svg';
+          }} />
+            <Button variant="ghost" size="icon" className="absolute top-4 right-4 text-white hover:bg-white/20" onClick={() => setShowImageLightbox(false)}>
               <Plus className="h-6 w-6 rotate-45" />
             </Button>
           </div>
-        </div>
-      )}
+        </div>}
 
       {/* Reviews Section */}
       <div className={`${isNativeApp ? 'mb-6' : 'mb-12'}`}>
@@ -323,15 +246,8 @@ const PackageDetail = () => {
       </div>
 
       {/* Destination Detail Popup */}
-      {selectedDestination && (
-        <DestinationDetailPopup 
-          destination={selectedDestination}
-          onClose={() => setSelectedDestination(null)}
-        />
-      )}
+      {selectedDestination && <DestinationDetailPopup destination={selectedDestination} onClose={() => setSelectedDestination(null)} />}
     </div>
-    </AppLayout>
-  );
+    </AppLayout>;
 };
-
 export default PackageDetail;
