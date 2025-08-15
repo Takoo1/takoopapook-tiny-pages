@@ -197,19 +197,19 @@ const DestinationDetail = () => {
 
         {/* Packages Available Section */}
         {destinationPackages.length > 0 && (
-          <div className="mb-8 lg:mb-12">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 lg:mb-8">
+          <div className={`${isNativeApp ? 'mb-6' : 'mb-8 lg:mb-12'}`}>
+            <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${isNativeApp ? 'mb-4' : 'mb-6 lg:mb-8'}`}>
               <div>
-                <h2 className="text-xl lg:text-2xl font-bold text-gray-800 mb-2">Our All Available Packages For {destination.name}</h2>
-                <p className="text-gray-600 text-sm lg:text-base">Explore curated packages that include this destination</p>
+                <h2 className={`${isNativeApp ? 'text-lg' : 'text-xl lg:text-2xl'} font-bold text-gray-800 mb-2`}>Available Packages</h2>
+                <p className={`text-gray-600 ${isNativeApp ? 'text-xs' : 'text-sm lg:text-base'}`}>Curated packages including this destination</p>
               </div>
               <Badge variant="outline" className="flex items-center space-x-1 self-start sm:self-auto">
-                <PackageIcon className="h-3 w-3" />
-                <span className="text-sm">{destinationPackages.length} packages</span>
+                <PackageIcon className={`${isNativeApp ? 'h-2 w-2' : 'h-3 w-3'}`} />
+                <span className={`${isNativeApp ? 'text-xs' : 'text-sm'}`}>{destinationPackages.length} packages</span>
               </Badge>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+            <div className={`grid grid-cols-1 ${isNativeApp ? 'gap-3' : 'md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6'}`}>
               {destinationPackages.map((pkg) => (
                 <Card key={pkg.id} className="h-full flex flex-col group hover:shadow-lg transition-all duration-300">
                   <div className="relative overflow-hidden rounded-t-lg">

@@ -260,9 +260,9 @@ const PackageDetail = () => {
 
       {/* Locations Included */}
       {includedLocations && includedLocations.length > 0 && (
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold mb-6">Destinations Included in this Package</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className={`${isNativeApp ? 'mb-6' : 'mb-12'}`}>
+          <h2 className={`${isNativeApp ? 'text-lg' : 'text-2xl'} font-bold ${isNativeApp ? 'mb-3' : 'mb-6'}`}>Destinations Included</h2>
+          <div className={`grid grid-cols-1 ${isNativeApp ? 'gap-3' : 'md:grid-cols-2 lg:grid-cols-3 gap-6'}`}>
             {includedLocations.map((location) => (
               <DestinationCard 
                 key={location.id} 
@@ -275,12 +275,12 @@ const PackageDetail = () => {
       )}
 
       {/* Price and Action Buttons */}
-      <Card className="mb-8 lg:mb-12">
-        <CardContent className="p-4 lg:p-6">
+      <Card className={`${isNativeApp ? 'mb-6' : 'mb-8 lg:mb-12'}`}>
+        <CardContent className={`${isNativeApp ? 'p-3' : 'p-4 lg:p-6'}`}>
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="text-center sm:text-left">
-              <div className="text-2xl lg:text-3xl font-bold text-primary mb-1">{packageData.price}</div>
-              <div className="text-muted-foreground text-sm lg:text-base">Total package price</div>
+              <div className={`${isNativeApp ? 'text-lg' : 'text-2xl lg:text-3xl'} font-bold text-primary mb-1`}>{packageData.price}</div>
+              <div className={`text-muted-foreground ${isNativeApp ? 'text-xs' : 'text-sm lg:text-base'}`}>Total package price</div>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
               {packageData.is_editable && (
@@ -326,7 +326,7 @@ const PackageDetail = () => {
       )}
 
       {/* Reviews Section */}
-      <div className="mb-12">
+      <div className={`${isNativeApp ? 'mb-6' : 'mb-12'}`}>
         <ReviewSection itemType="package" itemId={packageData.id} />
       </div>
 

@@ -63,10 +63,10 @@ const Explore = () => {
                    {/* Category Filters */}
                    {!categoryFilter && <div className="mobile-spacing">
                         
-                      <div className="flex gap-2 overflow-x-auto pb-2">
+                      <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pb-2">
                         {categories.map(category => {
-                    return <button key={category} onClick={() => handleCategoryClick(category)} className="flex-shrink-0 mobile-card mobile-card-content mobile-card-hover group text-center px-4 py-3 rounded-xl whitespace-nowrap">
-                              <span className="mobile-text font-medium text-foreground group-hover:text-primary transition-colors duration-300">
+                    return <button key={category} onClick={() => handleCategoryClick(category)} className="flex-shrink-0 mobile-card mobile-card-content mobile-card-hover group text-center px-3 py-2 rounded-lg whitespace-nowrap">
+                              <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors duration-300">
                                 {category}
                               </span>
                             </button>;

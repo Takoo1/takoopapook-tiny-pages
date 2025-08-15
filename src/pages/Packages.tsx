@@ -82,9 +82,9 @@ const Packages = () => {
                    {/* Category Filters */}
                    {categoryFilter === 'all' && <div className="mobile-spacing">
                         
-                      <div className="flex gap-2 overflow-x-auto pb-2">
-                        {categories.slice(1).map(category => <button key={category.id} onClick={() => handleCategoryClick(category.id)} className="flex-shrink-0 mobile-card mobile-card-content mobile-card-hover group text-center px-4 py-3 rounded-xl whitespace-nowrap">
-                              <span className="mobile-text font-medium text-foreground group-hover:text-primary transition-colors duration-300">
+                      <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pb-2">
+                        {categories.slice(1).map(category => <button key={category.id} onClick={() => handleCategoryClick(category.id)} className="flex-shrink-0 mobile-card mobile-card-content mobile-card-hover group text-center px-3 py-2 rounded-lg whitespace-nowrap">
+                              <span className="text-xs font-medium text-foreground group-hover:text-primary transition-colors duration-300">
                                 {category.name}
                               </span>
                           </button>)}
