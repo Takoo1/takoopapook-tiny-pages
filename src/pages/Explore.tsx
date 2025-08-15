@@ -38,7 +38,7 @@ const Explore = () => {
       <div className={`bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 dark:from-emerald-950/30 dark:via-teal-950/20 dark:to-cyan-950/30 relative overflow-hidden ${isNativeApp ? 'min-h-[calc(100vh-5rem)]' : 'min-h-screen'}`}>
         <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5" />
         {/* Hero Section */}
-        <div className="mobile-container mobile-section relative my-[50px]">
+        <div className="mobile-container mobile-section relative my-[5px]">
           <div className="text-center mobile-spacing-lg">
             <h1 className="mobile-heading-xl mb-4 sm:mb-6 leading-tight">
               {getCategoryTitle()}
