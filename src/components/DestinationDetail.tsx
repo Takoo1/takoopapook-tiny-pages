@@ -36,10 +36,6 @@ const DestinationDetail = () => {
       <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">Destination not found</h2>
-          <Button onClick={() => navigate('/explore')} variant="outline">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back To All Destinations
-          </Button>
         </div>
       </div>
     );
@@ -65,15 +61,7 @@ const DestinationDetail = () => {
     <AppLayout>
     <div className={`min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 ${isNativeApp ? 'pt-0' : ''}`}>
       <div className={`${isNativeApp ? 'mobile-container mobile-section' : 'container mx-auto px-4 py-4'}`}>
-        {/* Back Button */}
-        <Button 
-          onClick={() => navigate('/explore')} 
-          variant="ghost" 
-          className={`${isNativeApp ? 'mb-2 h-8 text-sm' : 'mb-4'} hover:bg-white/50`}
-        >
-          <ArrowLeft className={`mr-2 ${isNativeApp ? 'h-3 w-3' : 'h-4 w-4'}`} />
-          Back To All Destinations
-        </Button>
+        {/* Header removed for cleaner mobile design */}
 
         {/* Main Content */}
         <div className={`grid grid-cols-1 ${isNativeApp ? 'gap-2 mb-3' : 'lg:grid-cols-2 gap-4 lg:gap-6 mb-6 lg:mb-8'}`}>
@@ -140,27 +128,25 @@ const DestinationDetail = () => {
 
           {/* Right Column - Details */}
           <div className="space-y-4 lg:space-y-6 order-2 lg:order-2">
-            <div>
-              <h1 className={`${isNativeApp ? 'text-xl' : 'text-2xl md:text-3xl lg:text-4xl'} font-bold text-gray-800 mb-4`}>
+            <div className="text-center space-y-3">
+              <h1 className={`${isNativeApp ? 'text-lg font-semibold' : 'text-2xl md:text-3xl lg:text-4xl font-bold'} text-gray-800 leading-tight`}>
                 {destination.name}
               </h1>
               
-              <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${isNativeApp ? 'mb-4' : 'mb-6'}`}>
-                <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
-                  <div className="flex items-center space-x-1">
-                    <Star className={`${isNativeApp ? 'h-3 w-3' : 'h-4 w-4 lg:h-5 lg:w-5'} fill-yellow-400 text-yellow-400`} />
-                    <span className={`font-semibold text-gray-700 ${isNativeApp ? 'text-sm' : 'text-sm lg:text-base'}`}>
-                      {reviewStats ? reviewStats.averageRating.toFixed(1) : '0.0'}
-                    </span>
-                    <span className={`text-gray-500 ${isNativeApp ? 'text-xs' : 'text-sm'}`}>
-                      ({reviewStats ? reviewStats.totalReviews : 0} reviews)
-                    </span>
-                  </div>
-                  <Badge variant="secondary" className={`flex items-center space-x-1 self-start sm:self-auto ${isNativeApp ? 'text-xs' : ''}`}>
-                    <MapPin className={`${isNativeApp ? 'h-2 w-2' : 'h-3 w-3'}`} />
-                    <span className={`${isNativeApp ? 'text-xs' : 'text-xs lg:text-sm'}`}>Arunachal Pradesh</span>
-                  </Badge>
+              <div className="flex items-center justify-center gap-3">
+                <div className="flex items-center space-x-1">
+                  <Star className={`${isNativeApp ? 'h-3 w-3' : 'h-4 w-4'} fill-yellow-400 text-yellow-400`} />
+                  <span className={`font-semibold text-gray-700 ${isNativeApp ? 'text-xs' : 'text-sm'}`}>
+                    {reviewStats ? reviewStats.averageRating.toFixed(1) : '0.0'}
+                  </span>
+                  <span className={`text-gray-500 ${isNativeApp ? 'text-xs' : 'text-sm'}`}>
+                    ({reviewStats ? reviewStats.totalReviews : 0})
+                  </span>
                 </div>
+                <Badge variant="secondary" className={`flex items-center space-x-1 ${isNativeApp ? 'text-xs px-2 py-0.5' : ''}`}>
+                  <MapPin className={`${isNativeApp ? 'h-2 w-2' : 'h-3 w-3'}`} />
+                  <span className={`${isNativeApp ? 'text-xs' : 'text-xs lg:text-sm'}`}>Arunachal Pradesh</span>
+                </Badge>
                 <PlanButton 
                   itemId={destination.id}
                   itemType="location"
@@ -168,29 +154,29 @@ const DestinationDetail = () => {
                   labelMode="liked"
                 />
               </div>
+            </div>
 
-              <div className="space-y-4">
-                <div>
-                  <h4 className={`font-semibold mb-2 ${isNativeApp ? 'text-sm' : ''}`}>Description</h4>
-                  <p className={`text-muted-foreground leading-relaxed ${isNativeApp ? 'text-sm' : ''}`}>
-                    {destination.description || 'Discover the beauty and culture of this amazing destination in Arunachal Pradesh.'}
-                  </p>
-                </div>
-
-                {destination.bullet_points && destination.bullet_points.length > 0 && (
-                  <div>
-                    <h4 className={`font-semibold mb-3 ${isNativeApp ? 'text-sm' : ''}`}>Key Highlights</h4>
-                    <div className="grid grid-cols-1 gap-2">
-                      {destination.bullet_points.map((point, index) => (
-                        <div key={index} className="flex items-start space-x-3">
-                          <div className={`${isNativeApp ? 'w-1.5 h-1.5' : 'w-2 h-2'} bg-emerald-500 rounded-full mt-2 flex-shrink-0`} />
-                          <span className={`text-gray-700 leading-relaxed ${isNativeApp ? 'text-sm' : ''}`}>{point}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+            <div className="space-y-4">
+              <div>
+                <h4 className={`font-semibold mb-2 ${isNativeApp ? 'text-sm' : ''}`}>Description</h4>
+                <p className={`text-muted-foreground leading-relaxed ${isNativeApp ? 'text-sm' : ''}`}>
+                  {destination.description || 'Discover the beauty and culture of this amazing destination in Arunachal Pradesh.'}
+                </p>
               </div>
+
+              {destination.bullet_points && destination.bullet_points.length > 0 && (
+                <div>
+                  <h4 className={`font-semibold mb-3 ${isNativeApp ? 'text-sm' : ''}`}>Key Highlights</h4>
+                  <div className="grid grid-cols-1 gap-2">
+                    {destination.bullet_points.map((point, index) => (
+                      <div key={index} className="flex items-start space-x-3">
+                        <div className={`${isNativeApp ? 'w-1.5 h-1.5' : 'w-2 h-2'} bg-emerald-500 rounded-full mt-2 flex-shrink-0`} />
+                        <span className={`text-gray-700 leading-relaxed ${isNativeApp ? 'text-sm' : ''}`}>{point}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -228,15 +214,15 @@ const DestinationDetail = () => {
                     </div>
                   </div>
                   
-                  <CardContent className="flex-1 p-4">
-                    <h3 className="font-semibold text-lg mb-2 line-clamp-2">{pkg.title}</h3>
+                  <CardContent className={`flex-1 ${isNativeApp ? 'p-2.5' : 'p-4'}`}>
+                    <h3 className={`font-semibold ${isNativeApp ? 'text-sm' : 'text-lg'} mb-2 line-clamp-2`}>{pkg.title}</h3>
                     
-                    <div className="flex items-center text-muted-foreground text-sm mb-2">
-                      <MapPin className="h-4 w-4 mr-1" />
+                    <div className={`flex items-center text-muted-foreground ${isNativeApp ? 'text-xs' : 'text-sm'} mb-2`}>
+                      <MapPin className={`${isNativeApp ? 'h-3 w-3' : 'h-4 w-4'} mr-1`} />
                       <span>{pkg.location}</span>
                     </div>
                     
-                    <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
+                    <div className={`flex items-center justify-between ${isNativeApp ? 'text-xs' : 'text-sm'} text-muted-foreground mb-2`}>
                       <div className="flex items-center">
                         <span>{pkg.duration}</span>
                       </div>
@@ -245,15 +231,15 @@ const DestinationDetail = () => {
                       </div>
                     </div>
                     
-                    <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center">
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400 mr-1" />
-                        <span className="font-medium">{pkg.rating.toFixed(1)}</span>
-                        <span className="text-muted-foreground text-sm ml-1">
-                          ({pkg.reviews_count} reviews)
+                        <Star className={`${isNativeApp ? 'h-3 w-3' : 'h-4 w-4'} fill-yellow-400 text-yellow-400 mr-1`} />
+                        <span className={`font-medium ${isNativeApp ? 'text-xs' : 'text-sm'}`}>{pkg.rating.toFixed(1)}</span>
+                        <span className={`text-muted-foreground ${isNativeApp ? 'text-xs' : 'text-sm'} ml-1`}>
+                          ({pkg.reviews_count})
                         </span>
                       </div>
-                      <span className="font-bold text-lg text-primary">{pkg.price}</span>
+                      <span className={`font-bold ${isNativeApp ? 'text-sm' : 'text-lg'} text-primary`}>{pkg.price}</span>
                     </div>
                     
                     {pkg.features.length > 0 && (

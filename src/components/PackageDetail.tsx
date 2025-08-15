@@ -100,50 +100,42 @@ const PackageDetail = () => {
   return (
     <AppLayout>
     <div className={`${isNativeApp ? 'mobile-container mobile-section' : 'container mx-auto px-4 py-8'}`}>
-      {/* Back Button */}
-      <div className={`${isNativeApp ? 'mb-3' : 'mb-6'}`}>
-        <Button variant="ghost" asChild className={`pl-0 ${isNativeApp ? 'h-8 text-sm' : ''}`}>
-          <Link to="/packages">
-            <ArrowLeft className={`${isNativeApp ? 'h-3 w-3' : 'h-4 w-4'} mr-2`} />
-            Back to Packages
-          </Link>
-        </Button>
-      </div>
-
-      {/* Package Title */}
-      <div className={`${isNativeApp ? 'mb-3' : 'mb-8'}`}>
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className={`${isNativeApp ? 'text-xl' : 'text-3xl md:text-4xl'} font-bold text-foreground mb-2`}>
-              {packageData.title}
-            </h1>
-            <div className="flex items-center gap-4 text-muted-foreground">
-              <div className="flex items-center">
-                <MapPin className={`${isNativeApp ? 'h-3 w-3' : 'h-4 w-4'} mr-1`} />
-                <span className={isNativeApp ? 'text-sm' : ''}>{packageData.location}</span>
-              </div>
-              <Badge variant="secondary" className={isNativeApp ? 'text-xs' : ''}>{packageData.package_code}</Badge>
+      {/* Package Header */}
+      <div className={`${isNativeApp ? 'mb-4' : 'mb-8'}`}>
+        <div className="text-center space-y-3">
+          <h1 className={`${isNativeApp ? 'text-lg font-semibold' : 'text-3xl md:text-4xl font-bold'} text-foreground leading-tight`}>
+            {packageData.title}
+          </h1>
+          
+          <div className={`flex items-center justify-center gap-3 text-muted-foreground ${isNativeApp ? 'text-xs' : 'text-sm'}`}>
+            <div className="flex items-center">
+              <MapPin className={`${isNativeApp ? 'h-3 w-3' : 'h-4 w-4'} mr-1`} />
+              <span>{packageData.location}</span>
             </div>
+            <Badge variant="secondary" className={`${isNativeApp ? 'text-xs px-2 py-0.5' : ''}`}>
+              {packageData.package_code}
+            </Badge>
           </div>
-          <div className="text-right">
-            <div className={`${isNativeApp ? 'text-xl' : 'text-3xl'} font-bold text-primary mb-1`}>{packageData.price}</div>
-            <div className="flex items-center justify-end">
+          
+          <div className="flex items-center justify-center gap-4">
+            <div className={`${isNativeApp ? 'text-lg' : 'text-2xl'} font-bold text-primary`}>
+              {packageData.price}
+            </div>
+            <div className="flex items-center">
               <Star className={`${isNativeApp ? 'h-3 w-3' : 'h-4 w-4'} fill-yellow-400 text-yellow-400 mr-1`} />
-              <span className={`font-medium ${isNativeApp ? 'text-sm' : ''}`}>
+              <span className={`font-medium ${isNativeApp ? 'text-xs' : 'text-sm'}`}>
                 {reviewStats ? reviewStats.averageRating.toFixed(1) : '0.0'}
               </span>
               <span className={`text-muted-foreground ${isNativeApp ? 'text-xs' : 'text-sm'} ml-1`}>
-                ({reviewStats ? reviewStats.totalReviews : 0} reviews)
+                ({reviewStats ? reviewStats.totalReviews : 0})
               </span>
             </div>
-            <div className="mt-2 flex justify-end">
-              <PlanButton 
-                itemId={packageData.id} 
-                itemType="package" 
-                itemName={packageData.title}
-                labelMode="liked"
-              />
-            </div>
+            <PlanButton 
+              itemId={packageData.id} 
+              itemType="package" 
+              itemName={packageData.title}
+              labelMode="liked"
+            />
           </div>
         </div>
       </div>
@@ -153,17 +145,17 @@ const PackageDetail = () => {
         {/* Left Column - Description */}
         <div className={`space-y-4 ${isNativeApp ? 'order-2' : 'lg:space-y-6 order-2 lg:order-1'}`}>
           <Card>
-            <CardHeader className={`${isNativeApp ? 'pb-2' : 'pb-4'}`}>
-              <CardTitle className={`${isNativeApp ? 'text-base' : 'text-lg lg:text-xl'}`}>Package Details</CardTitle>
+            <CardHeader className={`${isNativeApp ? 'pb-1 px-3 pt-3' : 'pb-4'}`}>
+              <CardTitle className={`${isNativeApp ? 'text-sm font-medium' : 'text-lg lg:text-xl'}`}>Package Details</CardTitle>
             </CardHeader>
-            <CardContent className={`space-y-4 ${isNativeApp ? 'p-3' : ''}`}>
-              <div className={`grid grid-cols-1 sm:grid-cols-2 gap-3 ${isNativeApp ? 'lg:gap-2' : 'lg:gap-4'}`}>
-                <div className={`flex items-center ${isNativeApp ? 'p-2' : 'p-3'} bg-muted/50 rounded-lg`}>
-                  <Clock className={`${isNativeApp ? 'h-3 w-3' : 'h-4 w-4'} mr-2 text-muted-foreground flex-shrink-0`} />
+            <CardContent className={`space-y-3 ${isNativeApp ? 'px-3 pb-3' : 'space-y-4'}`}>
+              <div className={`grid grid-cols-1 sm:grid-cols-2 ${isNativeApp ? 'gap-2' : 'gap-3 lg:gap-4'}`}>
+                <div className={`flex items-center ${isNativeApp ? 'p-1.5' : 'p-3'} bg-muted/50 rounded-lg`}>
+                  <Clock className={`${isNativeApp ? 'h-2.5 w-2.5' : 'h-4 w-4'} mr-2 text-muted-foreground flex-shrink-0`} />
                   <span className={`${isNativeApp ? 'text-xs' : 'text-sm'} font-medium`}>Duration: {packageData.duration}</span>
                 </div>
-                <div className={`flex items-center ${isNativeApp ? 'p-2' : 'p-3'} bg-muted/50 rounded-lg`}>
-                  <Users className={`${isNativeApp ? 'h-3 w-3' : 'h-4 w-4'} mr-2 text-muted-foreground flex-shrink-0`} />
+                <div className={`flex items-center ${isNativeApp ? 'p-1.5' : 'p-3'} bg-muted/50 rounded-lg`}>
+                  <Users className={`${isNativeApp ? 'h-2.5 w-2.5' : 'h-4 w-4'} mr-2 text-muted-foreground flex-shrink-0`} />
                   <span className={`${isNativeApp ? 'text-xs' : 'text-sm'} font-medium`}>Group Size: {packageData.group_size}</span>
                 </div>
               </div>
@@ -276,22 +268,22 @@ const PackageDetail = () => {
 
       {/* Price and Action Buttons */}
       <Card className={`${isNativeApp ? 'mb-6' : 'mb-8 lg:mb-12'}`}>
-        <CardContent className={`${isNativeApp ? 'p-3' : 'p-4 lg:p-6'}`}>
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+        <CardContent className={`${isNativeApp ? 'p-2.5' : 'p-4 lg:p-6'}`}>
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-3">
             <div className="text-center sm:text-left">
-              <div className={`${isNativeApp ? 'text-lg' : 'text-2xl lg:text-3xl'} font-bold text-primary mb-1`}>{packageData.price}</div>
+              <div className={`${isNativeApp ? 'text-base font-semibold' : 'text-2xl lg:text-3xl font-bold'} text-primary mb-1`}>{packageData.price}</div>
               <div className={`text-muted-foreground ${isNativeApp ? 'text-xs' : 'text-sm lg:text-base'}`}>Total package price</div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               {packageData.is_editable && (
-                <Button variant="outline" asChild className="w-full sm:w-auto">
+                <Button variant="outline" asChild className={`w-full sm:w-auto ${isNativeApp ? 'h-7 text-xs px-2' : ''}`}>
                   <Link to={`/admin/map-editor`}>
-                    <Edit className="h-4 w-4 mr-2" />
+                    <Edit className={`${isNativeApp ? 'h-3 w-3' : 'h-4 w-4'} mr-1`} />
                     Edit Package
                   </Link>
                 </Button>
               )}
-              <BookingButton packageId={packageData.id} className={`w-full sm:w-auto ${isNativeApp ? 'h-8 text-sm' : ''}`} />
+              <BookingButton packageId={packageData.id} className={`w-full sm:w-auto ${isNativeApp ? 'h-7 text-xs px-2' : ''}`} />
             </div>
           </div>
         </CardContent>
