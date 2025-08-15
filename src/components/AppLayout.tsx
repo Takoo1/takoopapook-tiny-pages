@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Capacitor } from '@capacitor/core';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -14,10 +15,15 @@ interface AppLayoutProps {
 const AppLayout: React.FC<AppLayoutProps> = ({ children, className = '' }) => {
   const isNativeApp = Capacitor.isNativePlatform();
   const isMobile = useIsMobile();
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
   // Use mobile design for both native apps and mobile browsers
   const useMobileLayout = isNativeApp || isMobile;
+  
+  // Show header only on home page for mobile, always show for desktop
+  const showHeader = !useMobileLayout || isHomePage;
 
   const handleMenuToggle = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -25,8 +31,10 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, className = '' }) => {
 
   return (
     <div className={`min-h-screen font-sans ${useMobileLayout ? 'pb-16' : ''} ${className}`}>
-      <Header />
-      <main className={`${isNativeApp ? 'pt-safe-area-top' : ''}`}>
+      {showHeader && <Header />}
+      <main className={`${isNativeApp ? 'pt-safe-area-top' : ''} ${
+        useMobileLayout && isHomePage ? 'pt-20' : ''
+      }`}>
         {children}
       </main>
       {useMobileLayout && (

@@ -63,7 +63,7 @@ const Explore = () => {
                    {/* Category Filters */}
                    {!categoryFilter && <div className="mobile-spacing">
                         
-                      <div className={`mobile-spacing grid ${isNativeApp ? 'grid-cols-2 grid-rows-2' : 'grid-cols-1 sm:grid-cols-2'} gap-2`}>
+                      <div className="mobile-spacing grid grid-cols-2 gap-2">
                         {categories.map(category => {
                     const categoryCount = locations.filter(loc => loc.categories?.includes(category) && loc.is_active).length;
                     return <button key={category} onClick={() => handleCategoryClick(category)} className={`mobile-card mobile-card-content mobile-card-hover group text-left ${isNativeApp ? 'aspect-square' : ''} flex flex-col items-center justify-center p-4 rounded-lg`}>
