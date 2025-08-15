@@ -58,7 +58,7 @@ const Packages = () => {
   return <AppLayout>
       <div className={`bg-gradient-to-br from-emerald-50 to-teal-50 ${isNativeApp ? 'min-h-[calc(100vh-5rem)]' : 'min-h-screen'}`}>
         {/* Hero Section */}
-        <div className="mobile-container mobile-section my-[50px]">
+        <div className="mobile-container mobile-section my-[5px]">
           <div className="text-center mobile-spacing-lg">
             <h1 className="mobile-heading-xl mb-4 sm:mb-6">
               {getCategoryTitle()}
