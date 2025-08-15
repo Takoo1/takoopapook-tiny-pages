@@ -63,18 +63,12 @@ const Explore = () => {
                    {/* Category Filters */}
                    {!categoryFilter && <div className="mobile-spacing">
                         
-                      <div className="mobile-spacing grid grid-cols-2 gap-2">
+                      <div className="flex gap-2 overflow-x-auto pb-2">
                         {categories.map(category => {
-                    const categoryCount = locations.filter(loc => loc.categories?.includes(category) && loc.is_active).length;
-                    return <button key={category} onClick={() => handleCategoryClick(category)} className={`mobile-card mobile-card-content mobile-card-hover group text-left ${isNativeApp ? 'aspect-square' : ''} flex flex-col items-center justify-center p-4 rounded-lg`}>
-                               <div className="text-center">
-                                  <span className="mobile-text font-medium text-foreground group-hover:text-primary transition-colors duration-300 block mb-1">
-                                    {category}
-                                  </span>
-                                  <span className="mobile-text-sm text-muted-foreground">
-                                    {categoryCount} places
-                                  </span>
-                                </div>
+                    return <button key={category} onClick={() => handleCategoryClick(category)} className="flex-shrink-0 mobile-card mobile-card-content mobile-card-hover group text-center px-4 py-3 rounded-xl whitespace-nowrap">
+                              <span className="mobile-text font-medium text-foreground group-hover:text-primary transition-colors duration-300">
+                                {category}
+                              </span>
                             </button>;
                   })}
                       </div>
