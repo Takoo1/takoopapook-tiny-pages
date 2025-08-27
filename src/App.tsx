@@ -11,7 +11,12 @@ import Admin from "./pages/Admin";
 import OrganizerLogin from "./pages/OrganizerLogin";
 import OrganizerDashboard from "./pages/OrganizerDashboard";
 import GlobalFortuneCounter from "./pages/GlobalFortuneCounter";
+import Videos from "./pages/Videos";
+import Winners from "./pages/Winners";
+import MyTickets from "./pages/MyTickets";
+import MenuPage from "./pages/MenuPage";
 import NotFound from "./pages/NotFound";
+import { MobileLayout } from "./components/MobileLayout";
 
 const queryClient = new QueryClient();
 
@@ -22,18 +27,24 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/lottery/:gameId" element={<LotteryDetail />} />
-          <Route path="/lottery/:gameId/buy" element={<TicketBuying />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/organizer-login" element={<OrganizerLogin />} />
-          <Route path="/organizer-dashboard" element={<OrganizerDashboard />} />
-          <Route path="/global-fortune-counter" element={<GlobalFortuneCounter />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+          <MobileLayout>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/lottery/:gameId" element={<LotteryDetail />} />
+              <Route path="/lottery/:gameId/buy" element={<TicketBuying />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/organizer-login" element={<OrganizerLogin />} />
+              <Route path="/organizer-dashboard" element={<OrganizerDashboard />} />
+              <Route path="/global-fortune-counter" element={<GlobalFortuneCounter />} />
+              <Route path="/videos" element={<Videos />} />
+              <Route path="/winners" element={<Winners />} />
+              <Route path="/my-tickets" element={<MyTickets />} />
+              <Route path="/menu" element={<MenuPage />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </MobileLayout>
+        </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>
   </QueryClientProvider>
