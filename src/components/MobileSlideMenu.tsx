@@ -248,9 +248,9 @@ export function MobileSlideMenu({ isOpen, onClose, user }: MobileSlideMenuProps)
         <div className="pt-safe-top" />
 
         {/* Menu Content */}
-        <div className="flex-1 flex flex-col p-4">
+        <div className="flex-1 flex flex-col p-4 overflow-y-auto">
           {/* Menu Items */}
-          <div className="space-y-2">
+          <div className="space-y-2 flex-shrink-0">
             {menuItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -375,14 +375,18 @@ export function MobileSlideMenu({ isOpen, onClose, user }: MobileSlideMenuProps)
           </div>
 
           {/* Organiser Button at Bottom */}
-          <div className="mt-auto">
+          <div className="mt-auto pt-4 flex-shrink-0">
             <Button
               onClick={handleOrganiser}
-              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg h-10"
+              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg h-12 font-medium"
             >
-              <Settings className="h-4 w-4 mr-2" />
+              <Settings className="h-5 w-5 mr-2" />
               Organiser
             </Button>
+            {/* Debug: Always visible button for testing */}
+            <div className="text-xs text-center mt-2 text-muted-foreground">
+              Button should be visible
+            </div>
           </div>
         </div>
 
