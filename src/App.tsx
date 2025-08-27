@@ -15,6 +15,9 @@ import Videos from "./pages/Videos";
 import Winners from "./pages/Winners";
 import MyTickets from "./pages/MyTickets";
 import MenuPage from "./pages/MenuPage";
+import About from "./pages/About";
+import Terms from "./pages/Terms";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import { MobileLayout } from "./components/MobileLayout";
 
@@ -40,6 +43,9 @@ const App = () => (
               <Route path="/winners" element={<Winners />} />
               <Route path="/my-tickets" element={<MyTickets />} />
               <Route path="/menu" element={<MenuPage />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/profile" element={<Profile />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
