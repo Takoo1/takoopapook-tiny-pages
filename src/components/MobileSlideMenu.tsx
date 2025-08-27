@@ -4,6 +4,8 @@ import { useTheme } from "next-themes";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 interface MobileSlideMenuProps {
   isOpen: boolean;
@@ -67,9 +69,51 @@ export function MobileSlideMenu({ isOpen, onClose, user }: MobileSlideMenuProps)
     onClose();
   };
 
-  const handleOrganiser = () => {
-    navigate("/organizer-login");
-    onClose();
+  const handleOrganiser = async () => {
+    try {
+      // Check if user is authenticated first
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          title: "Login Required",
+          description: "Please login first to access organiser dashboard",
+          variant: "destructive",
+        });
+        navigate("/auth");
+        onClose();
+        return;
+      }
+
+      // Check if user has organiser role
+      const { data: userProfile, error: roleError } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('user_id', user.id)
+        .single();
+
+      if (roleError || !userProfile || userProfile.role !== 'organiser') {
+        toast({
+          title: "Access Denied",
+          description: "Only users with organiser role can access this dashboard. Contact admin to get organiser access.",
+          variant: "destructive",
+        });
+        onClose();
+        return;
+      }
+
+      // User has access, navigate to organiser dashboard
+      navigate("/game-organiser-dashboard");
+      onClose();
+    } catch (error) {
+      console.error('Error checking organiser access:', error);
+      toast({
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
+      onClose();
+    }
   };
 
   // Close menu when clicking outside

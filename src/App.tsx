@@ -8,7 +8,7 @@ import Home from "./pages/Home";
 import LotteryDetail from "./pages/LotteryDetail";
 import TicketBuying from "./pages/TicketBuying";
 import Admin from "./pages/Admin";
-import OrganizerLogin from "./pages/OrganizerLogin";
+import GameOrganiserDashboard from "./pages/GameOrganiserDashboard";
 import OrganizerDashboard from "./pages/OrganizerDashboard";
 import GlobalFortuneCounter from "./pages/GlobalFortuneCounter";
 import Videos from "./pages/Videos";
@@ -36,7 +36,7 @@ const App = () => (
               <Route path="/lottery/:gameId" element={<LotteryDetail />} />
               <Route path="/lottery/:gameId/buy" element={<TicketBuying />} />
               <Route path="/admin" element={<Admin />} />
-              <Route path="/organizer-login" element={<OrganizerLogin />} />
+              <Route path="/game-organiser-dashboard" element={<GameOrganiserDashboard />} />
               <Route path="/organizer-dashboard" element={<OrganizerDashboard />} />
               <Route path="/global-fortune-counter" element={<GlobalFortuneCounter />} />
               <Route path="/videos" element={<Videos />} />
