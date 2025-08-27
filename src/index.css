@@ -1,0 +1,169 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Light mode colors */
+    --background: 0 0% 100%;
+    --foreground: 220 20% 7%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 7%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 7%;
+
+    --primary: 45 100% 60%;
+    --primary-foreground: 220 20% 7%;
+
+    --secondary: 210 40% 98%;
+    --secondary-foreground: 220 20% 7%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 20% 45%;
+
+    --accent: 45 100% 60%;
+    --accent-foreground: 220 20% 7%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 45 100% 60%;
+
+    /* Lottery specific colors for light mode */
+    --lottery-gold: 45 100% 50%;
+    --lottery-gold-light: 45 100% 65%;
+    --lottery-sold-offline: 217 91% 50%;
+    --lottery-sold-online: 142 76% 30%;
+    --lottery-available: 215 20% 45%;
+
+    /* Festival themed colors for different price tiers */
+    --tier-100-primary: 0 100% 50%; /* Red theme for ₹100 */
+    --tier-100-secondary: 15 100% 60%;
+    --tier-100-accent: 350 100% 70%;
+    
+    --tier-500-primary: 270 100% 50%; /* Purple theme for ₹500 */
+    --tier-500-secondary: 285 100% 60%;
+    --tier-500-accent: 255 100% 70%;
+    
+    --tier-1000-primary: 220 100% 50%; /* Blue theme for ₹1000 */
+    --tier-1000-secondary: 210 100% 60%;
+    --tier-1000-accent: 200 100% 70%;
+    
+    --tier-other-primary: 142 76% 40%; /* Green theme for other prices */
+    --tier-other-secondary: 155 76% 50%;
+    --tier-other-accent: 170 76% 60%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(45 100% 50%), hsl(45 100% 65%));
+    --gradient-background: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 40% 98%));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(210 40% 96%));
+    
+    /* Festival gradients */
+    --gradient-tier-100: linear-gradient(135deg, hsl(0 100% 50%), hsl(15 100% 60%));
+    --gradient-tier-500: linear-gradient(135deg, hsl(270 100% 50%), hsl(285 100% 60%));
+    --gradient-tier-1000: linear-gradient(135deg, hsl(220 100% 50%), hsl(210 100% 60%));
+    --gradient-tier-other: linear-gradient(135deg, hsl(142 76% 40%), hsl(155 76% 50%));
+
+    /* Shadows */
+    --shadow-lottery: 0 10px 30px -10px hsl(45 100% 50% / 0.3);
+    --shadow-card: 0 8px 32px -12px hsl(0 0% 0% / 0.1);
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 220 20% 7%;
+    --foreground: 45 100% 95%;
+
+    --card: 220 15% 12%;
+    --card-foreground: 45 100% 95%;
+
+    --popover: 220 15% 12%;
+    --popover-foreground: 45 100% 95%;
+
+    --primary: 45 100% 60%;
+    --primary-foreground: 220 20% 7%;
+
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 45 100% 95%;
+
+    --muted: 217 33% 17%;
+    --muted-foreground: 45 20% 65%;
+
+    --accent: 45 100% 60%;
+    --accent-foreground: 220 20% 7%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 45 100% 95%;
+
+    --border: 217 33% 25%;
+    --input: 217 33% 25%;
+    --ring: 45 100% 60%;
+
+    /* Lottery specific colors for dark mode */
+    --lottery-gold: 45 100% 60%;
+    --lottery-gold-light: 45 100% 75%;
+    --lottery-sold-offline: 217 91% 60%;
+    --lottery-sold-online: 142 76% 36%;
+    --lottery-available: 45 20% 65%;
+
+    /* Festival themed colors for different price tiers - dark mode */
+    --tier-100-primary: 0 100% 60%;
+    --tier-100-secondary: 15 100% 70%;
+    --tier-100-accent: 350 100% 80%;
+    
+    --tier-500-primary: 270 100% 60%;
+    --tier-500-secondary: 285 100% 70%;
+    --tier-500-accent: 255 100% 80%;
+    
+    --tier-1000-primary: 220 100% 60%;
+    --tier-1000-secondary: 210 100% 70%;
+    --tier-1000-accent: 200 100% 80%;
+    
+    --tier-other-primary: 142 76% 50%;
+    --tier-other-secondary: 155 76% 60%;
+    --tier-other-accent: 170 76% 70%;
+
+    /* Festival gradients - dark mode */
+    --gradient-tier-100: linear-gradient(135deg, hsl(0 100% 60%), hsl(15 100% 70%));
+    --gradient-tier-500: linear-gradient(135deg, hsl(270 100% 60%), hsl(285 100% 70%));
+    --gradient-tier-1000: linear-gradient(135deg, hsl(220 100% 60%), hsl(210 100% 70%));
+    --gradient-tier-other: linear-gradient(135deg, hsl(142 76% 50%), hsl(155 76% 60%));
+
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
