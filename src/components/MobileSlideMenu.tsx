@@ -239,8 +239,8 @@ export function MobileSlideMenu({ isOpen, onClose, user }: MobileSlideMenuProps)
       {/* Slide Menu */}
       <div
         className={cn(
-          "slide-menu fixed top-0 right-0 w-[60%] bg-background border-l border-border transition-transform duration-300 z-45 flex flex-col",
-          "h-[calc(100vh-5rem)]", // Full height minus bottom nav (80px = 5rem)
+          "slide-menu fixed top-0 right-0 w-[60%] bg-background border-l border-border transition-transform duration-300 flex flex-col",
+          "h-screen z-[100]", // Increased z-index and full screen height for mobile
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >

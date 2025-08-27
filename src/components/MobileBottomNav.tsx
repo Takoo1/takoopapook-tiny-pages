@@ -3,7 +3,9 @@ import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { MobileSlideMenu } from "./MobileSlideMenu";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import type { User } from "@supabase/supabase-js";
 
 const navItems = [
   {
@@ -42,6 +44,21 @@ export function MobileBottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleNavigation = (path: string) => {
     if (path === "/menu") {
@@ -90,7 +107,7 @@ export function MobileBottomNav() {
       <MobileSlideMenu
         isOpen={isMenuOpen}
         onClose={() => setIsMenuOpen(false)}
-        user={null} // TODO: Pass actual user from auth context
+        user={user}
       />
     </>
   );
