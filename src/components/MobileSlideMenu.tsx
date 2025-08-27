@@ -40,6 +40,12 @@ const menuItems = [
     label: "Profile",
     icon: User,
     path: "/profile"
+  },
+  {
+    id: "organiser",
+    label: "Organiser",
+    icon: Settings,
+    path: "organiser" // Special path for organiser functionality
   }
 ];
 
@@ -58,8 +64,12 @@ export function MobileSlideMenu({ isOpen, onClose, user }: MobileSlideMenuProps)
   }, []);
 
   const handleNavigation = (path: string) => {
-    navigate(path);
-    onClose();
+    if (path === "organiser") {
+      handleOrganiser();
+    } else {
+      navigate(path);
+      onClose();
+    }
   };
 
   const handleThemeToggle = () => {
@@ -239,8 +249,8 @@ export function MobileSlideMenu({ isOpen, onClose, user }: MobileSlideMenuProps)
       {/* Slide Menu */}
       <div
         className={cn(
-          "slide-menu fixed top-0 right-0 w-[60%] bg-background border-l border-border transition-transform duration-300 flex flex-col",
-          "h-screen z-[100]", // Increased z-index and full screen height for mobile
+          "slide-menu fixed top-0 right-0 w-[80%] bg-background border-l border-border transition-transform duration-300 flex flex-col",
+          "h-screen z-40", // Lower z-index than bottom nav (z-50)
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
@@ -248,9 +258,9 @@ export function MobileSlideMenu({ isOpen, onClose, user }: MobileSlideMenuProps)
         <div className="pt-safe-top" />
 
         {/* Menu Content */}
-        <div className="flex-1 flex flex-col p-4 overflow-y-auto">
+        <div className="flex-1 flex flex-col p-4">
           {/* Menu Items */}
-          <div className="space-y-2 flex-shrink-0">
+          <div className="space-y-2">
             {menuItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -372,21 +382,6 @@ export function MobileSlideMenu({ isOpen, onClose, user }: MobileSlideMenuProps)
                 </DialogContent>
               </Dialog>
             )}
-          </div>
-
-          {/* Organiser Button at Bottom */}
-          <div className="mt-auto pt-4 flex-shrink-0">
-            <Button
-              onClick={handleOrganiser}
-              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg h-12 font-medium"
-            >
-              <Settings className="h-5 w-5 mr-2" />
-              Organiser
-            </Button>
-            {/* Debug: Always visible button for testing */}
-            <div className="text-xs text-center mt-2 text-muted-foreground">
-              Button should be visible
-            </div>
           </div>
         </div>
 
