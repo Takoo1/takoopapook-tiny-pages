@@ -32,12 +32,12 @@ export function MobileStickySearchFAB({
   const outerRadius = R + 36;
   const centerOffsetRight = rectW + R;
 
-  // Ring segments configuration - left semicircle from top to bottom
+  // Ring segments configuration - surrounding the D-shape from left semicircle
   const segments = [
-    { label: "Search", value: "search", startAngle: 90, endAngle: 135 },
-    { label: "₹200", value: "200", startAngle: 135, endAngle: 180 },
-    { label: "₹500", value: "500", startAngle: 180, endAngle: 225 },
-    { label: "₹1000", value: "1000", startAngle: 225, endAngle: 270 }
+    { label: "Search", value: "search", startAngle: 315, endAngle: 360 },
+    { label: "₹200", value: "200", startAngle: 270, endAngle: 315 },
+    { label: "₹500", value: "500", startAngle: 225, endAngle: 270 },
+    { label: "₹1000", value: "1000", startAngle: 180, endAngle: 225 }
   ];
 
   // Helper function to convert polar to cartesian coordinates
