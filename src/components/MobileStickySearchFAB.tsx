@@ -24,7 +24,7 @@ export function MobileStickySearchFAB({
   // Geometry constants for D-shaped control
   const R = 28; // Half-circle radius
   const rectW = 14; // Rectangle thickness
-  const gap = 1; // Gap between ring and D-shape
+  const gap = 0; // No gap - segments touch the D-shape
   const svgSize = 200;
   const centerX = svgSize / 2;
   const centerY = svgSize / 2;
@@ -32,12 +32,12 @@ export function MobileStickySearchFAB({
   const outerRadius = R + 36;
   const centerOffsetRight = rectW + R;
 
-  // Ring segments configuration - surrounding the D-shape from left semicircle
+  // Ring segments configuration - touching segments with enlarged top/bottom
   const segments = [
-    { label: "Search", value: "search", startAngle: 315, endAngle: 360 },
-    { label: "₹200", value: "200", startAngle: 270, endAngle: 315 },
-    { label: "₹500", value: "500", startAngle: 225, endAngle: 270 },
-    { label: "₹1000", value: "1000", startAngle: 180, endAngle: 225 }
+    { label: "Search", value: "search", startAngle: 300, endAngle: 375 }, // Enlarged to touch right edge
+    { label: "₹200", value: "200", startAngle: 269, endAngle: 301 }, // Slight overlap
+    { label: "₹500", value: "500", startAngle: 224, endAngle: 271 }, // Slight overlap
+    { label: "₹1000", value: "1000", startAngle: 165, endAngle: 240 } // Enlarged to touch right edge
   ];
 
   // Helper function to convert polar to cartesian coordinates
@@ -122,7 +122,8 @@ export function MobileStickySearchFAB({
             position: 'absolute',
             right: `${centerOffsetRight - svgSize/2}px`,
             top: '50%',
-            transform: 'translateY(-50%)'
+            transform: 'translateY(-50%)',
+            overflow: 'visible'
           }}
         >
           {segments.map((segment) => {
@@ -138,10 +139,9 @@ export function MobileStickySearchFAB({
                   className={cn(
                     "cursor-pointer transition-all duration-300",
                     isActive 
-                      ? "fill-primary stroke-primary-foreground/20" 
-                      : "fill-secondary hover:fill-secondary/80 stroke-border"
+                      ? "fill-primary" 
+                      : "fill-secondary hover:fill-secondary/80"
                   )}
-                  strokeWidth="1"
                   onClick={() => handleSegmentClick(segment)}
                 />
                 <text
