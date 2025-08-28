@@ -28,7 +28,7 @@ export function MobileStickySearchFAB({
   const svgSize = 200;
   const centerX = svgSize / 2;
   const centerY = svgSize / 2;
-  const innerRadius = R + gap;
+  const innerRadius = R; // Exactly match the D-shaped button radius
   const outerRadius = R + 36;
   const centerOffsetRight = rectW + R;
 
