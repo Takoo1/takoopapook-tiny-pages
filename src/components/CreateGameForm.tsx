@@ -11,6 +11,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Trash2, Upload, Calendar } from "lucide-react";
 
+// Generate a random 5-character game code (mix of letters and digits)
+const generateGameCode = (): string => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = '';
+  for (let i = 0; i < 5; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+};
+
 interface Book {
   id: string;
   name: string;
@@ -231,7 +241,8 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
           live_draw_url: formData.liveDrawUrl || null,
           contact_phone: formData.contactPhone || null,
           contact_email: formData.contactEmail || null,
-          created_by_user_id: user.data.user.id
+          created_by_user_id: user.data.user.id,
+          game_code: generateGameCode()
         })
         .select()
         .single();

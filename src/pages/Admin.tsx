@@ -21,6 +21,7 @@ interface LotteryGame {
   starting_ticket_number: number;
   last_ticket_number: number;
   organising_group_name: string;
+  game_code: string | null;
 }
 
 interface LotteryBook {
@@ -240,10 +241,15 @@ export default function Admin() {
                   }`}
                   onClick={() => setSelectedGameId(selectedGameId === game.id ? null : game.id)}
                 >
-                  <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <h3 className="font-medium text-sm truncate">{game.title}</h3>
+                        {game.game_code && (
+                          <Badge variant="outline" className="text-xs font-mono">
+                            {game.game_code}
+                          </Badge>
+                        )}
                         <Badge 
                           variant="secondary" 
                           className="cursor-pointer hover:bg-lottery-gold/20"

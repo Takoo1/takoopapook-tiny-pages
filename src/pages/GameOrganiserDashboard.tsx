@@ -21,12 +21,12 @@ interface LotteryGame {
   total_tickets: number;
   organising_group_name: string;
   created_by_user_id: string;
+  game_code: string | null;
 }
 
 const GameOrganiserDashboard = () => {
   const [games, setGames] = useState<LotteryGame[]>([]);
   const [gameCode, setGameCode] = useState("");
-  const [gamePassword, setGamePassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [createGameOpen, setCreateGameOpen] = useState(false);
   const [fortuneCounters, setFortuneCounters] = useState<Record<string, number>>({});
@@ -123,10 +123,10 @@ const GameOrganiserDashboard = () => {
   };
 
   const handleAccessGame = async () => {
-    if (!gameCode.trim() || !gamePassword.trim()) {
+    if (!gameCode.trim()) {
       toast({
         title: "Missing Information",
-        description: "Please enter both game code and password",
+        description: "Please enter game code",
         variant: "destructive",
       });
       return;
@@ -138,13 +138,12 @@ const GameOrganiserDashboard = () => {
         .from('lottery_games')
         .select('*')
         .eq('game_code', gameCode.trim())
-        .eq('game_password', gamePassword.trim())
         .single();
 
       if (error || !game) {
         toast({
           title: "Access Denied",
-          description: "Invalid game code or password",
+          description: "Invalid game code",
           variant: "destructive",
         });
         return;
@@ -216,6 +215,11 @@ const GameOrganiserDashboard = () => {
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           <h3 className="font-semibold">{game.title}</h3>
+                          {game.game_code && (
+                            <Badge variant="outline" className="text-xs font-mono">
+                              {game.game_code}
+                            </Badge>
+                          )}
                           <Badge variant="secondary" className="text-xs">
                             <Target className="h-3 w-3 mr-1" />
                             {fortuneCounters[game.id] || 0}
@@ -266,7 +270,7 @@ const GameOrganiserDashboard = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              If you have a game code and password for an existing game, you can access it here.
+              If you have a game code for an existing game, you can access it here.
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -277,24 +281,14 @@ const GameOrganiserDashboard = () => {
                   type="text"
                   value={gameCode}
                   onChange={(e) => setGameCode(e.target.value)}
-                  placeholder="Enter game code"
-                />
-              </div>
-              <div>
-                <Label htmlFor="gamePassword">Game Password</Label>
-                <Input
-                  id="gamePassword"
-                  type="password"
-                  value={gamePassword}
-                  onChange={(e) => setGamePassword(e.target.value)}
-                  placeholder="Enter game password"
+                  placeholder="Enter 5-character game code"
                 />
               </div>
             </div>
             
             <Button
               onClick={handleAccessGame}
-              disabled={loading || !gameCode.trim() || !gamePassword.trim()}
+              disabled={loading || !gameCode.trim()}
               className="w-full md:w-auto"
             >
               {loading ? "Accessing..." : "Access Game"}
