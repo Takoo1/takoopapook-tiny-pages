@@ -21,8 +21,8 @@ export function MobileStickySearchFAB({
   const fabRef = useRef<HTMLDivElement>(null);
 
   const priceOptions = [
-    { label: "₹200", value: "200", angle: 225 },   // bottom-left
-    { label: "₹500", value: "500", angle: 180 },  // left
+    { label: "₹200", value: "200", angle: 270 },   // bottom
+    { label: "₹500", value: "500", angle: 225 },  // bottom-left
     { label: "₹1000", value: "1000", angle: 135 } // top-left
   ];
 
@@ -85,7 +85,7 @@ export function MobileStickySearchFAB({
           key={option.value}
           size="icon"
           variant={selectedPriceFilter === option.value ? "default" : "secondary"}
-          className="absolute w-12 h-12 rounded-full shadow-lg transition-all duration-300 text-xs font-semibold border-2 border-white/20"
+          className="absolute w-16 h-8 rounded-xl shadow-lg transition-all duration-300 text-xs font-semibold border-2 border-white/20 flex items-center justify-center"
           style={{
             ...getButtonPosition(option.angle),
             pointerEvents: isExpanded ? 'auto' : 'none'
