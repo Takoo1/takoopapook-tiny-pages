@@ -175,6 +175,48 @@ export type Database = {
         }
         Relationships: []
       }
+      fortune_counter_requests: {
+        Row: {
+          amount_due: number
+          confirmed_at: string | null
+          confirmed_by_organizer_id: string | null
+          created_at: string
+          id: string
+          lottery_game_id: string
+          notes: string | null
+          requested_by_admin_id: string
+          status: string
+          ticket_count: number
+          updated_at: string
+        }
+        Insert: {
+          amount_due: number
+          confirmed_at?: string | null
+          confirmed_by_organizer_id?: string | null
+          created_at?: string
+          id?: string
+          lottery_game_id: string
+          notes?: string | null
+          requested_by_admin_id: string
+          status?: string
+          ticket_count: number
+          updated_at?: string
+        }
+        Update: {
+          amount_due?: number
+          confirmed_at?: string | null
+          confirmed_by_organizer_id?: string | null
+          created_at?: string
+          id?: string
+          lottery_game_id?: string
+          notes?: string | null
+          requested_by_admin_id?: string
+          status?: string
+          ticket_count?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       fortune_counter_resets: {
         Row: {
           created_at: string
@@ -792,6 +834,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_request_fortune_reset: {
+        Args: { p_game_id: string }
+        Returns: string
+      }
       award_purchase_bonus: {
         Args: { ticket_prices: number[] }
         Returns: undefined
@@ -833,6 +879,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      organizer_confirm_fortune_reset: {
+        Args: { p_request_id: string }
+        Returns: undefined
       }
       purge_lottery_game: {
         Args: { p_game_id: string }

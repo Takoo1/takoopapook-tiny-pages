@@ -49,7 +49,7 @@ export default function Admin() {
   const [loading, setLoading] = useState(true);
   const [fortuneCounters, setFortuneCounters] = useState<Record<string, number>>({});
   const [fortuneModalOpen, setFortuneModalOpen] = useState(false);
-  const [selectedFortuneGame, setSelectedFortuneGame] = useState<{ id: string; title: string; counter: number } | null>(null);
+  const [selectedFortuneGame, setSelectedFortuneGame] = useState<{ id: string; title: string; counter: number; ticket_price: number } | null>(null);
   const [createGameOpen, setCreateGameOpen] = useState(false);
   const [previewGameId, setPreviewGameId] = useState<string | null>(null);
   const [previewModalOpen, setPreviewModalOpen] = useState(false);
@@ -245,7 +245,8 @@ export default function Admin() {
     setSelectedFortuneGame({
       id: game.id,
       title: game.title,
-      counter: fortuneCounters[game.id] || 0
+      counter: fortuneCounters[game.id] || 0,
+      ticket_price: game.ticket_price
     });
     setFortuneModalOpen(true);
   };
@@ -562,6 +563,7 @@ export default function Admin() {
             gameId={selectedFortuneGame.id}
             gameTitle={selectedFortuneGame.title}
             fortuneCounter={selectedFortuneGame.counter}
+            ticketPrice={selectedFortuneGame.ticket_price}
             isAdmin={true}
             onCounterUpdate={handleFortuneCounterUpdate}
           />

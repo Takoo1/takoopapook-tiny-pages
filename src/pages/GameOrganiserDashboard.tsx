@@ -252,6 +252,7 @@ const GameOrganiserDashboard = () => {
             gameId={selectedGame.id}
             gameTitle={selectedGame.title}
             fortuneCounter={fortuneCounters[selectedGame.id] || 0}
+            ticketPrice={selectedGame.ticket_price}
             isAdmin={false}
             onCounterUpdate={() => {
               fetchMyGames(); // Refresh fortune counters
