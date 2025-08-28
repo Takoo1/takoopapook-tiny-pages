@@ -43,11 +43,9 @@ export default function Home() {
   }, []);
 
   const checkAuthAndReferral = async () => {
-    // Check if user is logged in
     const { data: { session } } = await supabase.auth.getSession();
     setUser(session?.user ?? null);
 
-    // Check for referral code in URL or localStorage
     const params = new URLSearchParams(window.location.search);
     const refFromUrl = params.get('ref');
     const refFromStorage = localStorage.getItem('ref_code');
@@ -55,7 +53,6 @@ export default function Home() {
 
     if (referralCodeToCheck && !session?.user) {
       setReferralCode(referralCodeToCheck);
-      // Get referrer's name for display
       try {
         const { data } = await supabase
           .from('profiles')
@@ -72,7 +69,6 @@ export default function Home() {
       }
     }
 
-    // Listen for auth changes
     supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) {
@@ -84,14 +80,12 @@ export default function Home() {
   useEffect(() => {
     let filtered = lotteryGames;
 
-    // Filter by search term (organising group name)
     if (searchTerm) {
       filtered = filtered.filter(game =>
         game.organising_group_name?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    // Filter by price
     if (selectedPriceFilter !== "all") {
       if (selectedPriceFilter === "other") {
         filtered = filtered.filter(game => 
@@ -103,7 +97,6 @@ export default function Home() {
       }
     }
 
-    // Sort by nearest upcoming game date
     filtered.sort((a, b) => new Date(a.game_date).getTime() - new Date(b.game_date).getTime());
 
     setFilteredGames(filtered);
@@ -140,11 +133,11 @@ export default function Home() {
           total_tickets,
           organising_group_name
         `)
+        .eq('status', 'live')
         .order('game_date', { ascending: true });
 
       if (error) throw error;
 
-      // Get available tickets count for each game
       const gamesWithAvailableTickets = await Promise.all(
         (games || []).map(async (game) => {
           const { count } = await supabase
@@ -264,7 +257,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-background/50">
-      {/* Referral Banner */}
       {showReferralBanner && (
         <div className="fixed top-0 left-0 right-0 z-30 bg-gradient-to-r from-lottery-gold/20 to-lottery-gold-light/20 border-b border-lottery-gold/30 backdrop-blur-sm">
           <div className="max-w-4xl mx-auto p-4">
@@ -304,7 +296,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* Header */}
       <header className={`absolute top-0 left-0 right-0 z-20 p-3 md:p-6 ${showReferralBanner ? 'mt-20' : ''}`}>
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <h1 className="text-lg md:text-2xl font-bold text-lottery-gold">Fortune Bridge</h1>
@@ -315,7 +306,6 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -344,16 +334,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Lottery Games Section */}
       <section id="games" className="py-8 md:py-20 px-3 md:px-6 bg-card/20">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center mb-8 md:mb-16 text-foreground">
             Choose Your Fortune
           </h2>
           
-          {/* Search and Filter Section */}
           <div className="mb-6 md:mb-12 space-y-4 md:space-y-6">
-            {/* Search Bar */}
             <div className="relative max-w-md mx-auto px-2">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
@@ -374,7 +361,6 @@ export default function Home() {
                 </Button>
               </div>
               
-              {/* Suggestions Dropdown */}
               {showSuggestions && (
                 <div className="absolute top-full left-0 right-0 bg-card border border-border rounded-md mt-1 shadow-lg z-10">
                   {organizerSuggestions.map((suggestion, index) => (
@@ -390,7 +376,6 @@ export default function Home() {
               )}
             </div>
 
-            {/* Price Filters */}
             <div className="flex flex-wrap justify-center gap-2 md:gap-3 px-2">
               {priceFilters.map((filter) => (
                 <Button
@@ -425,13 +410,11 @@ export default function Home() {
                 
                 return (
                   <div key={price} className={`relative p-8 rounded-3xl bg-gradient-to-br ${sectionTheme.gradient} border-2 ${sectionTheme.border} overflow-hidden`}>
-                    {/* Background Pattern */}
                     <div className="absolute inset-0 opacity-5">
                       <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent" />
                       <div className="absolute top-4 right-4 text-6xl opacity-30">{sectionTheme.icon}</div>
                     </div>
                     
-                    {/* Section Header */}
                     <div className="relative z-10 text-center mb-8">
                       <div className="flex items-center justify-center gap-4 mb-4">
                         <div className={`px-4 py-2 rounded-full ${sectionTheme.badge} text-sm font-bold tracking-wider`}>
@@ -449,7 +432,6 @@ export default function Home() {
                       </p>
                     </div>
                     
-                    {/* Games Grid */}
                     <div className="relative z-10 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {games.map((game) => (
                         <LotteryCard
@@ -476,7 +458,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features Section */}
       <section className="py-12 md:py-20 px-3 md:px-6">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center mb-8 md:mb-16 text-foreground">
@@ -508,7 +489,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="bg-card/30 border-t border-border/30 py-6 md:py-8">
         <div className="max-w-6xl mx-auto px-3 md:px-6 text-center">
           <div className="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-6 mb-4">

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -6,11 +7,14 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { FortuneCounterModal } from "@/components/FortuneCounterModal";
 import { CreateGameForm } from "@/components/CreateGameForm";
+import { GamePreviewModal } from "@/components/GamePreviewModal";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-import { Plus, Edit, Trash2, Eye, Target, BookOpen, Calendar, Users, Gamepad2 } from "lucide-react";
+import { Plus, Trash2, Eye, Target, Calendar, Users, Gamepad2 } from "lucide-react";
 
 interface LotteryGame {
   id: string;
@@ -23,6 +27,7 @@ interface LotteryGame {
   last_ticket_number: number;
   organising_group_name: string;
   game_code: string | null;
+  status: 'pending' | 'live' | 'ended';
 }
 
 interface LotteryBook {
@@ -46,6 +51,8 @@ export default function Admin() {
   const [fortuneModalOpen, setFortuneModalOpen] = useState(false);
   const [selectedFortuneGame, setSelectedFortuneGame] = useState<{ id: string; title: string; counter: number } | null>(null);
   const [createGameOpen, setCreateGameOpen] = useState(false);
+  const [previewGameId, setPreviewGameId] = useState<string | null>(null);
+  const [previewModalOpen, setPreviewModalOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -154,6 +161,57 @@ export default function Admin() {
     }
   };
 
+  const handleStatusChange = async (gameId: string, newStatus: string) => {
+    try {
+      const { error } = await supabase
+        .from('lottery_games')
+        .update({ status: newStatus })
+        .eq('id', gameId);
+
+      if (error) throw error;
+
+      // Update local state
+      setGames(prev => prev.map(game => 
+        game.id === gameId 
+          ? { ...game, status: newStatus as 'pending' | 'live' | 'ended' }
+          : game
+      ));
+
+      toast({
+        title: "Success",
+        description: `Game status updated to ${newStatus}`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update game status",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteGame = async (gameId: string) => {
+    try {
+      const { error } = await supabase.rpc('purge_lottery_game', { p_game_id: gameId });
+
+      if (error) throw error;
+
+      // Remove from local state
+      setGames(prev => prev.filter(game => game.id !== gameId));
+      
+      toast({
+        title: "Success",
+        description: "Game permanently deleted",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete game",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleToggleBookAvailability = async (bookId: string, currentValue: boolean) => {
     try {
       const { error } = await supabase
@@ -194,6 +252,24 @@ export default function Admin() {
 
   const handleFortuneCounterUpdate = () => {
     fetchGames(); // Refresh to get updated counters
+  };
+
+  const handleViewGame = (gameId: string) => {
+    setPreviewGameId(gameId);
+    setPreviewModalOpen(true);
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return <Badge variant="secondary" className="bg-yellow-500/10 text-yellow-700 dark:text-yellow-400">Pending Approval</Badge>;
+      case 'live':
+        return <Badge variant="default" className="bg-green-500/10 text-green-700 dark:text-green-400">Live</Badge>;
+      case 'ended':
+        return <Badge variant="outline" className="bg-gray-500/10 text-gray-700 dark:text-gray-400">Ended</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
+    }
   };
 
   if (loading) {
@@ -261,6 +337,7 @@ export default function Admin() {
                         <TableHead>Price</TableHead>
                         <TableHead>Tickets</TableHead>
                         <TableHead>Organiser</TableHead>
+                        <TableHead>Status</TableHead>
                         <TableHead>Fortune</TableHead>
                         <TableHead>Actions</TableHead>
                       </TableRow>
@@ -297,6 +374,21 @@ export default function Admin() {
                             </div>
                           </TableCell>
                           <TableCell>
+                            <div className="flex flex-col gap-1">
+                              {getStatusBadge(game.status)}
+                              <Select value={game.status} onValueChange={(value) => handleStatusChange(game.id, value)}>
+                                <SelectTrigger className="w-24 h-6 text-xs">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="pending">Pending</SelectItem>
+                                  <SelectItem value="live">Live</SelectItem>
+                                  <SelectItem value="ended">Ended</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </TableCell>
+                          <TableCell>
                             <Badge 
                               variant="secondary" 
                               className="cursor-pointer hover:bg-lottery-gold/20"
@@ -307,14 +399,50 @@ export default function Admin() {
                             </Badge>
                           </TableCell>
                           <TableCell>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => setSelectedGameId(selectedGameId === game.id ? null : game.id)}
-                            >
-                              <BookOpen className="h-3 w-3 mr-1" />
-                              Manage
-                            </Button>
+                            <div className="flex gap-1">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleViewGame(game.id)}
+                              >
+                                <Eye className="h-3 w-3" />
+                              </Button>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="text-red-600 hover:text-red-700"
+                                  >
+                                    <Trash2 className="h-3 w-3" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Delete Game Permanently</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      This action cannot be undone. This will permanently delete the game "{game.title}" and all associated data including tickets, books, prizes, terms, and committee information.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() => handleDeleteGame(game.id)}
+                                      className="bg-red-600 hover:bg-red-700"
+                                    >
+                                      Delete Permanently
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setSelectedGameId(selectedGameId === game.id ? null : game.id)}
+                              >
+                                Books
+                              </Button>
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -329,8 +457,7 @@ export default function Admin() {
               <Card className="bg-gradient-to-br from-card to-card/80 border-border/50">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <BookOpen className="h-5 w-5" />
-                    Manage Tickets - {selectedGame.title}
+                    Manage Books - {selectedGame.title}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -399,7 +526,6 @@ export default function Admin() {
             </Card>
           </TabsContent>
 
-          {/* Fortune Counter Tab */}
           <TabsContent value="fortune">
             <Card className="bg-gradient-to-br from-card to-card/80 border-border/50">
               <CardHeader>
@@ -438,6 +564,18 @@ export default function Admin() {
             fortuneCounter={selectedFortuneGame.counter}
             isAdmin={true}
             onCounterUpdate={handleFortuneCounterUpdate}
+          />
+        )}
+
+        {/* Game Preview Modal */}
+        {previewGameId && (
+          <GamePreviewModal
+            gameId={previewGameId}
+            isOpen={previewModalOpen}
+            onClose={() => {
+              setPreviewModalOpen(false);
+              setPreviewGameId(null);
+            }}
           />
         )}
       </div>
