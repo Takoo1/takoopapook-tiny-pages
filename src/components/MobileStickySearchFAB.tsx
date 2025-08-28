@@ -197,21 +197,36 @@ export function MobileStickySearchFAB({
         </div>
       )}
 
-      {/* Main FAB Button */}
-      <Button
-        size="icon"
-        className={cn(
-          "w-14 h-14 rounded-full shadow-xl bg-primary hover:bg-primary/90 transition-all duration-300 transform relative z-10",
-          isExpanded ? "rotate-45 scale-110" : "rotate-0 scale-100"
-        )}
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
-        {isExpanded ? (
-          <X className="w-6 h-6 text-primary-foreground" />
-        ) : (
-          <Search className="w-6 h-6 text-primary-foreground" />
-        )}
-      </Button>
+      {/* Main FAB Button - Half circle + rectangle design */}
+      <div className="relative">
+        <Button
+          size="icon"
+          className={cn(
+            "w-14 h-14 shadow-xl bg-primary hover:bg-primary/90 transition-all duration-300 transform relative z-10",
+            "rounded-l-full rounded-r-none", // Half circle on left, flat on right
+            isExpanded ? "rotate-45 scale-110" : "rotate-0 scale-100"
+          )}
+          style={{
+            borderTopRightRadius: 0,
+            borderBottomRightRadius: 0,
+          }}
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          {isExpanded ? (
+            <X className="w-6 h-6 text-primary-foreground" />
+          ) : (
+            <Search className="w-6 h-6 text-primary-foreground" />
+          )}
+        </Button>
+        
+        {/* Hidden rectangle extending off-screen */}
+        <div 
+          className="absolute top-0 left-14 w-4 h-14 bg-primary transition-all duration-300"
+          style={{
+            transform: isExpanded ? "scale(1.1)" : "scale(1)"
+          }}
+        />
+      </div>
     </div>
   );
 }
