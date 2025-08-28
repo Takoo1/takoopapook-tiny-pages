@@ -28,12 +28,12 @@ export function MobileStickySearchFAB({
   const innerRadius = 45;
   const outerRadius = 75;
 
-  // Ring segments configuration
+  // Ring segments configuration - rotated 90 degrees clockwise
   const segments = [
-    { label: "Search", value: "search", startAngle: 225, endAngle: 270, icon: "search" },
-    { label: "₹200", value: "200", startAngle: 180, endAngle: 225 },
-    { label: "₹500", value: "500", startAngle: 135, endAngle: 180 },
-    { label: "₹1000", value: "1000", startAngle: 90, endAngle: 135 }
+    { label: "Search", value: "search", startAngle: 315, endAngle: 360, icon: "search" },
+    { label: "₹200", value: "200", startAngle: 270, endAngle: 315 },
+    { label: "₹500", value: "500", startAngle: 225, endAngle: 270 },
+    { label: "₹1000", value: "1000", startAngle: 180, endAngle: 225 }
   ];
 
   // Helper function to convert polar to cartesian coordinates
