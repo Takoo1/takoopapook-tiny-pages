@@ -7,13 +7,105 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.12 (cd3cf9e)"
   }
   public: {
     Tables: {
+      booking_cancellations: {
+        Row: {
+          booking_id: string
+          created_at: string
+          details: string | null
+          id: string
+          reason: string
+          status: string | null
+          updated_at: string
+          user_session: string
+        }
+        Insert: {
+          booking_id: string
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason: string
+          status?: string | null
+          updated_at?: string
+          user_session: string
+        }
+        Update: {
+          booking_id?: string
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason?: string
+          status?: string | null
+          updated_at?: string
+          user_session?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_cancellations_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bookings: {
+        Row: {
+          created_at: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string | null
+          destination_id: string | null
+          id: string
+          number_of_people: number | null
+          package_id: string | null
+          special_requests: string | null
+          status: string | null
+          total_amount: number | null
+          travel_date: string | null
+          updated_at: string
+          user_session: string | null
+        }
+        Insert: {
+          created_at?: string
+          customer_email: string
+          customer_name: string
+          customer_phone?: string | null
+          destination_id?: string | null
+          id?: string
+          number_of_people?: number | null
+          package_id?: string | null
+          special_requests?: string | null
+          status?: string | null
+          total_amount?: number | null
+          travel_date?: string | null
+          updated_at?: string
+          user_session?: string | null
+        }
+        Update: {
+          created_at?: string
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string | null
+          destination_id?: string | null
+          id?: string
+          number_of_people?: number | null
+          package_id?: string | null
+          special_requests?: string | null
+          status?: string | null
+          total_amount?: number | null
+          travel_date?: string | null
+          updated_at?: string
+          user_session?: string | null
+        }
+        Relationships: []
+      }
       fc_balances: {
         Row: {
           balance: number
@@ -123,6 +215,90 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      homepage_slider_images: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          image_url: string
+          is_active: boolean
+          link_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          image_url: string
+          is_active?: boolean
+          link_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          image_url?: string
+          is_active?: boolean
+          link_url?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      locations: {
+        Row: {
+          bullet_points: string[] | null
+          categories: string[] | null
+          coordinates_x: number
+          coordinates_y: number
+          created_at: string
+          description: string | null
+          id: string
+          images: string[] | null
+          is_active: boolean | null
+          name: string
+          packages_included: string[] | null
+          rating: number | null
+          reviews: string[] | null
+          reviews_count: number | null
+          updated_at: string
+        }
+        Insert: {
+          bullet_points?: string[] | null
+          categories?: string[] | null
+          coordinates_x: number
+          coordinates_y: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          is_active?: boolean | null
+          name: string
+          packages_included?: string[] | null
+          rating?: number | null
+          reviews?: string[] | null
+          reviews_count?: number | null
+          updated_at?: string
+        }
+        Update: {
+          bullet_points?: string[] | null
+          categories?: string[] | null
+          coordinates_x?: number
+          coordinates_y?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          is_active?: boolean | null
+          name?: string
+          packages_included?: string[] | null
+          rating?: number | null
+          reviews?: string[] | null
+          reviews_count?: number | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       lottery_books: {
         Row: {
@@ -276,6 +452,98 @@ export type Database = {
           },
         ]
       }
+      packages: {
+        Row: {
+          created_at: string
+          duration: string
+          features: string[] | null
+          group_size: string
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          is_editable: boolean | null
+          location: string
+          locations_included: string[] | null
+          package_code: string
+          price: string
+          rating: number | null
+          reviews: string[] | null
+          reviews_count: number | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          duration: string
+          features?: string[] | null
+          group_size: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          is_editable?: boolean | null
+          location: string
+          locations_included?: string[] | null
+          package_code: string
+          price: string
+          rating?: number | null
+          reviews?: string[] | null
+          reviews_count?: number | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          duration?: string
+          features?: string[] | null
+          group_size?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          is_editable?: boolean | null
+          location?: string
+          locations_included?: string[] | null
+          package_code?: string
+          price?: string
+          rating?: number | null
+          reviews?: string[] | null
+          reviews_count?: number | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      planned_locations: {
+        Row: {
+          id: string
+          location_id: string
+          notes: string | null
+          planned_at: string
+          user_session: string
+        }
+        Insert: {
+          id?: string
+          location_id: string
+          notes?: string | null
+          planned_at?: string
+          user_session: string
+        }
+        Update: {
+          id?: string
+          location_id?: string
+          notes?: string | null
+          planned_at?: string
+          user_session?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "planned_locations_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string | null
@@ -312,6 +580,51 @@ export type Database = {
           role?: string | null
           updated_at?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      reviews: {
+        Row: {
+          created_at: string
+          detailed_review: string
+          experience_summary: string
+          id: string
+          images: string[] | null
+          is_published: boolean | null
+          item_id: string
+          item_type: string
+          rating: number
+          reviewer_name: string
+          updated_at: string
+          videos: string[] | null
+        }
+        Insert: {
+          created_at?: string
+          detailed_review: string
+          experience_summary: string
+          id?: string
+          images?: string[] | null
+          is_published?: boolean | null
+          item_id: string
+          item_type: string
+          rating: number
+          reviewer_name: string
+          updated_at?: string
+          videos?: string[] | null
+        }
+        Update: {
+          created_at?: string
+          detailed_review?: string
+          experience_summary?: string
+          id?: string
+          images?: string[] | null
+          is_published?: boolean | null
+          item_id?: string
+          item_type?: string
+          rating?: number
+          reviewer_name?: string
+          updated_at?: string
+          videos?: string[] | null
         }
         Relationships: []
       }
@@ -355,16 +668,16 @@ export type Database = {
       }
       generate_lottery_tickets: {
         Args:
+          | { end_num: number; game_id: string; start_num: number }
           | { game_id: string; num_tickets: number }
-          | { game_id: string; start_num: number; end_num: number }
         Returns: undefined
       }
       generate_lottery_tickets_for_book: {
         Args: {
-          game_id: string
           book_id: string
-          start_num: number
           end_num: number
+          game_id: string
+          start_num: number
         }
         Returns: undefined
       }
@@ -378,8 +691,8 @@ export type Database = {
       }
       has_role: {
         Args: {
-          _user_id: string
           _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
         }
         Returns: boolean
       }

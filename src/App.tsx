@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,7 +11,6 @@ import TicketBuying from "./pages/TicketBuying";
 import Admin from "./pages/Admin";
 import GameOrganiserDashboard from "./pages/GameOrganiserDashboard";
 import OrganizerDashboard from "./pages/OrganizerDashboard";
-import GlobalFortuneCounter from "./pages/GlobalFortuneCounter";
 import Videos from "./pages/Videos";
 import Winners from "./pages/Winners";
 import MyTickets from "./pages/MyTickets";
@@ -38,7 +38,6 @@ const App = () => (
               <Route path="/admin" element={<Admin />} />
               <Route path="/game-organiser-dashboard" element={<GameOrganiserDashboard />} />
               <Route path="/organizer-dashboard" element={<OrganizerDashboard />} />
-              <Route path="/global-fortune-counter" element={<GlobalFortuneCounter />} />
               <Route path="/videos" element={<Videos />} />
               <Route path="/winners" element={<Winners />} />
               <Route path="/my-tickets" element={<MyTickets />} />

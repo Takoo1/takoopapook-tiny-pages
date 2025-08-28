@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { LotteryTicket } from "@/components/ui/lottery-ticket";
-import { GlobalFortuneCounterModal } from "@/components/GlobalFortuneCounterModal";
 import { toast } from "@/hooks/use-toast";
 import { ChevronLeft, ChevronRight, LogOut } from "lucide-react";
 
@@ -35,17 +34,15 @@ const OrganizerDashboard = () => {
     totalTickets: 0,
     offlineSold: 0,
     onlineSold: 0,
-    available: 0,
-    globalFortuneCounter: 0
+    available: 0
   });
-  const [globalFortuneModalOpen, setGlobalFortuneModalOpen] = useState(false);
   const navigate = useNavigate();
   const ticketsPerPage = 100;
 
   useEffect(() => {
     const storedGame = sessionStorage.getItem('organizerGame');
     if (!storedGame) {
-      navigate('/organizer-login');
+      navigate('/game-organiser-dashboard');
       return;
     }
 
@@ -96,7 +93,7 @@ const OrganizerDashboard = () => {
         description: "Failed to fetch game details",
         variant: "destructive",
       });
-      navigate('/organizer-login');
+      navigate('/game-organiser-dashboard');
     }
   };
 
@@ -119,18 +116,8 @@ const OrganizerDashboard = () => {
         else if (ticket.status === 'sold_online') acc.onlineSold++;
         else acc.available++;
         return acc;
-      }, { totalTickets: 0, offlineSold: 0, onlineSold: 0, available: 0, globalFortuneCounter: 0 }) || 
-      { totalTickets: 0, offlineSold: 0, onlineSold: 0, available: 0, globalFortuneCounter: 0 };
-
-      // Fetch global fortune counter from database
-      try {
-        const { data: globalFortuneCount, error: globalFortuneError } = await supabase.rpc('get_global_fortune_counter');
-        if (!globalFortuneError) {
-          stats.globalFortuneCounter = globalFortuneCount || 0;
-        }
-      } catch (error) {
-        console.error('Error fetching global fortune counter:', error);
-      }
+      }, { totalTickets: 0, offlineSold: 0, onlineSold: 0, available: 0 }) || 
+      { totalTickets: 0, offlineSold: 0, onlineSold: 0, available: 0 };
 
       setStats(stats);
     } catch (error) {
@@ -171,18 +158,8 @@ const OrganizerDashboard = () => {
         else if (ticket.status === 'sold_online') acc.onlineSold++;
         else acc.available++;
         return acc;
-      }, { totalTickets: 0, offlineSold: 0, onlineSold: 0, available: 0, globalFortuneCounter: 0 });
+      }, { totalTickets: 0, offlineSold: 0, onlineSold: 0, available: 0 });
       
-      // Update global fortune counter from database
-      try {
-        const { data: globalFortuneCount, error: globalFortuneError } = await supabase.rpc('get_global_fortune_counter');
-        if (!globalFortuneError) {
-          newStats.globalFortuneCounter = globalFortuneCount || 0;
-        }
-      } catch (error) {
-        console.error('Error fetching global fortune counter:', error);
-      }
-
       setStats(newStats);
 
       toast({
@@ -198,19 +175,9 @@ const OrganizerDashboard = () => {
     }
   };
 
-  const handleGlobalFortuneCounterClick = () => {
-    setGlobalFortuneModalOpen(true);
-  };
-
-  const handleGlobalFortuneCounterUpdate = () => {
-    if (gameData) {
-      fetchTickets(gameData.id);
-    }
-  };
-
   const handleLogout = () => {
     sessionStorage.removeItem('organizerGame');
-    navigate('/organizer-login');
+    navigate('/game-organiser-dashboard');
   };
 
   if (!gameData) {
@@ -255,7 +222,7 @@ const OrganizerDashboard = () => {
         </Card>
 
         {/* Statistics */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card>
             <CardContent className="p-4 text-center">
               <div className="text-2xl font-bold text-foreground">{stats.totalTickets}</div>
@@ -278,16 +245,6 @@ const OrganizerDashboard = () => {
             <CardContent className="p-4 text-center">
               <div className="text-2xl font-bold text-gray-600">{stats.available}</div>
               <div className="text-sm text-muted-foreground">Available</div>
-            </CardContent>
-          </Card>
-          <Card 
-            className="cursor-pointer hover:bg-muted/50 transition-colors" 
-            onClick={handleGlobalFortuneCounterClick}
-          >
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-purple-600">{stats.globalFortuneCounter}</div>
-              <div className="text-sm text-muted-foreground">Global Fortune Counter</div>
-              <div className="text-xs text-muted-foreground mt-1">Click to manage</div>
             </CardContent>
           </Card>
         </div>
@@ -340,15 +297,6 @@ const OrganizerDashboard = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* Global Fortune Counter Modal */}
-      <GlobalFortuneCounterModal
-        isOpen={globalFortuneModalOpen}
-        onClose={() => setGlobalFortuneModalOpen(false)}
-        fortuneCounter={stats.globalFortuneCounter}
-        isAdmin={false}
-        onCounterUpdate={handleGlobalFortuneCounterUpdate}
-      />
     </div>
   );
 };
