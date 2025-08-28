@@ -14,7 +14,8 @@ import { CreateGameForm } from "@/components/CreateGameForm";
 import { GamePreviewModal } from "@/components/GamePreviewModal";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-import { Plus, Trash2, Eye, Target, Calendar, Users, Gamepad2 } from "lucide-react";
+import { Plus, Trash2, Eye, Target, Calendar, Users, Gamepad2, ImageIcon } from "lucide-react";
+import { MediaManager } from "@/components/MediaManager";
 
 interface LotteryGame {
   id: string;
@@ -294,10 +295,14 @@ export default function Admin() {
         </div>
 
         <Tabs defaultValue="games" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="games" className="flex items-center gap-2">
               <Gamepad2 className="w-4 h-4" />
               Game Manager
+            </TabsTrigger>
+            <TabsTrigger value="media" className="flex items-center gap-2">
+              <ImageIcon className="w-4 h-4" />
+              Media Manager
             </TabsTrigger>
             <TabsTrigger value="bookings" className="flex items-center gap-2">
               <Users className="w-4 h-4" />
@@ -504,6 +509,10 @@ export default function Admin() {
                 </CardContent>
               </Card>
             )}
+          </TabsContent>
+
+          <TabsContent value="media" className="space-y-6">
+            <MediaManager />
           </TabsContent>
 
           {/* Bookings Tab */}

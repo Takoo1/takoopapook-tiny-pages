@@ -10,6 +10,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Shield, Trophy, Zap, Search, Gift, UserPlus } from "lucide-react";
 import heroImage from "@/assets/Fortune_Bridge_Banner.png";
 import type { User as SupabaseUser } from '@supabase/supabase-js';
+import { ImageCarousel } from "@/components/ImageCarousel";
+import { VideoThumbnailCarousel } from "@/components/VideoThumbnailCarousel";
 
 interface LotteryGame {
   id: string;
@@ -334,6 +336,9 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Image Carousel Section */}
+      <ImageCarousel />
+
       <section id="games" className="py-8 md:py-20 px-3 md:px-6 bg-card/20">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center mb-8 md:mb-16 text-foreground">
@@ -457,6 +462,11 @@ export default function Home() {
           )}
         </div>
       </section>
+
+      {/* Video Thumbnail Carousel - Desktop Only */}
+      <div className="hidden md:block">
+        <VideoThumbnailCarousel />
+      </div>
 
       <section className="py-12 md:py-20 px-3 md:px-6">
         <div className="max-w-6xl mx-auto">

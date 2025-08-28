@@ -632,6 +632,124 @@ export type Database = {
           },
         ]
       }
+      media_video_links: {
+        Row: {
+          created_at: string
+          created_by_user_id: string | null
+          display_order: number
+          id: string
+          is_active: boolean
+          label: string
+          updated_at: string
+          url: string
+          video_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by_user_id?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          label: string
+          updated_at?: string
+          url: string
+          video_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by_user_id?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          label?: string
+          updated_at?: string
+          url?: string
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "media_video_links_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "media_videos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      media_video_reactions: {
+        Row: {
+          created_at: string
+          id: string
+          reaction_type: string
+          user_id: string | null
+          user_session: string | null
+          video_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reaction_type?: string
+          user_id?: string | null
+          user_session?: string | null
+          video_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reaction_type?: string
+          user_id?: string | null
+          user_session?: string | null
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "media_video_reactions_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "media_videos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      media_videos: {
+        Row: {
+          created_at: string
+          created_by_user_id: string | null
+          description: string | null
+          display_order: number
+          id: string
+          is_active: boolean
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+          video_url: string
+        }
+        Insert: {
+          created_at?: string
+          created_by_user_id?: string | null
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+          video_url: string
+        }
+        Update: {
+          created_at?: string
+          created_by_user_id?: string | null
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+          video_url?: string
+        }
+        Relationships: []
+      }
       packages: {
         Row: {
           created_at: string
