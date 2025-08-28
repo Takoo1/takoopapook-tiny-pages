@@ -25,7 +25,7 @@ export function MobileStickySearchFAB({
   const svgSize = 200;
   const centerX = svgSize / 2;
   const centerY = svgSize / 2;
-  const innerRadius = 30; // Almost touching the FAB button (FAB radius ~28px)
+  const innerRadius = 29; // Just 1px larger than FAB button radius (28px)
   const outerRadius = 65;
 
   // Ring segments configuration - rotated 90 degrees clockwise
@@ -109,9 +109,11 @@ export function MobileStickySearchFAB({
           isExpanded ? "opacity-100 scale-100" : "opacity-0 scale-75 pointer-events-none"
         )}
         style={{
-          right: '28px', // Center SVG relative to FAB button
-          top: '50%',
-          transform: 'translateY(-50%)'
+          right: '0', // Align with FAB button
+          top: '0',
+          width: '56px', // Same as FAB button
+          height: '56px', // Same as FAB button
+          transform: 'translate(0, 0)'
         }}
       >
         <svg
@@ -119,6 +121,12 @@ export function MobileStickySearchFAB({
           height={svgSize}
           viewBox={`0 0 ${svgSize} ${svgSize}`}
           className="filter drop-shadow-lg"
+          style={{
+            position: 'absolute',
+            right: '50%',
+            top: '50%',
+            transform: 'translate(50%, -50%)' // Center SVG on FAB button
+          }}
         >
           {segments.map((segment) => {
             const isActive = segment.value === "search" 
