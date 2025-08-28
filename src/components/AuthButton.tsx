@@ -253,12 +253,7 @@ export function AuthButton() {
 
   if (user) {
     return (
-      <div className="flex items-center gap-1 md:gap-3">
-        <div className="hidden md:flex items-center gap-2 text-sm">
-          <User className="w-4 h-4" />
-          <span>{user.email}</span>
-        </div>
-        
+      <div className="flex items-center gap-1 md:gap-3">        
         {/* FC Balance - Clickable */}
         <Dialog open={fcModalOpen} onOpenChange={setFcModalOpen}>
           <DialogTrigger asChild>

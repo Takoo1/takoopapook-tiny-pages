@@ -8,7 +8,7 @@ import { AuthButton } from "@/components/AuthButton";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Shield, Trophy, Zap, Search, Gift, UserPlus } from "lucide-react";
-import heroImage from "@/assets/Fortune_Bridge_Banner.png";
+import heroImage from "@/assets/hero-fortune-bridge.jpg";
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { ImageCarousel } from "@/components/ImageCarousel";
 import { VideoThumbnailCarousel } from "@/components/VideoThumbnailCarousel";
@@ -260,20 +260,20 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-background/50">
       {showReferralBanner && (
-        <div className="fixed top-0 left-0 right-0 z-30 bg-gradient-to-r from-lottery-gold/20 to-lottery-gold-light/20 border-b border-lottery-gold/30 backdrop-blur-sm">
+        <div className="fixed top-16 left-0 right-0 z-40 bg-gradient-to-r from-primary/20 to-accent/20 border-b border-primary/30 backdrop-blur-sm">
           <div className="max-w-4xl mx-auto p-4">
-            <Alert className="border-lottery-gold/50 bg-lottery-gold/10">
-              <Gift className="h-4 w-4 text-lottery-gold" />
+            <Alert className="border-primary/50 bg-primary/10">
+              <Gift className="h-4 w-4 text-primary" />
               <AlertDescription className="text-foreground">
                 <div className="flex items-center justify-between flex-wrap gap-4">
                   <div className="flex-1">
-                    <strong className="text-lottery-gold">{referrerName}</strong> invited you to Fortune Bridge! 
-                    Sign up now and get <strong className="text-lottery-gold">50 FC free</strong> to start playing!
+                    <strong className="text-primary">{referrerName}</strong> invited you to Fortune Bridge! 
+                    Sign up now and get <strong className="text-primary">50 FC free</strong> to start playing!
                   </div>
                   <div className="flex gap-2">
                     <Button 
                       size="sm" 
-                      variant="lottery"
+                      className="bg-primary hover:bg-primary/90"
                       onClick={() => {
                         const authButton = document.querySelector('[data-auth-trigger]') as HTMLElement;
                         authButton?.click();
@@ -298,34 +298,40 @@ export default function Home() {
         </div>
       )}
 
-      <header className={`absolute top-0 left-0 right-0 z-20 p-3 md:p-6 ${showReferralBanner ? 'mt-20' : ''}`}>
-        <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <h1 className="text-lg md:text-2xl font-bold text-lottery-gold">Fortune Bridge</h1>
-          <div className="flex items-center gap-1 md:gap-2">
-            <ThemeToggle />
+      {/* Fixed Header */}
+      <header className={`fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm ${showReferralBanner ? 'mt-20' : ''}`}>
+        <div className="max-w-6xl mx-auto flex justify-between items-center p-4">
+          <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            Fortune Bridge
+          </h1>
+          <div className="flex items-center gap-2">
+            {/* Desktop: Theme toggle + Auth, Mobile: Only Auth */}
+            <div className="hidden md:block">
+              <ThemeToggle />
+            </div>
             <AuthButton />
           </div>
         </div>
       </header>
 
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Hero Section - Now positioned below header */}
+      <section className={`relative h-[60vh] md:h-[70vh] flex items-center justify-center overflow-hidden ${showReferralBanner ? 'mt-32' : 'mt-16'}`}>
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${heroImage})` }}
         />
-        <div className="absolute inset-0 bg-black/50" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/60" />
         
         <div className="relative z-10 text-center max-w-4xl mx-auto px-4 md:px-6">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold mb-4 md:mb-6 bg-gradient-to-r from-lottery-gold to-lottery-gold-light bg-clip-text text-transparent">
-            Fortune Bridge
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 text-white drop-shadow-2xl">
+            Your Gateway to <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Fortune</span>
           </h1>
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-foreground/90 mb-6 md:mb-8 leading-relaxed px-2">
-            Cross the bridge to your fortune. Premium lottery games with transparent draws and instant wins.
+          <p className="text-base sm:text-lg md:text-xl text-white/90 mb-6 md:mb-8 leading-relaxed px-2 drop-shadow-lg">
+            Experience premium lottery games with complete transparency, instant results, and life-changing prizes
           </p>
           <Button 
-            size="default"
-            variant="lottery"
-            className="px-6 py-3 md:px-8 md:py-6 text-base md:text-lg"
+            size="lg"
+            className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground font-semibold px-8 py-3 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
             onClick={() => {
               const gamesSection = document.getElementById('games');
               gamesSection?.scrollIntoView({ behavior: 'smooth' });
