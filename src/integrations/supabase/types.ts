@@ -343,13 +343,19 @@ export type Database = {
       }
       lottery_games: {
         Row: {
+          contact_email: string | null
+          contact_phone: string | null
           created_at: string
+          created_by_user_id: string | null
           description: string | null
           game_code: string | null
           game_date: string
           game_password: string | null
+          headline: string | null
           id: string
           last_ticket_number: number | null
+          live_draw_url: string | null
+          organiser_logo_url: string | null
           organising_group_name: string | null
           starting_ticket_number: number | null
           ticket_image_url: string | null
@@ -359,13 +365,19 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          contact_email?: string | null
+          contact_phone?: string | null
           created_at?: string
+          created_by_user_id?: string | null
           description?: string | null
           game_code?: string | null
           game_date: string
           game_password?: string | null
+          headline?: string | null
           id?: string
           last_ticket_number?: number | null
+          live_draw_url?: string | null
+          organiser_logo_url?: string | null
           organising_group_name?: string | null
           starting_ticket_number?: number | null
           ticket_image_url?: string | null
@@ -375,13 +387,19 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          contact_email?: string | null
+          contact_phone?: string | null
           created_at?: string
+          created_by_user_id?: string | null
           description?: string | null
           game_code?: string | null
           game_date?: string
           game_password?: string | null
+          headline?: string | null
           id?: string
           last_ticket_number?: number | null
+          live_draw_url?: string | null
+          organiser_logo_url?: string | null
           organising_group_name?: string | null
           starting_ticket_number?: number | null
           ticket_image_url?: string | null
@@ -391,6 +409,123 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      lottery_organising_committee: {
+        Row: {
+          created_at: string
+          designation: string
+          display_order: number
+          id: string
+          lottery_game_id: string
+          member_name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          designation: string
+          display_order?: number
+          id?: string
+          lottery_game_id: string
+          member_name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          designation?: string
+          display_order?: number
+          id?: string
+          lottery_game_id?: string
+          member_name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lottery_organising_committee_lottery_game_id_fkey"
+            columns: ["lottery_game_id"]
+            isOneToOne: false
+            referencedRelation: "lottery_games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lottery_prizes: {
+        Row: {
+          amount: number | null
+          created_at: string
+          description: string | null
+          display_order: number
+          id: string
+          lottery_game_id: string
+          prize_type: Database["public"]["Enums"]["prize_type"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          lottery_game_id: string
+          prize_type: Database["public"]["Enums"]["prize_type"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          lottery_game_id?: string
+          prize_type?: Database["public"]["Enums"]["prize_type"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lottery_prizes_lottery_game_id_fkey"
+            columns: ["lottery_game_id"]
+            isOneToOne: false
+            referencedRelation: "lottery_games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lottery_terms: {
+        Row: {
+          content: string
+          created_at: string
+          display_order: number
+          id: string
+          lottery_game_id: string
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          lottery_game_id: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          lottery_game_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lottery_terms_lottery_game_id_fkey"
+            columns: ["lottery_game_id"]
+            isOneToOne: false
+            referencedRelation: "lottery_games"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       lottery_tickets: {
         Row: {
@@ -705,6 +840,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user" | "organiser"
+      prize_type: "main" | "incentive"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -833,6 +969,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user", "organiser"],
+      prize_type: ["main", "incentive"],
     },
   },
 } as const

@@ -1,33 +1,41 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { toast } from "@/hooks/use-toast";
-import { Plus, Settings, Trash2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { CreateGameForm } from "@/components/CreateGameForm";
+import { useToast } from "@/hooks/use-toast";
+import { Plus, Search, Calendar, Users, Target, LogOut } from "lucide-react";
+import { format } from "date-fns";
 
-interface GameData {
+interface LotteryGame {
   id: string;
   title: string;
-  organising_group_name?: string;
-  game_code?: string;
+  description: string;
+  game_date: string;
+  ticket_price: number;
+  total_tickets: number;
+  organising_group_name: string;
+  created_by_user_id: string;
 }
 
 const GameOrganiserDashboard = () => {
-  const [games, setGames] = useState<GameData[]>([]);
+  const [games, setGames] = useState<LotteryGame[]>([]);
   const [gameCode, setGameCode] = useState("");
   const [gamePassword, setGamePassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [userProfile, setUserProfile] = useState<any>(null);
+  const [createGameOpen, setCreateGameOpen] = useState(false);
+  const [fortuneCounters, setFortuneCounters] = useState<Record<string, number>>({});
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     checkUserAccess();
-    loadSavedGames();
+    fetchMyGames();
   }, []);
 
   const checkUserAccess = async () => {
@@ -36,18 +44,17 @@ const GameOrganiserDashboard = () => {
       
       if (!user) {
         toast({
-          title: "Access Denied",
-          description: "Please login to access the organiser dashboard",
+          title: "Authentication Required",
+          description: "Please sign in to access the organiser dashboard",
           variant: "destructive",
         });
         navigate('/');
         return;
       }
 
-      // Check if user has organiser role
       const { data: profile, error } = await supabase
         .from('profiles')
-        .select('role, full_name, email')
+        .select('role')
         .eq('user_id', user.id)
         .single();
 
@@ -60,72 +67,96 @@ const GameOrganiserDashboard = () => {
         navigate('/');
         return;
       }
-
-      setUserProfile(profile);
     } catch (error) {
-      console.error('Error checking user access:', error);
+      console.error('Access check failed:', error);
       navigate('/');
     }
   };
 
-  const loadSavedGames = () => {
-    const savedGames = localStorage.getItem('organizerGames');
-    if (savedGames) {
-      setGames(JSON.parse(savedGames));
-    }
-  };
-
-  const handleAddGame = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
+  const fetchMyGames = async () => {
     try {
-      const { data, error } = await supabase
-        .from('lottery_games')
-        .select('id, title, organising_group_name, game_code')
-        .eq('game_code', gameCode.toUpperCase())
-        .eq('game_password', gamePassword.toUpperCase())
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('user_id', user.id)
         .single();
 
-      if (error || !data) {
-        toast({
-          title: "Invalid Credentials",
-          description: "Game code or password is incorrect.",
-          variant: "destructive",
-        });
-        return;
+      let query = supabase
+        .from('lottery_games')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      // If user is not admin, only show their own games
+      if (profile?.role !== 'admin') {
+        query = query.eq('created_by_user_id', user.id);
       }
 
-      // Check if game already exists in list
-      const existingGame = games.find((g) => g.id === data.id);
-      if (existingGame) {
-        toast({
-          title: "Game Already Added",
-          description: "This game is already in your list.",
-          variant: "destructive",
-        });
-        return;
+      const { data, error } = await query;
+
+      if (error) throw error;
+      setGames(data || []);
+
+      // Fetch fortune counters
+      const counters: Record<string, number> = {};
+      for (const game of data || []) {
+        try {
+          const { data: counter, error: counterError } = await supabase.rpc('get_fortune_counter', { game_id: game.id });
+          if (!counterError) {
+            counters[game.id] = counter || 0;
+          }
+        } catch (error) {
+          console.error(`Error fetching fortune counter for game ${game.id}:`, error);
+          counters[game.id] = 0;
+        }
       }
-
-      // Add game to list
-      const updatedGames = [...games, data];
-      setGames(updatedGames);
-      
-      // Save to localStorage
-      localStorage.setItem('organizerGames', JSON.stringify(updatedGames));
-
-      toast({
-        title: "Game Added",
-        description: `Successfully added "${data.title}" to your games list.`,
-      });
-
-      setGameCode("");
-      setGamePassword("");
-      setDialogOpen(false);
+      setFortuneCounters(counters);
     } catch (error) {
       toast({
         title: "Error",
-        description: "Something went wrong. Please try again.",
+        description: "Failed to fetch your games",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleAccessGame = async () => {
+    if (!gameCode.trim() || !gamePassword.trim()) {
+      toast({
+        title: "Missing Information",
+        description: "Please enter both game code and password",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { data: game, error } = await supabase
+        .from('lottery_games')
+        .select('*')
+        .eq('game_code', gameCode.trim())
+        .eq('game_password', gamePassword.trim())
+        .single();
+
+      if (error || !game) {
+        toast({
+          title: "Access Denied",
+          description: "Invalid game code or password",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Store game data in session storage for the organizer dashboard
+      sessionStorage.setItem('organizerGame', JSON.stringify(game));
+      navigate('/organizer-dashboard');
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to access the game",
         variant: "destructive",
       });
     } finally {
@@ -133,168 +164,153 @@ const GameOrganiserDashboard = () => {
     }
   };
 
-  const handleGameSelect = (game: GameData) => {
-    // Set the selected game for the organizer dashboard
+  const handleGameSelect = (game: LotteryGame) => {
     sessionStorage.setItem('organizerGame', JSON.stringify(game));
     navigate('/organizer-dashboard');
   };
 
-  const handleRemoveGame = (gameId: string) => {
-    const updatedGames = games.filter((g) => g.id !== gameId);
-    setGames(updatedGames);
-    localStorage.setItem('organizerGames', JSON.stringify(updatedGames));
-    
-    toast({
-      title: "Game Removed",
-      description: "Game has been removed from your list.",
-    });
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/');
   };
 
-  if (!userProfile) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-muted/50 flex items-center justify-center p-4">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Checking access...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-muted/50 p-4">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-background to-background/50 py-4">
+      <div className="max-w-4xl mx-auto px-4 space-y-6">
         {/* Header */}
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold">Game Organiser Dashboard</h1>
-          <p className="text-muted-foreground">
-            Welcome, {userProfile.full_name || userProfile.email}
-          </p>
-        </div>
-
-        {/* Add New Game Button */}
         <div className="flex justify-between items-center">
-          <h2 className="text-xl font-semibold">Your Games</h2>
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="gap-2">
-                <Plus className="h-4 w-4" />
-                Add New Game
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add New Game</DialogTitle>
-                <DialogDescription>
-                  Enter the game code and password to add a new game to your dashboard.
-                </DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleAddGame} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="gameCode">Game Code</Label>
-                  <Input
-                    id="gameCode"
-                    type="text"
-                    placeholder="Enter 4-digit game code"
-                    value={gameCode}
-                    onChange={(e) => setGameCode(e.target.value.toUpperCase())}
-                    maxLength={4}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="gamePassword">Password</Label>
-                  <Input
-                    id="gamePassword"
-                    type="password"
-                    placeholder="Enter 6-digit password"
-                    value={gamePassword}
-                    onChange={(e) => setGamePassword(e.target.value.toUpperCase())}
-                    maxLength={6}
-                    required
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <Button type="submit" className="flex-1" disabled={loading}>
-                    {loading ? "Adding..." : "Add Game"}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setDialogOpen(false)}
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </form>
-            </DialogContent>
-          </Dialog>
-        </div>
-
-        {/* Games List */}
-        {games.length === 0 ? (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <Settings className="h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No Games Added</h3>
-              <p className="text-muted-foreground text-center mb-4">
-                Add your first game using the "Add New Game" button above.
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {games.map((game) => (
-              <Card key={game.id} className="hover:shadow-md transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg">{game.title}</CardTitle>
-                      {game.organising_group_name && (
-                        <CardDescription className="mt-1">
-                          {game.organising_group_name}
-                        </CardDescription>
-                      )}
-                      {game.game_code && (
-                        <p className="text-sm text-muted-foreground mt-1">
-                          Code: {game.game_code}
-                        </p>
-                      )}
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleRemoveGame(game.id)}
-                      className="text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <Button
-                    onClick={() => handleGameSelect(game)}
-                    className="w-full"
-                  >
-                    <Settings className="h-4 w-4 mr-2" />
-                    Manage Game
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+          <div className="text-center flex-1">
+            <h1 className="text-3xl font-bold text-foreground mb-2">Game Organiser Dashboard</h1>
+            <p className="text-muted-foreground">Manage your lottery games and access game controls</p>
           </div>
-        )}
-
-        {/* Back to Home */}
-        <div className="text-center pt-8">
-          <Button
-            variant="outline"
-            onClick={() => navigate('/')}
-            className="gap-2"
-          >
-            ← Back to Home
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={() => setCreateGameOpen(true)} className="bg-lottery-gold hover:bg-lottery-gold/90">
+              <Plus className="w-4 h-4 mr-2" />
+              Create Game
+            </Button>
+            <Button onClick={handleLogout} variant="outline">
+              <LogOut className="w-4 h-4 mr-2" />
+              Logout
+            </Button>
+          </div>
         </div>
+
+        {/* My Games */}
+        <Card className="bg-gradient-to-br from-card to-card/80 border-border/50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              My Games ({games.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {games.length > 0 ? (
+              <div className="grid gap-4">
+                {games.map((game) => (
+                  <div
+                    key={game.id}
+                    className="p-4 border rounded-lg hover:bg-card/50 cursor-pointer transition-colors"
+                    onClick={() => handleGameSelect(game)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h3 className="font-semibold">{game.title}</h3>
+                          <Badge variant="secondary" className="text-xs">
+                            <Target className="h-3 w-3 mr-1" />
+                            {fortuneCounters[game.id] || 0}
+                          </Badge>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <Calendar className="h-4 w-4" />
+                            {format(new Date(game.game_date), 'MMM dd, yyyy')}
+                          </div>
+                          <div>₹{game.ticket_price} per ticket</div>
+                          <div>{game.total_tickets} total tickets</div>
+                          <div className="truncate">{game.organising_group_name}</div>
+                        </div>
+                        {game.description && (
+                          <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
+                            {game.description}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">No Games Yet</h3>
+                <p className="text-muted-foreground mb-4">
+                  You haven't created any games yet. Create your first lottery game to get started.
+                </p>
+                <Button onClick={() => setCreateGameOpen(true)} className="bg-lottery-gold hover:bg-lottery-gold/90">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Your First Game
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Access Existing Game */}
+        <Card className="bg-gradient-to-br from-card to-card/80 border-border/50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Search className="h-5 w-5" />
+              Access Existing Game
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              If you have a game code and password for an existing game, you can access it here.
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="gameCode">Game Code</Label>
+                <Input
+                  id="gameCode"
+                  type="text"
+                  value={gameCode}
+                  onChange={(e) => setGameCode(e.target.value)}
+                  placeholder="Enter game code"
+                />
+              </div>
+              <div>
+                <Label htmlFor="gamePassword">Game Password</Label>
+                <Input
+                  id="gamePassword"
+                  type="password"
+                  value={gamePassword}
+                  onChange={(e) => setGamePassword(e.target.value)}
+                  placeholder="Enter game password"
+                />
+              </div>
+            </div>
+            
+            <Button
+              onClick={handleAccessGame}
+              disabled={loading || !gameCode.trim() || !gamePassword.trim()}
+              className="w-full md:w-auto"
+            >
+              {loading ? "Accessing..." : "Access Game"}
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Create Game Modal */}
+        <CreateGameForm
+          isOpen={createGameOpen}
+          onClose={() => setCreateGameOpen(false)}
+          onSuccess={() => {
+            fetchMyGames();
+            setCreateGameOpen(false);
+          }}
+        />
       </div>
     </div>
   );

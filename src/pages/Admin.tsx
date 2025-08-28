@@ -1,15 +1,12 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { FortuneCounterModal } from "@/components/FortuneCounterModal";
+import { CreateGameForm } from "@/components/CreateGameForm";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Plus, Edit, Trash2, Eye, Target, BookOpen } from "lucide-react";
@@ -46,6 +43,7 @@ export default function Admin() {
   const [fortuneCounters, setFortuneCounters] = useState<Record<string, number>>({});
   const [fortuneModalOpen, setFortuneModalOpen] = useState(false);
   const [selectedFortuneGame, setSelectedFortuneGame] = useState<{ id: string; title: string; counter: number } | null>(null);
+  const [createGameOpen, setCreateGameOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -211,9 +209,15 @@ export default function Admin() {
     <div className="min-h-screen bg-gradient-to-br from-background to-background/50 py-4">
       <div className="max-w-7xl mx-auto px-4 space-y-6">
         {/* Header */}
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Admin Panel</h1>
-          <p className="text-muted-foreground">Manage lottery games, tickets, and settings</p>
+        <div className="flex justify-between items-center">
+          <div className="text-center flex-1">
+            <h1 className="text-3xl font-bold text-foreground mb-2">Admin Panel</h1>
+            <p className="text-muted-foreground">Manage lottery games, tickets, and settings</p>
+          </div>
+          <Button onClick={() => setCreateGameOpen(true)} className="bg-lottery-gold hover:bg-lottery-gold/90">
+            <Plus className="w-4 h-4 mr-2" />
+            Create Game
+          </Button>
         </div>
 
         {/* Lottery Games Section */}
@@ -318,6 +322,13 @@ export default function Admin() {
             </CardContent>
           </Card>
         )}
+
+        {/* Create Game Modal */}
+        <CreateGameForm
+          isOpen={createGameOpen}
+          onClose={() => setCreateGameOpen(false)}
+          onSuccess={fetchGames}
+        />
 
         {/* Fortune Counter Modal */}
         {selectedFortuneGame && (
