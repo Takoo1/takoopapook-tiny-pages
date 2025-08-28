@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { CreateGameForm } from "@/components/CreateGameForm";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Search, Calendar, Users, Target, LogOut } from "lucide-react";
+import { Plus, Calendar, Users, Target, LogOut } from "lucide-react";
 import { format } from "date-fns";
 
 interface LotteryGame {
@@ -26,7 +26,6 @@ interface LotteryGame {
 
 const GameOrganiserDashboard = () => {
   const [games, setGames] = useState<LotteryGame[]>([]);
-  const [gameCode, setGameCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [createGameOpen, setCreateGameOpen] = useState(false);
   const [fortuneCounters, setFortuneCounters] = useState<Record<string, number>>({});
@@ -122,46 +121,6 @@ const GameOrganiserDashboard = () => {
     }
   };
 
-  const handleAccessGame = async () => {
-    if (!gameCode.trim()) {
-      toast({
-        title: "Missing Information",
-        description: "Please enter game code",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const { data: game, error } = await supabase
-        .from('lottery_games')
-        .select('*')
-        .eq('game_code', gameCode.trim())
-        .single();
-
-      if (error || !game) {
-        toast({
-          title: "Access Denied",
-          description: "Invalid game code",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Store game data in session storage for the organizer dashboard
-      sessionStorage.setItem('organizerGame', JSON.stringify(game));
-      navigate('/organizer-dashboard');
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to access the game",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleGameSelect = (game: LotteryGame) => {
     sessionStorage.setItem('organizerGame', JSON.stringify(game));
@@ -260,41 +219,6 @@ const GameOrganiserDashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Access Existing Game */}
-        <Card className="bg-gradient-to-br from-card to-card/80 border-border/50">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Search className="h-5 w-5" />
-              Access Existing Game
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              If you have a game code for an existing game, you can access it here.
-            </p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="gameCode">Game Code</Label>
-                <Input
-                  id="gameCode"
-                  type="text"
-                  value={gameCode}
-                  onChange={(e) => setGameCode(e.target.value)}
-                  placeholder="Enter 5-character game code"
-                />
-              </div>
-            </div>
-            
-            <Button
-              onClick={handleAccessGame}
-              disabled={loading || !gameCode.trim()}
-              className="w-full md:w-auto"
-            >
-              {loading ? "Accessing..." : "Access Game"}
-            </Button>
-          </CardContent>
-        </Card>
 
         {/* Create Game Modal */}
         <CreateGameForm

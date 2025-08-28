@@ -5,11 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FortuneCounterModal } from "@/components/FortuneCounterModal";
 import { CreateGameForm } from "@/components/CreateGameForm";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-import { Plus, Edit, Trash2, Eye, Target, BookOpen } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, Target, BookOpen, Calendar, Users, Gamepad2 } from "lucide-react";
 
 interface LotteryGame {
   id: string;
@@ -210,124 +211,215 @@ export default function Admin() {
     <div className="min-h-screen bg-gradient-to-br from-background to-background/50 py-4">
       <div className="max-w-7xl mx-auto px-4 space-y-6">
         {/* Header */}
-        <div className="flex justify-between items-center">
-          <div className="text-center flex-1">
-            <h1 className="text-3xl font-bold text-foreground mb-2">Admin Panel</h1>
-            <p className="text-muted-foreground">Manage lottery games, tickets, and settings</p>
-          </div>
-          <Button onClick={() => setCreateGameOpen(true)} className="bg-lottery-gold hover:bg-lottery-gold/90">
-            <Plus className="w-4 h-4 mr-2" />
-            Create Game
-          </Button>
+        <div className="text-center mb-6">
+          <h1 className="text-3xl font-bold text-foreground mb-2">Admin Panel</h1>
+          <p className="text-muted-foreground">Manage lottery games, bookings, and system settings</p>
         </div>
 
-        {/* Lottery Games Section */}
-        <Card className="bg-gradient-to-br from-card to-card/80 border-border/50">
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-2">
-              <Eye className="h-5 w-5" />
-              Lottery Games
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2 max-h-96 overflow-y-auto">
-              {games.map((game) => (
-                <div
-                  key={game.id}
-                  className={`p-3 rounded-lg border transition-colors cursor-pointer ${
-                    selectedGameId === game.id 
-                      ? 'bg-primary/10 border-primary' 
-                      : 'bg-card/50 border-border hover:bg-card/80'
-                  }`}
-                  onClick={() => setSelectedGameId(selectedGameId === game.id ? null : game.id)}
-                >
-                      <div className="flex items-center justify-between">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-medium text-sm truncate">{game.title}</h3>
-                        {game.game_code && (
-                          <Badge variant="outline" className="text-xs font-mono">
-                            {game.game_code}
-                          </Badge>
-                        )}
-                        <Badge 
-                          variant="secondary" 
-                          className="cursor-pointer hover:bg-lottery-gold/20"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleFortuneCounterClick(game);
-                          }}
-                        >
-                          <Target className="h-3 w-3 mr-1" />
-                          {fortuneCounters[game.id] || 0}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground mt-1">
-                        <span>{format(new Date(game.game_date), 'MMM dd, yyyy')}</span>
-                        <span>₹{game.ticket_price}</span>
-                        <span>{game.total_tickets} tickets</span>
-                        <span className="truncate">{game.organising_group_name}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        <Tabs defaultValue="games" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="games" className="flex items-center gap-2">
+              <Gamepad2 className="w-4 h-4" />
+              Game Manager
+            </TabsTrigger>
+            <TabsTrigger value="bookings" className="flex items-center gap-2">
+              <Users className="w-4 h-4" />
+              Bookings
+            </TabsTrigger>
+            <TabsTrigger value="fortune" className="flex items-center gap-2">
+              <Target className="w-4 h-4" />
+              Fortune Counter
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Manage Tickets Section - Book Wise */}
-        {selectedGame && (
-          <Card className="bg-gradient-to-br from-card to-card/80 border-border/50">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BookOpen className="h-5 w-5" />
-                Manage Tickets - {selectedGame.title}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {books.length > 0 ? (
+          {/* Game Manager Tab */}
+          <TabsContent value="games" className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold">All Lottery Games</h2>
+              <Button onClick={() => setCreateGameOpen(true)} className="bg-lottery-gold hover:bg-lottery-gold/90">
+                <Plus className="w-4 h-4 mr-2" />
+                Create Game
+              </Button>
+            </div>
+
+            {/* Compact Games List */}
+            <Card className="bg-gradient-to-br from-card to-card/80 border-border/50">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Eye className="h-5 w-5" />
+                  All Games ({games.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
                 <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Book Name</TableHead>
-                        <TableHead>Ticket Range</TableHead>
-                        <TableHead>Total</TableHead>
-                        <TableHead>Available</TableHead>
-                        <TableHead>Sold Online</TableHead>
-                        <TableHead>Online Sales</TableHead>
+                        <TableHead>Game Title</TableHead>
+                        <TableHead>Code</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Price</TableHead>
+                        <TableHead>Tickets</TableHead>
+                        <TableHead>Organiser</TableHead>
+                        <TableHead>Fortune</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {books.map((book) => (
-                        <TableRow key={book.id}>
-                          <TableCell className="font-medium">{book.book_name}</TableCell>
+                      {games.map((game) => (
+                        <TableRow key={game.id}>
                           <TableCell>
-                            {book.first_ticket_number} - {book.last_ticket_number}
+                            <div className="font-medium">{game.title}</div>
+                            {game.description && (
+                              <div className="text-xs text-muted-foreground truncate max-w-[200px]">
+                                {game.description}
+                              </div>
+                            )}
                           </TableCell>
-                          <TableCell>{book.total_tickets}</TableCell>
-                          <TableCell className="text-green-600">{book.available}</TableCell>
-                          <TableCell className="text-green-800">{book.sold_online}</TableCell>
                           <TableCell>
-                            <Switch
-                              checked={book.is_online_available}
-                              onCheckedChange={() => handleToggleBookAvailability(book.id, book.is_online_available)}
-                            />
+                            {game.game_code && (
+                              <Badge variant="outline" className="text-xs font-mono">
+                                {game.game_code}
+                              </Badge>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              {format(new Date(game.game_date), 'MMM dd, yyyy')}
+                            </div>
+                          </TableCell>
+                          <TableCell>₹{game.ticket_price}</TableCell>
+                          <TableCell>{game.total_tickets}</TableCell>
+                          <TableCell>
+                            <div className="truncate max-w-[150px]">
+                              {game.organising_group_name}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge 
+                              variant="secondary" 
+                              className="cursor-pointer hover:bg-lottery-gold/20"
+                              onClick={() => handleFortuneCounterClick(game)}
+                            >
+                              <Target className="h-3 w-3 mr-1" />
+                              {fortuneCounters[game.id] || 0}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setSelectedGameId(selectedGameId === game.id ? null : game.id)}
+                            >
+                              <BookOpen className="h-3 w-3 mr-1" />
+                              Manage
+                            </Button>
                           </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
                   </Table>
                 </div>
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  No books found for this game
+              </CardContent>
+            </Card>
+
+            {/* Manage Tickets Section - Book Wise */}
+            {selectedGame && (
+              <Card className="bg-gradient-to-br from-card to-card/80 border-border/50">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BookOpen className="h-5 w-5" />
+                    Manage Tickets - {selectedGame.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {books.length > 0 ? (
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Book Name</TableHead>
+                            <TableHead>Ticket Range</TableHead>
+                            <TableHead>Total</TableHead>
+                            <TableHead>Available</TableHead>
+                            <TableHead>Sold Online</TableHead>
+                            <TableHead>Online Sales</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {books.map((book) => (
+                            <TableRow key={book.id}>
+                              <TableCell className="font-medium">{book.book_name}</TableCell>
+                              <TableCell>
+                                {book.first_ticket_number} - {book.last_ticket_number}
+                              </TableCell>
+                              <TableCell>{book.total_tickets}</TableCell>
+                              <TableCell className="text-green-600">{book.available}</TableCell>
+                              <TableCell className="text-green-800">{book.sold_online}</TableCell>
+                              <TableCell>
+                                <Switch
+                                  checked={book.is_online_available}
+                                  onCheckedChange={() => handleToggleBookAvailability(book.id, book.is_online_available)}
+                                />
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-muted-foreground">
+                      No books found for this game
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* Bookings Tab */}
+          <TabsContent value="bookings">
+            <Card className="bg-gradient-to-br from-card to-card/80 border-border/50">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5" />
+                  Bookings Management
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-12">
+                  <Users className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">Coming Soon</h3>
+                  <p className="text-muted-foreground">
+                    Bookings management features will be available soon.
+                  </p>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Fortune Counter Tab */}
+          <TabsContent value="fortune">
+            <Card className="bg-gradient-to-br from-card to-card/80 border-border/50">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="h-5 w-5" />
+                  Fortune Counter Management
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-12">
+                  <Target className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">Coming Soon</h3>
+                  <p className="text-muted-foreground">
+                    Advanced fortune counter management features will be available soon.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
 
         {/* Create Game Modal */}
         <CreateGameForm
