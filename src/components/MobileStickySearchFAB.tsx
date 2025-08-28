@@ -25,8 +25,8 @@ export function MobileStickySearchFAB({
   const svgSize = 200;
   const centerX = svgSize / 2;
   const centerY = svgSize / 2;
-  const innerRadius = 45;
-  const outerRadius = 75;
+  const innerRadius = 30; // Almost touching the FAB button (FAB radius ~28px)
+  const outerRadius = 65;
 
   // Ring segments configuration - rotated 90 degrees clockwise
   const segments = [
