@@ -21,14 +21,16 @@ export function MobileStickySearchFAB({
   const [showSearchInput, setShowSearchInput] = useState(false);
   const fabRef = useRef<HTMLDivElement>(null);
 
-  // Geometry constants for circular centered control
-  const R = 28; // Button radius
+  // Geometry constants for D-shaped control
+  const R = 28; // Half-circle radius
+  const rectW = 14; // Rectangle thickness
+  const gap = 0; // No gap - segments touch the D-shape
   const svgSize = 200;
   const centerX = svgSize / 2;
   const centerY = svgSize / 2;
-  const innerRadius = R; // Button radius
+  const innerRadius = R; // Exactly match the D-shaped button radius
   const outerRadius = R + 36;
-  const centerOffsetRight = R; // Center the circular button
+  const centerOffsetRight = rectW + R;
 
   // Ring segments configuration - touching segments with enlarged top/bottom
   const segments = [
@@ -192,17 +194,17 @@ export function MobileStickySearchFAB({
         </div>
       )}
 
-      {/* Main Circular Button - centered in the semicircle */}
+      {/* Main D-shaped Button */}
       <button
         className={cn(
-          "bg-primary hover:bg-primary/90 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 relative z-10",
+          "bg-primary hover:bg-primary/90 rounded-l-full rounded-r-none shadow-xl flex items-center justify-center transition-all duration-300 relative z-10",
           isExpanded ? "scale-110" : "scale-100"
         )}
         style={{
-          width: `${2 * R}px`,
+          width: `${rectW + R}px`,
           height: `${2 * R}px`,
           position: 'absolute',
-          right: `${centerOffsetRight}px`,
+          right: 0,
           top: '50%',
           transform: 'translateY(-50%)'
         }}
