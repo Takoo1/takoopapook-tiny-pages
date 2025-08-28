@@ -1,10 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { LotteryTicket } from "@/components/ui/lottery-ticket";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Calendar, Trophy, Ticket, Clock, BookOpen, ChevronLeft, ChevronRight } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { ArrowLeft, Calendar, Trophy, Ticket, Clock, BookOpen, ChevronLeft, ChevronRight, Gift, FileText, Users, Building } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -16,6 +19,9 @@ interface LotteryGame {
   ticket_image_url: string;
   ticket_price: number;
   total_tickets: number;
+  headline: string;
+  organiser_logo_url: string;
+  organising_group_name: string;
 }
 
 interface LotteryTicketData {
@@ -33,6 +39,28 @@ interface LotteryBook {
   is_online_available: boolean;
 }
 
+interface LotteryPrize {
+  id: string;
+  title: string;
+  description: string;
+  amount: number;
+  prize_type: string;
+  display_order: number;
+}
+
+interface LotteryTerm {
+  id: string;
+  content: string;
+  display_order: number;
+}
+
+interface CommitteeMember {
+  id: string;
+  member_name: string;
+  designation: string;
+  display_order: number;
+}
+
 export default function LotteryDetail() {
   const { gameId } = useParams<{ gameId: string }>();
   const navigate = useNavigate();
@@ -42,9 +70,16 @@ export default function LotteryDetail() {
   const [game, setGame] = useState<LotteryGame | null>(null);
   const [tickets, setTickets] = useState<LotteryTicketData[]>([]);
   const [books, setBooks] = useState<LotteryBook[]>([]);
+  const [prizes, setPrizes] = useState<LotteryPrize[]>([]);
+  const [terms, setTerms] = useState<LotteryTerm[]>([]);
+  const [committee, setCommittee] = useState<CommitteeMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTickets, setSelectedTickets] = useState<{ id: string; number: number }[]>([]);
   const [currentBookIndex, setCurrentBookIndex] = useState(0);
+  const [onlineBookCount, setOnlineBookCount] = useState(0);
+  const [offlineBookCount, setOfflineBookCount] = useState(0);
+  
+  const ticketsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (gameId) {
@@ -72,8 +107,13 @@ export default function LotteryDetail() {
         .order('first_ticket_number');
 
       if (booksError) throw booksError;
-      const onlineBooks = (booksData || []).filter(book => book.is_online_available);
+      const allBooks = booksData || [];
+      const onlineBooks = allBooks.filter(book => book.is_online_available);
+      const offlineBooks = allBooks.filter(book => !book.is_online_available);
+      
       setBooks(onlineBooks as LotteryBook[]);
+      setOnlineBookCount(onlineBooks.length);
+      setOfflineBookCount(offlineBooks.length);
 
       // Fetch tickets with book information
       const { data: ticketsData, error: ticketsError } = await supabase
@@ -92,6 +132,37 @@ export default function LotteryDetail() {
       );
       
       setTickets(filteredTickets as LotteryTicketData[]);
+
+      // Fetch prizes
+      const { data: prizesData, error: prizesError } = await supabase
+        .from('lottery_prizes')
+        .select('*')
+        .eq('lottery_game_id', gameId)
+        .order('display_order');
+
+      if (prizesError) throw prizesError;
+      setPrizes(prizesData || []);
+
+      // Fetch terms
+      const { data: termsData, error: termsError } = await supabase
+        .from('lottery_terms')
+        .select('*')
+        .eq('lottery_game_id', gameId)
+        .order('display_order');
+
+      if (termsError) throw termsError;
+      setTerms(termsData || []);
+
+      // Fetch committee members
+      const { data: committeeData, error: committeeError } = await supabase
+        .from('lottery_organising_committee')
+        .select('*')
+        .eq('lottery_game_id', gameId)
+        .order('display_order');
+
+      if (committeeError) throw committeeError;
+      setCommittee(committeeData || []);
+
     } catch (error) {
       console.error('Error fetching game details:', error);
       toast({
@@ -115,8 +186,10 @@ export default function LotteryDetail() {
 
   const handleBuyNow = () => {
     if (selectedTickets.length === 0) {
+      // Scroll to tickets section if no tickets selected
+      ticketsRef.current?.scrollIntoView({ behavior: 'smooth' });
       toast({
-        title: "No tickets selected",
+        title: "Select tickets",
         description: "Please select at least one available ticket before proceeding.",
         variant: "destructive",
       });
@@ -178,150 +251,204 @@ export default function LotteryDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-background/50 py-4 md:py-8">
-      <div className="max-w-6xl mx-auto px-3 md:px-6">
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-4 md:mb-8">
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
+        <div className="max-w-4xl mx-auto px-4 py-3">
           <Button 
-            variant="outline" 
+            variant="ghost" 
             onClick={() => navigate('/')}
-            className="border-border/50 hover:bg-card/50"
-            size={isMobile ? "sm" : "default"}
+            className="p-2"
+            size="sm"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            {isMobile ? "Back" : "Back to Games"}
+            Back
           </Button>
         </div>
+      </div>
 
-        {/* Game Info */}
-        <div className="mb-4 md:mb-8">
-          <Card className="bg-gradient-to-br from-card to-card/80 border-border/50">
-            <CardHeader className="pb-3 md:pb-6">
-              <div className={`flex ${isMobile ? 'flex-col gap-3' : 'items-start justify-between'}`}>
-                <div className={isMobile ? 'text-center' : ''}>
-                  <div className="flex items-center gap-2 mb-2 justify-center md:justify-start">
-                    <Trophy className={`${isMobile ? 'w-5 h-5' : 'w-6 h-6'} text-lottery-gold`} />
-                    <CardTitle className={`${isMobile ? 'text-xl' : 'text-3xl'} font-bold text-foreground`}>
-                      {game.title}
-                    </CardTitle>
-                  </div>
-                  <p className={`text-muted-foreground ${isMobile ? 'text-sm' : ''}`}>{game.description}</p>
-                </div>
-                <div className={`${isMobile ? 'text-center' : 'text-right'}`}>
-                  <div className={`${isMobile ? 'text-2xl' : 'text-3xl'} font-bold text-lottery-gold`}>
-                    ₹{game.ticket_price}
-                  </div>
-                  <div className="text-sm text-muted-foreground">per ticket</div>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3 md:space-y-4 pt-3 md:pt-4">
-              {game.ticket_image_url && (
-                <div className={`${isMobile ? 'aspect-[4/3]' : 'aspect-video'} rounded-lg overflow-hidden bg-muted`}>
-                  <img 
-                    src={game.ticket_image_url} 
-                    alt={`${game.title} ticket`}
-                    className="w-full h-full object-cover"
-                  />
+      <div className="max-w-4xl mx-auto px-4 pb-24">
+        {/* Detail Section */}
+        <div className="py-4 space-y-4">
+          {/* Lottery Ticket Image */}
+          {game.ticket_image_url && (
+            <Card className="overflow-hidden">
+              <AspectRatio ratio={16 / 9}>
+                <img 
+                  src={game.ticket_image_url} 
+                  alt={`${game.title} lottery ticket`}
+                  className="w-full h-full object-cover"
+                />
+              </AspectRatio>
+            </Card>
+          )}
+
+          {/* Organiser Info & Game Title Row */}
+          <div className="flex gap-3 items-start">
+            <div className="flex-shrink-0">
+              {game.organiser_logo_url ? (
+                <img 
+                  src={game.organiser_logo_url} 
+                  alt="Organiser logo"
+                  className="w-12 h-12 rounded-lg object-cover bg-muted border"
+                />
+              ) : (
+                <div className="w-12 h-12 rounded-lg bg-muted border flex items-center justify-center">
+                  <Building className="w-6 h-6 text-muted-foreground" />
                 </div>
               )}
-              
-              <div className={`flex ${isMobile ? 'flex-col items-center gap-2' : 'items-center gap-4'} text-sm`}>
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-muted-foreground">Draw Date:</span>
-                  <span className="font-semibold text-foreground">{formatDate(game.game_date)}</span>
-                </div>
+            </div>
+            <div className="flex-1 min-w-0">
+              <h1 className="text-xl font-bold text-foreground leading-tight mb-1">
+                {game.title}
+              </h1>
+              {game.headline && (
+                <p className="text-sm text-muted-foreground leading-snug">
+                  {game.headline}
+                </p>
+              )}
+              {game.organising_group_name && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  by {game.organising_group_name}
+                </p>
+              )}
+            </div>
+            <div className="text-right">
+              <div className="text-2xl font-bold text-lottery-gold">
+                ₹{game.ticket_price}
               </div>
-            </CardContent>
-          </Card>
-        </div>
+              <div className="text-xs text-muted-foreground">per ticket</div>
+            </div>
+          </div>
 
-        {/* Buy Now Button - Top */}
-        <div className="mb-4 md:mb-6 text-center">
-          <Button 
-            onClick={handleBuyNow}
-            disabled={selectedTickets.length === 0}
-            className="bg-lottery-gold hover:bg-lottery-gold/90 text-primary-foreground px-6 md:px-8 py-2 md:py-3"
-            size={isMobile ? "default" : "lg"}
-          >
-            {isMobile ? `Buy (${selectedTickets.length})` : `Buy Now (${selectedTickets.length} selected)`}
-          </Button>
-        </div>
+          {/* Game Date & Books Count Row */}
+          <div className="flex justify-between items-center text-sm py-3 border-y border-border">
+            <div className="flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-muted-foreground" />
+              <span className="text-muted-foreground">Draw Date:</span>
+              <span className="font-medium text-foreground">{formatDate(game.game_date)}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <BookOpen className="w-4 h-4 text-muted-foreground" />
+              <span className="text-muted-foreground">Books:</span>
+              <span className="font-medium text-foreground">
+                {onlineBookCount} online, {offlineBookCount} offline
+              </span>
+            </div>
+          </div>
 
-        {/* Book Navigation and Current Book Display */}
-        {books.length > 0 ? (
-          <div className="space-y-4 md:space-y-6">
-            {/* Current Book */}
-            {currentBook && (
-              <Card className="bg-gradient-to-br from-card to-card/80 border-border/50">
-                <CardHeader className="pb-2 md:pb-3">
-                  <div className={`flex ${isMobile ? 'flex-col gap-2' : 'items-center justify-between'}`}>
-                    <div className={`flex items-center gap-2 ${isMobile ? 'justify-center' : ''}`}>
-                      <BookOpen className="w-4 md:w-5 h-4 md:h-5 text-lottery-gold" />
-                      <CardTitle className={`${isMobile ? 'text-base' : 'text-lg'}`}>{currentBook.book_name}</CardTitle>
-                      {!isMobile && (
-                        <span className="text-sm text-muted-foreground">
-                          (Tickets {currentBook.first_ticket_number} - {currentBook.last_ticket_number})
-                        </span>
-                      )}
-                    </div>
-                    {isMobile && (
-                      <div className="text-center text-xs text-muted-foreground">
-                        Tickets {currentBook.first_ticket_number} - {currentBook.last_ticket_number}
+          {/* Prizes List */}
+          {prizes.length > 0 && (
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Gift className="w-4 h-4 text-lottery-gold" />
+                  Prizes
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="space-y-2">
+                  {prizes.map((prize) => (
+                    <div key={prize.id} className="flex justify-between items-center p-2 rounded-lg bg-muted/50">
+                      <div>
+                        <div className="font-medium text-sm">{prize.title}</div>
+                        {prize.description && (
+                          <div className="text-xs text-muted-foreground">{prize.description}</div>
+                        )}
                       </div>
-                    )}
-                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-600 dark:text-green-400">
-                      Online Available
-                    </span>
-                  </div>
-                </CardHeader>
-                
-                {/* Book Navigation - Moved above ticket grid */}
-                {books.length > 1 && (
-                  <div className="px-3 md:px-6 pb-2 md:pb-3">
-                    <div className={`flex items-center justify-center ${isMobile ? 'gap-2' : 'gap-4'}`}>
-                      <Button
-                        variant="outline"
-                        onClick={prevBook}
-                        className="border-border/50 hover:bg-card/50"
-                        size={isMobile ? "sm" : "default"}
-                      >
-                        <ChevronLeft className="w-4 h-4 mr-1 md:mr-2" />
-                        {isMobile ? "Prev" : "Previous Book"}
-                      </Button>
-                      <span className={`text-muted-foreground ${isMobile ? 'text-xs' : 'text-sm'}`}>
-                        Book {currentBookIndex + 1} of {books.length}
-                      </span>
-                      <Button
-                        variant="outline"
-                        onClick={nextBook}
-                        className="border-border/50 hover:bg-card/50"
-                        size={isMobile ? "sm" : "default"}
-                      >
-                        {isMobile ? "Next" : "Next Book"}
-                        <ChevronRight className="w-4 h-4 ml-1 md:ml-2" />
-                      </Button>
+                      <div className="text-lottery-gold font-bold">
+                        ₹{prize.amount?.toLocaleString()}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
-                <CardContent className="pt-2 md:pt-4">
-                  {currentBookTickets.length === 0 ? (
-                    <div className="text-center py-6 md:py-8">
-                      <p className="text-muted-foreground text-sm">No tickets available in this book</p>
+          {/* Terms & Conditions Button */}
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button 
+                variant="outline" 
+                className="w-full justify-start gap-2"
+              >
+                <FileText className="w-4 h-4" />
+                Terms & Conditions
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-md max-h-[80vh]">
+              <DialogHeader>
+                <DialogTitle>Terms & Conditions</DialogTitle>
+              </DialogHeader>
+              <ScrollArea className="max-h-[60vh] pr-4">
+                <div className="space-y-4">
+                  {/* Terms */}
+                  {terms.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold mb-2">Terms & Conditions</h4>
+                      <div className="space-y-2">
+                        {terms.map((term, index) => (
+                          <p key={term.id} className="text-sm text-muted-foreground">
+                            {index + 1}. {term.content}
+                          </p>
+                        ))}
+                      </div>
                     </div>
-                  ) : (
-                    <>
-                      <p className="text-muted-foreground mb-3 md:mb-4 text-xs md:text-sm text-center">
-                        {isMobile ? "Tap available tickets to select" : "Click on available tickets to select them for purchase"}
-                      </p>
-                      <div className={`grid gap-2 md:gap-3 ${
-                        isMobile 
-                          ? 'grid-cols-6 sm:grid-cols-8' 
-                          : 'grid-cols-8 sm:grid-cols-10 md:grid-cols-12 lg:grid-cols-15 xl:grid-cols-20'
-                      }`}>
-                        {currentBookTickets.map((ticket) => {
+                  )}
+                  
+                  {/* Organising Committee */}
+                  {committee.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold mb-2 flex items-center gap-2">
+                        <Users className="w-4 h-4" />
+                        Organising Committee
+                      </h4>
+                      <div className="space-y-2">
+                        {committee.map((member) => (
+                          <div key={member.id} className="flex justify-between items-center">
+                            <span className="text-sm font-medium">{member.member_name}</span>
+                            <span className="text-xs text-muted-foreground">{member.designation}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </ScrollArea>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        {/* Tickets Section */}
+        <div ref={ticketsRef} className="space-y-4">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            <Ticket className="w-5 h-5 text-lottery-gold" />
+            Select Tickets
+          </h2>
+          
+          {books.length > 0 ? (
+            <div className="space-y-4">
+              {books.map((book, bookIndex) => {
+                const bookTickets = tickets.filter(ticket => ticket.book_id === book.id);
+                if (bookTickets.length === 0) return null;
+                
+                return (
+                  <Card key={book.id}>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-base flex items-center justify-between">
+                        <span className="flex items-center gap-2">
+                          <BookOpen className="w-4 h-4 text-lottery-gold" />
+                          {book.book_name}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {book.first_ticket_number}-{book.last_ticket_number}
+                        </span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="grid grid-cols-6 gap-2">
+                        {bookTickets.map((ticket) => {
                           const isSelected = selectedTickets.some(t => t.id === ticket.id);
                           return (
                             <LotteryTicket
@@ -333,41 +460,40 @@ export default function LotteryDetail() {
                                   ? () => handleTicketClick(ticket.id, ticket.ticket_number)
                                   : undefined
                               }
-                              className={`${isSelected ? "ring-2 ring-lottery-gold ring-offset-1" : ""} ${
-                                isMobile ? "w-10 h-10 text-xs" : ""
-                              }`}
+                              className={`${isSelected ? "ring-2 ring-lottery-gold ring-offset-1" : ""} w-12 h-12 text-xs`}
                             />
                           );
                         })}
                       </div>
-                    </>
-                  )}
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        ) : (
-          <Card className="bg-gradient-to-br from-card to-card/80 border-border/50">
-            <CardContent className="text-center py-8">
-              <Trophy className="w-12 h-12 mx-auto text-muted-foreground opacity-50 mb-4" />
-              <h3 className="font-semibold text-foreground mb-2">No ticket books available</h3>
-              <p className="text-muted-foreground">This game doesn't have any online ticket books set up yet.</p>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Buy Now Button - Bottom */}
-        <div className="mt-4 md:mt-6 text-center">
-          <Button 
-            onClick={handleBuyNow}
-            disabled={selectedTickets.length === 0}
-            className="bg-lottery-gold hover:bg-lottery-gold/90 text-primary-foreground px-6 md:px-8 py-2 md:py-3"
-            size={isMobile ? "default" : "lg"}
-          >
-            {isMobile ? `Buy (${selectedTickets.length})` : `Buy Now (${selectedTickets.length} selected)`}
-          </Button>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          ) : (
+            <Card>
+              <CardContent className="text-center py-8">
+                <Trophy className="w-12 h-12 mx-auto text-muted-foreground opacity-50 mb-4" />
+                <h3 className="font-semibold text-foreground mb-2">No tickets available</h3>
+                <p className="text-muted-foreground text-sm">This game doesn't have any online tickets available yet.</p>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
+
+      {/* Sticky Buy Now Button - Mobile Only */}
+      {isMobile && (
+        <div className="fixed bottom-16 left-0 right-0 z-30 bg-background/95 backdrop-blur-sm border-t border-border p-4">
+          <Button 
+            onClick={handleBuyNow}
+            className="w-full bg-lottery-gold hover:bg-lottery-gold/90 text-primary-foreground py-3 font-semibold"
+            size="lg"
+          >
+            {selectedTickets.length > 0 ? `Buy ${selectedTickets.length} Tickets` : 'Select Tickets to Buy'}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
