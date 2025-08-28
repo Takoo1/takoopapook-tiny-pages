@@ -70,6 +70,7 @@ export default function LotteryDetail() {
   const [game, setGame] = useState<LotteryGame | null>(null);
   const [tickets, setTickets] = useState<LotteryTicketData[]>([]);
   const [books, setBooks] = useState<LotteryBook[]>([]);
+  const [allBooks, setAllBooks] = useState<LotteryBook[]>([]);
   const [prizes, setPrizes] = useState<LotteryPrize[]>([]);
   const [terms, setTerms] = useState<LotteryTerm[]>([]);
   const [committee, setCommittee] = useState<CommitteeMember[]>([]);
@@ -107,10 +108,11 @@ export default function LotteryDetail() {
         .order('first_ticket_number');
 
       if (booksError) throw booksError;
-      const allBooks = booksData || [];
-      const onlineBooks = allBooks.filter(book => book.is_online_available);
-      const offlineBooks = allBooks.filter(book => !book.is_online_available);
+      const allBooksData = booksData || [];
+      const onlineBooks = allBooksData.filter(book => book.is_online_available);
+      const offlineBooks = allBooksData.filter(book => !book.is_online_available);
       
+      setAllBooks(allBooksData as LotteryBook[]);
       setBooks(onlineBooks as LotteryBook[]);
       setOnlineBookCount(onlineBooks.length);
       setOfflineBookCount(offlineBooks.length);
@@ -124,14 +126,8 @@ export default function LotteryDetail() {
 
       if (ticketsError) throw ticketsError;
       
-      // Filter tickets to only show those from online-available books
-      const onlineBookIds = onlineBooks.map(book => book.id);
-      
-      const filteredTickets = (ticketsData || []).filter(ticket => 
-        onlineBookIds.includes(ticket.book_id)
-      );
-      
-      setTickets(filteredTickets as LotteryTicketData[]);
+      // Store all tickets (we'll filter by current book later)
+      setTickets(ticketsData as LotteryTicketData[] || []);
 
       // Fetch prizes
       const { data: prizesData, error: prizesError } = await supabase
@@ -188,11 +184,14 @@ export default function LotteryDetail() {
     if (selectedTickets.length === 0) {
       // Scroll to tickets section if no tickets selected
       ticketsRef.current?.scrollIntoView({ behavior: 'smooth' });
-      toast({
-        title: "Select tickets",
-        description: "Please select at least one available ticket before proceeding.",
-        variant: "destructive",
-      });
+      // Only show warning in desktop mode
+      if (!isMobile) {
+        toast({
+          title: "Select tickets",
+          description: "Please select at least one available ticket before proceeding.",
+          variant: "destructive",
+        });
+      }
       return;
     }
     
@@ -227,16 +226,18 @@ export default function LotteryDetail() {
     );
   }
 
-  const currentBook = books[currentBookIndex];
-  const currentBookTickets = currentBook ? tickets.filter(ticket => ticket.book_id === currentBook.id) : [];
+  const currentBook = allBooks[currentBookIndex];
+  const currentBookTickets = currentBook && currentBook.is_online_available 
+    ? tickets.filter(ticket => ticket.book_id === currentBook.id) 
+    : [];
 
   const nextBook = () => {
-    setCurrentBookIndex((prev) => (prev + 1) % books.length);
+    setCurrentBookIndex((prev) => (prev + 1) % allBooks.length);
     setSelectedTickets([]); // Clear selections when switching books
   };
 
   const prevBook = () => {
-    setCurrentBookIndex((prev) => (prev - 1 + books.length) % books.length);
+    setCurrentBookIndex((prev) => (prev - 1 + allBooks.length) % allBooks.length);
     setSelectedTickets([]); // Clear selections when switching books
   };
 
@@ -422,33 +423,66 @@ export default function LotteryDetail() {
 
         {/* Tickets Section */}
         <div ref={ticketsRef} className="space-y-4">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            <Ticket className="w-5 h-5 text-lottery-gold" />
-            Select Tickets
-          </h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold flex items-center gap-2">
+              <Ticket className="w-5 h-5 text-lottery-gold" />
+              Select Tickets
+            </h2>
+            {/* Desktop Buy Button */}
+            {!isMobile && (
+              <Button 
+                onClick={handleBuyNow}
+                className="bg-lottery-gold hover:bg-lottery-gold/90 text-primary-foreground"
+              >
+                {selectedTickets.length > 0 ? `Buy ${selectedTickets.length} Tickets` : 'Select Tickets to Buy'}
+              </Button>
+            )}
+          </div>
           
-          {books.length > 0 ? (
+          {allBooks.length > 0 ? (
             <div className="space-y-4">
-              {books.map((book, bookIndex) => {
-                const bookTickets = tickets.filter(ticket => ticket.book_id === book.id);
-                if (bookTickets.length === 0) return null;
-                
-                return (
-                  <Card key={book.id}>
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-base flex items-center justify-between">
-                        <span className="flex items-center gap-2">
-                          <BookOpen className="w-4 h-4 text-lottery-gold" />
-                          {book.book_name}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {book.first_ticket_number}-{book.last_ticket_number}
-                        </span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="pt-0">
+              {/* Book Navigation */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center justify-between">
+                    <span className="flex items-center gap-2">
+                      <BookOpen className="w-4 h-4 text-lottery-gold" />
+                      {currentBook?.book_name || "No Book Selected"}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={prevBook}
+                        disabled={allBooks.length <= 1}
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </Button>
+                      <span className="text-xs text-muted-foreground px-2">
+                        {currentBookIndex + 1} of {allBooks.length}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={nextBook}
+                        disabled={allBooks.length <= 1}
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </CardTitle>
+                  {currentBook && (
+                    <p className="text-xs text-muted-foreground">
+                      Tickets: {currentBook.first_ticket_number}-{currentBook.last_ticket_number}
+                      {!currentBook.is_online_available && " • Offline Book"}
+                    </p>
+                  )}
+                </CardHeader>
+                <CardContent className="pt-0">
+                  {currentBook ? (
+                    currentBook.is_online_available ? (
                       <div className="grid grid-cols-6 gap-2">
-                        {bookTickets.map((ticket) => {
+                        {currentBookTickets.map((ticket) => {
                           const isSelected = selectedTickets.some(t => t.id === ticket.id);
                           return (
                             <LotteryTicket
@@ -465,17 +499,29 @@ export default function LotteryDetail() {
                           );
                         })}
                       </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+                    ) : (
+                      <div className="text-center py-8">
+                        <Clock className="w-12 h-12 mx-auto text-muted-foreground opacity-50 mb-4" />
+                        <h3 className="font-semibold text-foreground mb-2">Sorry, This book is not available online</h3>
+                        <p className="text-muted-foreground text-sm">This book can only be purchased offline.</p>
+                      </div>
+                    )
+                  ) : (
+                    <div className="text-center py-8">
+                      <Trophy className="w-12 h-12 mx-auto text-muted-foreground opacity-50 mb-4" />
+                      <h3 className="font-semibold text-foreground mb-2">No books available</h3>
+                      <p className="text-muted-foreground text-sm">This game doesn't have any books yet.</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             </div>
           ) : (
             <Card>
               <CardContent className="text-center py-8">
                 <Trophy className="w-12 h-12 mx-auto text-muted-foreground opacity-50 mb-4" />
                 <h3 className="font-semibold text-foreground mb-2">No tickets available</h3>
-                <p className="text-muted-foreground text-sm">This game doesn't have any online tickets available yet.</p>
+                <p className="text-muted-foreground text-sm">This game doesn't have any tickets available yet.</p>
               </CardContent>
             </Card>
           )}
