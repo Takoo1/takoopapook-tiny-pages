@@ -21,10 +21,13 @@ export function MobileStickySearchFAB({
   const fabRef = useRef<HTMLDivElement>(null);
 
   const priceOptions = [
-    { label: "₹200", value: "200", position: "bottom" },
-    { label: "₹500", value: "500", position: "right" }, 
-    { label: "₹1000", value: "1000", position: "top" }
+    { label: "₹200", value: "200", angle: 225 },   // bottom-left
+    { label: "₹500", value: "500", angle: 180 },  // left
+    { label: "₹1000", value: "1000", angle: 135 } // top-left
   ];
+
+  // Search input position (completing the half circle)
+  const searchInputAngle = 90; // top
 
   // Close on click outside
   useEffect(() => {
@@ -43,19 +46,32 @@ export function MobileStickySearchFAB({
     };
   }, [isExpanded]);
 
-  const getButtonPosition = (position: string) => {
-    const baseClasses = "absolute w-12 h-12 rounded-full shadow-lg transition-all duration-300 transform";
+  const getButtonPosition = (angle: number) => {
+    const radius = 60;
+    const radian = (angle * Math.PI) / 180;
+    const x = Math.cos(radian) * radius;
+    const y = Math.sin(radian) * radius;
     
-    switch (position) {
-      case "bottom":
-        return `${baseClasses} ${isExpanded ? 'translate-y-16 opacity-100' : 'translate-y-0 opacity-0'}`;
-      case "right": 
-        return `${baseClasses} ${isExpanded ? 'translate-x-16 opacity-100' : 'translate-x-0 opacity-0'}`;
-      case "top":
-        return `${baseClasses} ${isExpanded ? '-translate-y-16 opacity-100' : 'translate-y-0 opacity-0'}`;
-      default:
-        return baseClasses;
-    }
+    return {
+      transform: isExpanded 
+        ? `translate(${x}px, ${y}px)` 
+        : 'translate(0, 0)',
+      opacity: isExpanded ? 1 : 0
+    };
+  };
+
+  const getSearchPosition = () => {
+    const radius = 60;
+    const radian = (searchInputAngle * Math.PI) / 180;
+    const x = Math.cos(radian) * radius;
+    const y = Math.sin(radian) * radius;
+    
+    return {
+      transform: isExpanded 
+        ? `translate(${x - 200}px, ${y}px)` // Offset for input width
+        : 'translate(0, 0)',
+      opacity: isExpanded ? 1 : 0
+    };
   };
 
   return (
@@ -69,15 +85,13 @@ export function MobileStickySearchFAB({
           key={option.value}
           size="icon"
           variant={selectedPriceFilter === option.value ? "default" : "secondary"}
-          className={cn(
-            getButtonPosition(option.position),
-            "text-xs font-semibold border-2 border-white/20"
-          )}
+          className="absolute w-12 h-12 rounded-full shadow-lg transition-all duration-300 text-xs font-semibold border-2 border-white/20"
+          style={{
+            ...getButtonPosition(option.angle),
+            pointerEvents: isExpanded ? 'auto' : 'none'
+          }}
           onClick={() => {
             onPriceFilterChange(selectedPriceFilter === option.value ? "all" : option.value);
-          }}
-          style={{ 
-            pointerEvents: isExpanded ? 'auto' : 'none'
           }}
         >
           {option.label.replace('₹', '')}
@@ -86,11 +100,9 @@ export function MobileStickySearchFAB({
 
       {/* Search input */}
       <div 
-        className={cn(
-          "absolute w-48 transition-all duration-300 transform",
-          isExpanded ? '-translate-x-52 opacity-100' : '-translate-x-0 opacity-0'
-        )}
-        style={{ 
+        className="absolute w-48 transition-all duration-300"
+        style={{
+          ...getSearchPosition(),
           pointerEvents: isExpanded ? 'auto' : 'none'
         }}
       >
