@@ -51,10 +51,10 @@ const GameOrganiserDashboard = () => {
         .eq('user_id', user.id)
         .single();
 
-      if (error || !profile || profile.role !== 'organiser') {
+      if (error || !profile || (profile.role !== 'organiser' && profile.role !== 'admin')) {
         toast({
           title: "Access Denied",
-          description: "Only users with organiser role can access this dashboard",
+          description: "Only users with organiser or admin role can access this dashboard",
           variant: "destructive",
         });
         navigate('/');

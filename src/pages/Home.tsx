@@ -520,7 +520,7 @@ export default function Home() {
             </button>
             <span className="hidden md:inline text-muted-foreground">•</span>
             <button 
-              onClick={() => navigate('/organizer-login')}
+              onClick={() => navigate('/game-organiser-dashboard')}
               className="text-muted-foreground hover:text-lottery-gold transition-colors text-xs md:text-sm"
             >
               Organizer Dashboard
