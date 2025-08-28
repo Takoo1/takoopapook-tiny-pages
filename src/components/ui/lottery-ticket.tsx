@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 
 interface LotteryTicketProps {
   ticketNumber: number;
-  status: 'available' | 'sold_offline' | 'sold_online';
+  status: 'available' | 'sold_online';
   onClick?: () => void;
   className?: string;
   forceClickable?: boolean; // Allow parent to override clickable logic
@@ -11,8 +11,6 @@ interface LotteryTicketProps {
 export function LotteryTicket({ ticketNumber, status, onClick, className, forceClickable }: LotteryTicketProps) {
   const getStatusColor = () => {
     switch (status) {
-      case 'sold_offline':
-        return 'bg-lottery-sold-offline text-white'; // Blue
       case 'sold_online':
         return 'bg-lottery-sold-online text-white'; // Green
       default:

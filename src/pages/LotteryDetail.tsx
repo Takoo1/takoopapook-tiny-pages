@@ -21,7 +21,7 @@ interface LotteryGame {
 interface LotteryTicketData {
   id: string;
   ticket_number: number;
-  status: 'available' | 'sold_offline' | 'sold_online';
+  status: 'available' | 'sold_online';
   book_id?: string;
 }
 

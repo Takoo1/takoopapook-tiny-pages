@@ -33,10 +33,8 @@ interface LotteryBook {
   last_ticket_number: number;
   is_online_available: boolean;
   total_tickets: number;
-  available_online: number;
-  available_offline: number;
+  available: number;
   sold_online: number;
-  sold_offline: number;
 }
 
 export default function Admin() {
@@ -124,24 +122,19 @@ export default function Admin() {
             return {
               ...book,
               total_tickets: book.last_ticket_number - book.first_ticket_number + 1,
-              available_online: 0,
-              available_offline: 0,
+              available: 0,
               sold_online: 0,
-              sold_offline: 0,
             };
           }
 
           const stats = (tickets || []).reduce((acc, ticket) => {
             if (ticket.status === 'available') {
-              if (book.is_online_available) acc.available_online++;
-              else acc.available_offline++;
+              acc.available++;
             } else if (ticket.status === 'sold_online') {
               acc.sold_online++;
-            } else if (ticket.status === 'sold_offline') {
-              acc.sold_offline++;
             }
             return acc;
-          }, { available_online: 0, available_offline: 0, sold_online: 0, sold_offline: 0 });
+          }, { available: 0, sold_online: 0 });
 
           return {
             ...book,
@@ -291,10 +284,8 @@ export default function Admin() {
                         <TableHead>Book Name</TableHead>
                         <TableHead>Ticket Range</TableHead>
                         <TableHead>Total</TableHead>
-                        <TableHead>Available Online</TableHead>
-                        <TableHead>Available Offline</TableHead>
+                        <TableHead>Available</TableHead>
                         <TableHead>Sold Online</TableHead>
-                        <TableHead>Sold Offline</TableHead>
                         <TableHead>Online Sales</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -306,10 +297,8 @@ export default function Admin() {
                             {book.first_ticket_number} - {book.last_ticket_number}
                           </TableCell>
                           <TableCell>{book.total_tickets}</TableCell>
-                          <TableCell className="text-green-600">{book.available_online}</TableCell>
-                          <TableCell className="text-blue-600">{book.available_offline}</TableCell>
+                          <TableCell className="text-green-600">{book.available}</TableCell>
                           <TableCell className="text-green-800">{book.sold_online}</TableCell>
-                          <TableCell className="text-blue-800">{book.sold_offline}</TableCell>
                           <TableCell>
                             <Switch
                               checked={book.is_online_available}

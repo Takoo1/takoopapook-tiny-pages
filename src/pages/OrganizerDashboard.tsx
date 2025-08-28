@@ -23,7 +23,7 @@ interface GameData {
 interface TicketData {
   id: string;
   ticket_number: number;
-  status: 'available' | 'sold_offline' | 'sold_online';
+  status: 'available' | 'sold_online';
 }
 
 const OrganizerDashboard = () => {
@@ -32,7 +32,6 @@ const OrganizerDashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [stats, setStats] = useState({
     totalTickets: 0,
-    offlineSold: 0,
     onlineSold: 0,
     available: 0
   });
@@ -112,12 +111,11 @@ const OrganizerDashboard = () => {
       // Calculate stats
       const stats = ticketsData?.reduce((acc, ticket) => {
         acc.totalTickets++;
-        if (ticket.status === 'sold_offline') acc.offlineSold++;
-        else if (ticket.status === 'sold_online') acc.onlineSold++;
+        if (ticket.status === 'sold_online') acc.onlineSold++;
         else acc.available++;
         return acc;
-      }, { totalTickets: 0, offlineSold: 0, onlineSold: 0, available: 0 }) || 
-      { totalTickets: 0, offlineSold: 0, onlineSold: 0, available: 0 };
+      }, { totalTickets: 0, onlineSold: 0, available: 0 }) || 
+      { totalTickets: 0, onlineSold: 0, available: 0 };
 
       setStats(stats);
     } catch (error) {
@@ -129,51 +127,7 @@ const OrganizerDashboard = () => {
     }
   };
 
-  const handleTicketClick = async (ticketId: string, currentStatus: string) => {
-    if (currentStatus !== 'available') return;
-
-    const confirmed = window.confirm("Mark this ticket as sold offline?");
-    if (!confirmed) return;
-
-    try {
-      const { error } = await supabase
-        .from('lottery_tickets')
-        .update({ status: 'sold_offline' })
-        .eq('id', ticketId);
-
-      if (error) throw error;
-
-      // Update local state immediately for better UX
-      const updatedTickets = tickets.map(ticket => 
-        ticket.id === ticketId 
-          ? { ...ticket, status: 'sold_offline' as const }
-          : ticket
-      );
-      setTickets(updatedTickets);
-      
-      // Update stats immediately
-      const newStats = updatedTickets.reduce((acc, ticket) => {
-        acc.totalTickets++;
-        if (ticket.status === 'sold_offline') acc.offlineSold++;
-        else if (ticket.status === 'sold_online') acc.onlineSold++;
-        else acc.available++;
-        return acc;
-      }, { totalTickets: 0, offlineSold: 0, onlineSold: 0, available: 0 });
-      
-      setStats(newStats);
-
-      toast({
-        title: "Success",
-        description: "Ticket marked as sold offline",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update ticket status",
-        variant: "destructive",
-      });
-    }
-  };
+  // Tickets are no longer clickable - all offline management is done outside this system
 
   const handleLogout = () => {
     sessionStorage.removeItem('organizerGame');
@@ -222,17 +176,11 @@ const OrganizerDashboard = () => {
         </Card>
 
         {/* Statistics */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
             <CardContent className="p-4 text-center">
               <div className="text-2xl font-bold text-foreground">{stats.totalTickets}</div>
               <div className="text-sm text-muted-foreground">Total Tickets</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-blue-600">{stats.offlineSold}</div>
-              <div className="text-sm text-muted-foreground">Offline Sold</div>
             </CardContent>
           </Card>
           <Card>
@@ -266,8 +214,6 @@ const OrganizerDashboard = () => {
                   key={ticket.id}
                   ticketNumber={ticket.ticket_number}
                   status={ticket.status}
-                  onClick={() => handleTicketClick(ticket.id, ticket.status)}
-                  className={ticket.status === 'available' ? 'cursor-pointer' : 'cursor-not-allowed'}
                 />
               ))}
             </div>
