@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, X } from "lucide-react";
+import { Search, X, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface MobileStickySearchFABProps {
@@ -21,19 +21,23 @@ export function MobileStickySearchFAB({
   const [showSearchInput, setShowSearchInput] = useState(false);
   const fabRef = useRef<HTMLDivElement>(null);
 
-  // SVG dimensions and radii
+  // Geometry constants for D-shaped control
+  const R = 28; // Half-circle radius
+  const rectW = 14; // Rectangle thickness
+  const gap = 1; // Gap between ring and D-shape
   const svgSize = 200;
   const centerX = svgSize / 2;
   const centerY = svgSize / 2;
-  const innerRadius = 29; // Just 1px larger than FAB button radius (28px)
-  const outerRadius = 65;
+  const innerRadius = R + gap;
+  const outerRadius = R + 36;
+  const centerOffsetRight = rectW + R;
 
-  // Ring segments configuration - rotated 90 degrees clockwise
+  // Ring segments configuration - left semicircle from top to bottom
   const segments = [
-    { label: "Search", value: "search", startAngle: 315, endAngle: 360, icon: "search" },
-    { label: "₹200", value: "200", startAngle: 270, endAngle: 315 },
-    { label: "₹500", value: "500", startAngle: 225, endAngle: 270 },
-    { label: "₹1000", value: "1000", startAngle: 180, endAngle: 225 }
+    { label: "Search", value: "search", startAngle: 90, endAngle: 135 },
+    { label: "₹200", value: "200", startAngle: 135, endAngle: 180 },
+    { label: "₹500", value: "500", startAngle: 180, endAngle: 225 },
+    { label: "₹1000", value: "1000", startAngle: 225, endAngle: 270 }
   ];
 
   // Helper function to convert polar to cartesian coordinates
@@ -100,7 +104,7 @@ export function MobileStickySearchFAB({
   return (
     <div 
       ref={fabRef}
-      className="fixed right-4 top-1/2 -translate-y-1/2 z-50 md:hidden"
+      className="fixed right-0 top-1/2 -translate-y-1/2 z-50 md:hidden"
     >
       {/* SVG Ring Menu */}
       <div 
@@ -108,13 +112,6 @@ export function MobileStickySearchFAB({
           "absolute transition-all duration-500 ease-out",
           isExpanded ? "opacity-100 scale-100" : "opacity-0 scale-75 pointer-events-none"
         )}
-        style={{
-          right: '0', // Align with FAB button
-          top: '0',
-          width: '56px', // Same as FAB button
-          height: '56px', // Same as FAB button
-          transform: 'translate(0, 0)'
-        }}
       >
         <svg
           width={svgSize}
@@ -123,9 +120,9 @@ export function MobileStickySearchFAB({
           className="filter drop-shadow-lg"
           style={{
             position: 'absolute',
-            right: '50%',
+            right: `${centerOffsetRight - svgSize/2}px`,
             top: '50%',
-            transform: 'translate(50%, -50%)' // Center SVG on FAB button
+            transform: 'translateY(-50%)'
           }}
         >
           {segments.map((segment) => {
@@ -178,7 +175,7 @@ export function MobileStickySearchFAB({
             showSearchInput ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
           )}
           style={{
-            right: '80px',
+            right: `${centerOffsetRight + 24}px`,
             top: '50%',
             transform: 'translateY(-50%)'
           }}
@@ -197,21 +194,28 @@ export function MobileStickySearchFAB({
         </div>
       )}
 
-      {/* Main FAB Button */}
-      <Button
-        size="icon"
+      {/* Main D-shaped Button */}
+      <button
         className={cn(
-          "w-14 h-14 rounded-full shadow-xl bg-primary hover:bg-primary/90 transition-all duration-300 transform relative z-10",
-          isExpanded ? "rotate-45 scale-110" : "rotate-0 scale-100"
+          "bg-primary hover:bg-primary/90 rounded-l-full rounded-r-none shadow-xl flex items-center justify-center transition-all duration-300 relative z-10",
+          isExpanded ? "scale-110" : "scale-100"
         )}
+        style={{
+          width: `${rectW + R}px`,
+          height: `${2 * R}px`,
+          position: 'absolute',
+          right: 0,
+          top: '50%',
+          transform: 'translateY(-50%)'
+        }}
         onClick={() => setIsExpanded(!isExpanded)}
       >
         {isExpanded ? (
           <X className="w-6 h-6 text-primary-foreground" />
         ) : (
-          <Search className="w-6 h-6 text-primary-foreground" />
+          <Plus className="w-6 h-6 text-primary-foreground" />
         )}
-      </Button>
+      </button>
     </div>
   );
 }
