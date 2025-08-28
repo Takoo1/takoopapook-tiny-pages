@@ -12,6 +12,7 @@ import heroImage from "@/assets/hero-fortune-bridge.jpg";
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { ImageCarousel } from "@/components/ImageCarousel";
 import { VideoThumbnailCarousel } from "@/components/VideoThumbnailCarousel";
+import { MobileStickySearchFAB } from "@/components/MobileStickySearchFAB";
 
 interface LotteryGame {
   id: string;
@@ -315,18 +316,18 @@ export default function Home() {
       </header>
 
       {/* Hero Section - Now positioned below header */}
-      <section className={`relative h-[60vh] md:h-[70vh] flex items-center justify-center overflow-hidden ${showReferralBanner ? 'mt-32' : 'mt-16'}`}>
+      <section className={`relative h-[40vh] md:h-[70vh] flex items-center overflow-hidden ${showReferralBanner ? 'mt-32' : 'mt-16'}`}>
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${heroImage})` }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/60" />
         
-        <div className="relative z-10 text-center max-w-4xl mx-auto px-4 md:px-6">
+        <div className="relative z-10 text-left max-w-4xl mx-auto px-4 md:px-6 w-full">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 text-white drop-shadow-2xl">
             Your Gateway to <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Fortune</span>
           </h1>
-          <p className="text-base sm:text-lg md:text-xl text-white/90 mb-6 md:mb-8 leading-relaxed px-2 drop-shadow-lg">
+          <p className="text-base sm:text-lg md:text-xl text-white/90 mb-6 md:mb-8 leading-relaxed drop-shadow-lg max-w-2xl">
             Experience premium lottery games with complete transparency, instant results, and life-changing prizes
           </p>
           <Button 
@@ -351,7 +352,8 @@ export default function Home() {
             Choose Your Fortune
           </h2>
           
-          <div className="mb-6 md:mb-12 space-y-4 md:space-y-6">
+          {/* Desktop Search and Filters */}
+          <div className="mb-6 md:mb-12 space-y-4 md:space-y-6 hidden md:block">
             <div className="relative max-w-md mx-auto px-2">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
@@ -401,6 +403,14 @@ export default function Home() {
               ))}
             </div>
           </div>
+
+          {/* Mobile Sticky Search FAB */}
+          <MobileStickySearchFAB
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            selectedPriceFilter={selectedPriceFilter}
+            onPriceFilterChange={setSelectedPriceFilter}
+          />
           
           {lotteryGames.length === 0 ? (
             <div className="text-center py-12">
