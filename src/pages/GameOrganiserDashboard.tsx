@@ -8,8 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { CreateGameForm } from "@/components/CreateGameForm";
+import { FortuneCounterModal } from "@/components/FortuneCounterModal";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Calendar, Users, Target, LogOut } from "lucide-react";
+import { Plus, Calendar, Users, Target, LogOut, Coins } from "lucide-react";
 import { format } from "date-fns";
 
 interface LotteryGame {
@@ -29,6 +30,8 @@ const GameOrganiserDashboard = () => {
   const [loading, setLoading] = useState(false);
   const [createGameOpen, setCreateGameOpen] = useState(false);
   const [fortuneCounters, setFortuneCounters] = useState<Record<string, number>>({});
+  const [selectedGame, setSelectedGame] = useState<LotteryGame | null>(null);
+  const [fortuneModalOpen, setFortuneModalOpen] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -123,8 +126,8 @@ const GameOrganiserDashboard = () => {
 
 
   const handleGameSelect = (game: LotteryGame) => {
-    sessionStorage.setItem('organizerGame', JSON.stringify(game));
-    navigate('/organizer-dashboard');
+    setSelectedGame(game);
+    setFortuneModalOpen(true);
   };
 
   const handleLogout = async () => {
@@ -133,86 +136,94 @@ const GameOrganiserDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-background/50 py-4">
-      <div className="max-w-4xl mx-auto px-4 space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-background to-background/50 py-2 px-2">
+      <div className="max-w-md mx-auto space-y-4">
         {/* Header */}
-        <div className="flex justify-between items-center">
-          <div className="text-center flex-1">
-            <h1 className="text-3xl font-bold text-foreground mb-2">Game Organiser Dashboard</h1>
-            <p className="text-muted-foreground">Manage your lottery games and access game controls</p>
-          </div>
-          <div className="flex gap-2">
-            <Button onClick={() => setCreateGameOpen(true)} className="bg-lottery-gold hover:bg-lottery-gold/90">
-              <Plus className="w-4 h-4 mr-2" />
-              Create Game
-            </Button>
-            <Button onClick={handleLogout} variant="outline">
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </Button>
-          </div>
+        <div className="text-center space-y-2">
+          <h1 className="text-xl md:text-2xl font-bold text-foreground">Organiser Dashboard</h1>
+          <p className="text-sm text-muted-foreground">Manage your lottery games</p>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex gap-2 justify-center">
+          <Button 
+            onClick={() => setCreateGameOpen(true)} 
+            size="sm"
+            className="bg-lottery-gold hover:bg-lottery-gold/90"
+          >
+            <Plus className="w-4 h-4 mr-1" />
+            Create Game
+          </Button>
+          <Button onClick={handleLogout} variant="outline" size="sm">
+            <LogOut className="w-4 h-4 mr-1" />
+            Logout
+          </Button>
         </div>
 
         {/* My Games */}
         <Card className="bg-gradient-to-br from-card to-card/80 border-border/50">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center gap-2">
               <Users className="h-5 w-5" />
               My Games ({games.length})
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             {games.length > 0 ? (
-              <div className="grid gap-4">
+              <div className="space-y-3">
                 {games.map((game) => (
                   <div
                     key={game.id}
-                    className="p-4 border rounded-lg hover:bg-card/50 cursor-pointer transition-colors"
+                    className="p-3 border rounded-lg hover:bg-card/50 cursor-pointer transition-all hover:shadow-md"
                     onClick={() => handleGameSelect(game)}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <h3 className="font-semibold">{game.title}</h3>
-                          {game.game_code && (
-                            <Badge variant="outline" className="text-xs font-mono">
-                              {game.game_code}
-                            </Badge>
-                          )}
-                          <Badge variant="secondary" className="text-xs">
-                            <Target className="h-3 w-3 mr-1" />
-                            {fortuneCounters[game.id] || 0}
+                    <div className="space-y-2">
+                      {/* Game Title & Fortune Counter */}
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-semibold text-sm truncate pr-2">{game.title}</h3>
+                        <Badge variant="secondary" className="text-xs shrink-0 bg-lottery-gold/10 text-lottery-gold">
+                          <Coins className="h-3 w-3 mr-1" />
+                          {fortuneCounters[game.id] || 0}
+                        </Badge>
+                      </div>
+                      
+                      {/* Game Code */}
+                      {game.game_code && (
+                        <div>
+                          <Badge variant="outline" className="text-xs font-mono">
+                            {game.game_code}
                           </Badge>
                         </div>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <Calendar className="h-4 w-4" />
-                            {format(new Date(game.game_date), 'MMM dd, yyyy')}
-                          </div>
-                          <div>₹{game.ticket_price} per ticket</div>
-                          <div>{game.total_tickets} total tickets</div>
-                          <div className="truncate">{game.organising_group_name}</div>
+                      )}
+                      
+                      {/* Game Info */}
+                      <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          {format(new Date(game.game_date), 'MMM dd')}
                         </div>
-                        {game.description && (
-                          <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
-                            {game.description}
-                          </p>
-                        )}
+                        <div>₹{game.ticket_price}/ticket</div>
+                        <div>{game.total_tickets} tickets</div>
+                        <div className="truncate">{game.organising_group_name}</div>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8">
-                <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No Games Yet</h3>
-                <p className="text-muted-foreground mb-4">
-                  You haven't created any games yet. Create your first lottery game to get started.
+              <div className="text-center py-6">
+                <Users className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+                <h3 className="text-base font-semibold mb-2">No Games Yet</h3>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Create your first lottery game to get started.
                 </p>
-                <Button onClick={() => setCreateGameOpen(true)} className="bg-lottery-gold hover:bg-lottery-gold/90">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create Your First Game
+                <Button 
+                  onClick={() => setCreateGameOpen(true)} 
+                  size="sm"
+                  className="bg-lottery-gold hover:bg-lottery-gold/90"
+                >
+                  <Plus className="w-4 h-4 mr-1" />
+                  Create Game
                 </Button>
               </div>
             )}
@@ -229,6 +240,24 @@ const GameOrganiserDashboard = () => {
             setCreateGameOpen(false);
           }}
         />
+
+        {/* Fortune Counter Modal */}
+        {selectedGame && (
+          <FortuneCounterModal
+            isOpen={fortuneModalOpen}
+            onClose={() => {
+              setFortuneModalOpen(false);
+              setSelectedGame(null);
+            }}
+            gameId={selectedGame.id}
+            gameTitle={selectedGame.title}
+            fortuneCounter={fortuneCounters[selectedGame.id] || 0}
+            isAdmin={false}
+            onCounterUpdate={() => {
+              fetchMyGames(); // Refresh fortune counters
+            }}
+          />
+        )}
       </div>
     </div>
   );
