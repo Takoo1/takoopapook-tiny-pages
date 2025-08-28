@@ -459,7 +459,7 @@ export default function LotteryDetail() {
                         <ChevronLeft className="w-4 h-4" />
                       </Button>
                       <span className="text-xs text-muted-foreground px-2">
-                        {currentBookIndex + 1} of {allBooks.length}
+                        Book {currentBookIndex + 1} of {allBooks.length}
                       </span>
                       <Button
                         variant="outline"
@@ -481,7 +481,7 @@ export default function LotteryDetail() {
                 <CardContent className="pt-0">
                   {currentBook ? (
                     currentBook.is_online_available ? (
-                      <div className="grid grid-cols-6 gap-2">
+                      <div className="grid grid-cols-8 sm:grid-cols-10 gap-1">
                         {currentBookTickets.map((ticket) => {
                           const isSelected = selectedTickets.some(t => t.id === ticket.id);
                           return (
@@ -494,7 +494,7 @@ export default function LotteryDetail() {
                                   ? () => handleTicketClick(ticket.id, ticket.ticket_number)
                                   : undefined
                               }
-                              className={`${isSelected ? "ring-2 ring-lottery-gold ring-offset-1" : ""} w-12 h-12 text-xs`}
+                              className={`${isSelected ? "ring-2 ring-lottery-gold ring-offset-1" : ""} w-10 h-10 text-xs sm:w-12 sm:h-12`}
                             />
                           );
                         })}
@@ -514,6 +514,32 @@ export default function LotteryDetail() {
                     </div>
                   )}
                 </CardContent>
+                {/* Bottom Book Navigation */}
+                {allBooks.length > 1 && (
+                  <div className="flex items-center justify-center gap-4 py-3 border-t border-border">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={prevBook}
+                      className="flex items-center gap-2"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                      Previous
+                    </Button>
+                    <span className="text-sm font-medium">
+                      Book {currentBookIndex + 1} of {allBooks.length}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={nextBook}
+                      className="flex items-center gap-2"
+                    >
+                      Next
+                      <ChevronRight className="w-4 h-4" />
+                    </Button>
+                  </div>
+                )}
               </Card>
             </div>
           ) : (
