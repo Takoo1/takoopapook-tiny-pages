@@ -304,24 +304,8 @@ export default function Home() {
         </div>
       )}
 
-      {/* Fixed Header */}
-      <header className={`fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm ${showReferralBanner ? 'mt-20' : ''}`}>
-        <div className="max-w-6xl mx-auto flex justify-between items-center p-4">
-          <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            Fortune Bridge
-          </h1>
-          <div className="flex items-center gap-2">
-            {/* Desktop: Theme toggle + Auth, Mobile: Only Auth */}
-            <div className="hidden md:block">
-              <ThemeToggle />
-            </div>
-            <AuthButton />
-          </div>
-        </div>
-      </header>
-
-      {/* Hero Section - Now positioned below header */}
-      <section className={`relative h-[40vh] md:h-[70vh] flex items-center overflow-hidden ${showReferralBanner ? 'mt-32' : 'mt-16'}`}>
+      {/* Hero Section */}
+      <section className="relative h-[40vh] md:h-[70vh] flex items-center overflow-hidden">
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${heroImage})` }}
