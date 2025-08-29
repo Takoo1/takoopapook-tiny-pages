@@ -167,7 +167,7 @@ export function MediaManager() {
           description: videoDescription,
           video_url: videoUrl,
           display_order: videos.length + 1,
-          created_by_user_id: (await supabase.auth.getUser()).data.user?.id
+          created_by_user_id: (await supabase.auth.getSession()).data.session?.user?.id
         });
 
       if (dbError) throw dbError;

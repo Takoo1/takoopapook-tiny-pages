@@ -215,8 +215,8 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
 
     setLoading(true);
     try {
-      const user = await supabase.auth.getUser();
-      if (!user.data.user) throw new Error('Not authenticated');
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) throw new Error('Not authenticated');
 
       // Calculate total tickets
       const totalTickets = books.reduce((sum, book) => 
@@ -241,7 +241,7 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
           live_draw_url: formData.liveDrawUrl || null,
           contact_phone: formData.contactPhone || null,
           contact_email: formData.contactEmail || null,
-          created_by_user_id: user.data.user.id,
+          created_by_user_id: session.user.id,
           game_code: generateGameCode()
         })
         .select()

@@ -42,9 +42,9 @@ const GameOrganiserDashboard = () => {
 
   const checkUserAccess = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
       
-      if (!user) {
+      if (!session?.user) {
         toast({
           title: "Authentication Required",
           description: "Please sign in to access the organiser dashboard",
@@ -57,7 +57,7 @@ const GameOrganiserDashboard = () => {
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('role')
-        .eq('user_id', user.id)
+        .eq('user_id', session.user.id)
         .single();
 
       if (error || !profile || (profile.role !== 'organiser' && profile.role !== 'admin')) {
@@ -77,13 +77,13 @@ const GameOrganiserDashboard = () => {
 
   const fetchMyGames = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return;
 
       const { data: profile } = await supabase
         .from('profiles')
         .select('role')
-        .eq('user_id', user.id)
+        .eq('user_id', session.user.id)
         .single();
 
       let query = supabase
@@ -93,7 +93,7 @@ const GameOrganiserDashboard = () => {
 
       // If user is not admin, only show their own games
       if (profile?.role !== 'admin') {
-        query = query.eq('created_by_user_id', user.id);
+        query = query.eq('created_by_user_id', session.user.id);
       }
 
       const { data, error } = await query;

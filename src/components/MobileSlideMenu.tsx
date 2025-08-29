@@ -170,9 +170,9 @@ export function MobileSlideMenu({ isOpen, onClose, user }: MobileSlideMenuProps)
   const handleOrganiser = async () => {
     try {
       // Check if user is authenticated first
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
       
-      if (!user) {
+      if (!session?.user) {
         toast({
           title: "Login Required",
           description: "Please login first to access organiser dashboard",
