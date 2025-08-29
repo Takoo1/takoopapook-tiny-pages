@@ -398,6 +398,8 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
                     id="title"
                     value={formData.title}
                     onChange={(e) => setFormData({...formData, title: e.target.value})}
+                    autoComplete="off"
+                    inputMode="none"
                     required
                   />
                 </div>
@@ -827,6 +829,8 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
                     value={formData.contactPhone}
                     onChange={(e) => setFormData({...formData, contactPhone: e.target.value})}
                     placeholder="Enter contact phone number"
+                    autoComplete="off"
+                    inputMode="none"
                   />
                 </div>
                 <div>
@@ -837,6 +841,8 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
                     value={formData.contactEmail}
                     onChange={(e) => setFormData({...formData, contactEmail: e.target.value})}
                     placeholder="Enter contact email"
+                    autoComplete="off"
+                    inputMode="none"
                   />
                 </div>
               </div>
@@ -849,6 +855,8 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
                   value={formData.liveDrawUrl}
                   onChange={(e) => setFormData({...formData, liveDrawUrl: e.target.value})}
                   placeholder="Enter live draw streaming URL"
+                  autoComplete="off"
+                  inputMode="none"
                 />
               </div>
             </CardContent>

@@ -63,6 +63,15 @@ export function MobileHeader() {
     navigate('/wallet');
   };
 
+  const handleReferralClick = () => {
+    navigate('/wallet');
+    // Scroll to referral section after navigation
+    setTimeout(() => {
+      const referralSection = document.getElementById('referral-section');
+      referralSection?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border pt-safe-top">
       <div className="flex items-center justify-between px-4 py-2.5">
@@ -86,21 +95,34 @@ export function MobileHeader() {
           </Button>
 
           {user ? (
-            /* Logged in - Show FC Balance */
-            <Button
-              variant="ghost"
-              onClick={handleWalletClick}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 rounded-full border border-primary/20 shadow-sm hover:bg-primary/15 transition-colors"
-            >
-              <img 
-                src={fcCoin} 
-                alt="FC" 
-                className="w-4 h-4"
-              />
-              <span className="text-sm font-semibold text-primary">
-                {fcBalance.toLocaleString()}
-              </span>
-            </Button>
+            /* Logged in - Show FC Balance and Referral Button */
+            <>
+              <Button
+                variant="ghost"
+                onClick={handleWalletClick}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 rounded-full border border-primary/20 shadow-sm hover:bg-primary/15 transition-colors"
+              >
+                <img 
+                  src={fcCoin} 
+                  alt="FC" 
+                  className="w-4 h-4"
+                />
+                <span className="text-sm font-semibold text-primary">
+                  {fcBalance.toLocaleString()}
+                </span>
+              </Button>
+              
+              <Button
+                variant="ghost"
+                onClick={handleReferralClick}
+                className="flex items-center gap-1.5 px-2 py-1.5 bg-green-500/10 rounded-full border border-green-500/20 shadow-sm hover:bg-green-500/15 transition-colors"
+              >
+                <Gift className="w-3 h-3 text-green-600 dark:text-green-400" />
+                <span className="text-xs font-semibold text-green-600 dark:text-green-400">
+                  Refer
+                </span>
+              </Button>
+            </>
           ) : (
             /* Logged out - Show Sign Up prompt */
             <Button 

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { AuthButton } from "@/components/AuthButton";
-import { LogOut } from "lucide-react";
+import { LogOut, Gift } from "lucide-react";
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import fcCoin from "@/assets/fc-coin.png";
 
@@ -63,6 +63,15 @@ export function DesktopHeader() {
     navigate('/wallet');
   };
 
+  const handleReferralClick = () => {
+    navigate('/wallet');
+    // Scroll to referral section after navigation
+    setTimeout(() => {
+      const referralSection = document.getElementById('referral-section');
+      referralSection?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
+
   return (
     <header className="hidden md:block bg-background/95 backdrop-blur-sm border-b border-border">
       <div className="container mx-auto flex items-center justify-between px-6 py-3">
@@ -77,20 +86,33 @@ export function DesktopHeader() {
         {/* Right side - FC Balance, Theme Toggle, Auth */}
         <div className="flex items-center gap-4">
           {user && (
-            <Button
-              variant="ghost"
-              onClick={handleWalletClick}
-              className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full border border-primary/20 shadow-sm hover:bg-primary/15 transition-colors"
-            >
-              <img 
-                src={fcCoin} 
-                alt="FC" 
-                className="w-5 h-5"
-              />
-              <span className="text-sm font-semibold text-primary">
-                {fcBalance.toLocaleString()}
-              </span>
-            </Button>
+            <>
+              <Button
+                variant="ghost"
+                onClick={handleWalletClick}
+                className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full border border-primary/20 shadow-sm hover:bg-primary/15 transition-colors"
+              >
+                <img 
+                  src={fcCoin} 
+                  alt="FC" 
+                  className="w-5 h-5"
+                />
+                <span className="text-sm font-semibold text-primary">
+                  {fcBalance.toLocaleString()}
+                </span>
+              </Button>
+              
+              <Button
+                variant="ghost"
+                onClick={handleReferralClick}
+                className="flex items-center gap-2 px-4 py-2 bg-green-500/10 rounded-full border border-green-500/20 shadow-sm hover:bg-green-500/15 transition-colors"
+              >
+                <Gift className="w-4 h-4 text-green-600 dark:text-green-400" />
+                <span className="text-sm font-semibold text-green-600 dark:text-green-400">
+                  Refer and Earn FC
+                </span>
+              </Button>
+            </>
           )}
 
           <ThemeToggle />

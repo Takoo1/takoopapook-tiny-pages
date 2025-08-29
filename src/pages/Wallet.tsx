@@ -245,7 +245,7 @@ export default function Wallet() {
         </Card>
 
         {/* Referral System */}
-        <Card>
+        <Card id="referral-section">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Users className="h-5 w-5" />

@@ -429,6 +429,8 @@ export function AuthButton() {
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
+                autoComplete="off"
+                inputMode="none"
                 required
               />
             </div>
@@ -440,6 +442,8 @@ export function AuthButton() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              autoComplete="off"
+              inputMode="none"
               required
             />
           </div>
@@ -450,6 +454,8 @@ export function AuthButton() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="off"
+              inputMode="none"
               required
             />
           </div>
