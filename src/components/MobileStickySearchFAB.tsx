@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, X, Plus } from "lucide-react";
+import { Search, X, Plus, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface MobileStickySearchFABProps {
@@ -114,7 +114,7 @@ export function MobileStickySearchFAB({
   return (
     <div 
       ref={fabRef}
-      className="fixed right-0 top-1/2 -translate-y-1/2 z-50 md:hidden"
+      className="fixed right-0 top-3/4 -translate-y-1/2 z-50 md:hidden"
     >
       {/* Expanded Rectangular Buttons */}
       {buttons.map((button) => {
@@ -190,7 +190,11 @@ export function MobileStickySearchFAB({
         }}
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <Search className="w-6 h-6 text-primary-foreground" />
+        {isExpanded ? (
+          <Minus className="w-6 h-6 text-primary-foreground ml-1" />
+        ) : (
+          <Search className="w-6 h-6 text-primary-foreground ml-1" />
+        )}
       </button>
     </div>
   );
