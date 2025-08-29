@@ -66,22 +66,16 @@ export function MobileHeader() {
           </div>
         </div>
 
-        {/* Right side - Notification, FC Balance, or Sign Up prompt */}
-        <div className="flex items-center gap-3">
-          {/* Notification Icon (Coming Soon) */}
+        {/* Right side - Notification and FC Balance/Sign Up */}
+        <div className="flex items-center gap-2">
+          {/* Notification Icon */}
           <Button 
             variant="ghost" 
             size="sm"
-            className="relative p-2"
+            className="relative p-2 h-9 w-9 flex items-center justify-center"
             disabled
           >
-            <Bell className="h-5 w-5 text-muted-foreground" />
-            <Badge 
-              variant="secondary" 
-              className="absolute -top-1 -right-1 text-xs px-1 bg-muted text-muted-foreground"
-            >
-              Soon
-            </Badge>
+            <Bell className="h-5 w-5 text-blue-900 dark:text-blue-400" />
           </Button>
 
           {user ? (

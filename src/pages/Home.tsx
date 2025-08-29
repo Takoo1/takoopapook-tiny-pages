@@ -305,7 +305,7 @@ export default function Home() {
       )}
 
       {/* Hero Section */}
-      <section className="relative h-[40vh] md:h-[70vh] flex items-center overflow-hidden">
+      <section className="relative h-[40vh] md:h-[70vh] flex items-center overflow-hidden pt-14">
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${heroImage})` }}
