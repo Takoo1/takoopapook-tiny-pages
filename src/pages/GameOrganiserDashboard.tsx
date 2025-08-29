@@ -7,8 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { CreateGameForm } from "@/components/CreateGameForm";
 import { FortuneCounterModal } from "@/components/FortuneCounterModal";
+import { BookingsManager } from "@/components/BookingsManager";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Calendar, Users, Target, LogOut, Coins } from "lucide-react";
 import { format } from "date-fns";
@@ -32,6 +34,8 @@ const GameOrganiserDashboard = () => {
   const [fortuneCounters, setFortuneCounters] = useState<Record<string, number>>({});
   const [selectedGame, setSelectedGame] = useState<LotteryGame | null>(null);
   const [fortuneModalOpen, setFortuneModalOpen] = useState(false);
+  const [bookingsModalOpen, setBookingsModalOpen] = useState(false);
+  const [selectedBookingsGame, setSelectedBookingsGame] = useState<LotteryGame | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -125,9 +129,14 @@ const GameOrganiserDashboard = () => {
   };
 
 
-  const handleGameSelect = (game: LotteryGame) => {
+  const handleFortuneCounterClick = (game: LotteryGame) => {
     setSelectedGame(game);
     setFortuneModalOpen(true);
+  };
+
+  const handleBookingsClick = (game: LotteryGame) => {
+    setSelectedBookingsGame(game);
+    setBookingsModalOpen(true);
   };
 
   const handleLogout = async () => {
@@ -174,10 +183,9 @@ const GameOrganiserDashboard = () => {
                 {games.map((game) => (
                   <div
                     key={game.id}
-                    className="p-3 border rounded-lg hover:bg-card/50 cursor-pointer transition-all hover:shadow-md"
-                    onClick={() => handleGameSelect(game)}
+                    className="p-3 border rounded-lg transition-all hover:shadow-md"
                   >
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       {/* Game Title & Fortune Counter */}
                       <div className="flex items-center justify-between">
                         <h3 className="font-semibold text-sm truncate pr-2">{game.title}</h3>
@@ -205,6 +213,28 @@ const GameOrganiserDashboard = () => {
                         <div>₹{game.ticket_price}/ticket</div>
                         <div>{game.total_tickets} tickets</div>
                         <div className="truncate">{game.organising_group_name}</div>
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex gap-2 pt-1">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleFortuneCounterClick(game)}
+                          className="flex-1 text-xs h-8"
+                        >
+                          <Target className="h-3 w-3 mr-1" />
+                          Fortune Counter
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleBookingsClick(game)}
+                          className="flex-1 text-xs h-8"
+                        >
+                          <Users className="h-3 w-3 mr-1" />
+                          Bookings
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -259,6 +289,20 @@ const GameOrganiserDashboard = () => {
             }}
           />
         )}
+
+        {/* Bookings Modal */}
+        <Dialog open={bookingsModalOpen} onOpenChange={setBookingsModalOpen}>
+          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>
+                Bookings - {selectedBookingsGame?.title}
+              </DialogTitle>
+            </DialogHeader>
+            {selectedBookingsGame && (
+              <BookingsManager gameId={selectedBookingsGame.id} />
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

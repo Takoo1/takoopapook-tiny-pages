@@ -22,7 +22,11 @@ interface BookingData {
   game_date: string;
 }
 
-export function BookingsManager() {
+interface BookingsManagerProps {
+  gameId?: string;
+}
+
+export function BookingsManager({ gameId }: BookingsManagerProps = {}) {
   const [bookings, setBookings] = useState<BookingData[]>([]);
   const [filteredBookings, setFilteredBookings] = useState<BookingData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,7 +35,7 @@ export function BookingsManager() {
 
   useEffect(() => {
     fetchBookings();
-  }, []);
+  }, [gameId]);
 
   useEffect(() => {
     if (searchTerm) {
@@ -53,8 +57,8 @@ export function BookingsManager() {
     try {
       setLoading(true);
       
-      // Fetch all sold tickets with game information
-      const { data, error } = await supabase
+      // Build query for sold tickets with game information
+      let query = supabase
         .from('lottery_tickets')
         .select(`
           id,
@@ -74,6 +78,13 @@ export function BookingsManager() {
         .eq('status', 'sold_online')
         .not('booked_at', 'is', null)
         .order('booked_at', { ascending: false });
+
+      // Filter by specific game if gameId is provided
+      if (gameId) {
+        query = query.eq('lottery_game_id', gameId);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
 

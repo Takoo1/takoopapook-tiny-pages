@@ -49,6 +49,8 @@ export default function Admin() {
   const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
   const [selectedGame, setSelectedGame] = useState<LotteryGame | null>(null);
   const [loading, setLoading] = useState(true);
+  const [accessLoading, setAccessLoading] = useState(true);
+  const [hasAccess, setHasAccess] = useState(false);
   const [fortuneCounters, setFortuneCounters] = useState<Record<string, number>>({});
   const [fortuneModalOpen, setFortuneModalOpen] = useState(false);
   const [selectedFortuneGame, setSelectedFortuneGame] = useState<{ id: string; title: string; counter: number; ticket_price: number } | null>(null);
@@ -58,7 +60,7 @@ export default function Admin() {
   const { toast } = useToast();
 
   useEffect(() => {
-    fetchGames();
+    checkAccess();
   }, []);
 
   useEffect(() => {
@@ -71,6 +73,37 @@ export default function Admin() {
       setSelectedGame(null);
     }
   }, [selectedGameId, games]);
+
+  const checkAccess = async () => {
+    try {
+      setAccessLoading(true);
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session?.user) {
+        setHasAccess(false);
+        return;
+      }
+
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('user_id', session.user.id)
+        .single();
+
+      if (error || !profile || profile.role !== 'admin') {
+        setHasAccess(false);
+        return;
+      }
+
+      setHasAccess(true);
+      fetchGames();
+    } catch (error) {
+      console.error('Access check failed:', error);
+      setHasAccess(false);
+    } finally {
+      setAccessLoading(false);
+    }
+  };
 
   const fetchGames = async () => {
     try {
@@ -274,6 +307,34 @@ export default function Admin() {
         return <Badge variant="outline">{status}</Badge>;
     }
   };
+
+  if (accessLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background to-background/50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-lottery-gold mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Checking access...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!hasAccess) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background to-background/50 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-6">
+          <div className="text-6xl mb-4">🚫</div>
+          <h1 className="text-2xl font-bold text-foreground mb-4">Access Restricted</h1>
+          <p className="text-muted-foreground mb-6">
+            Sorry, You are not allowed to enter This Page
+          </p>
+          <Button onClick={() => window.location.href = '/'} className="bg-lottery-gold hover:bg-lottery-gold/90">
+            Go Home
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
