@@ -15,12 +15,9 @@ export function MobileLayout({ children }: MobileLayoutProps) {
       {/* Mobile Header */}
       <MobileHeader />
       
-      {/* Status bar safe area */}
-      <div className="pt-safe-top" />
-      
-      {/* Main content with header padding only */}
+      {/* Main content with header padding */}
       <main className={cn(
-        "flex-1", // Remove top padding to eliminate space
+        "flex-1 pt-14", // Add top padding for fixed header
         isMobile ? "pb-20" : ""
       )}>
         {children}

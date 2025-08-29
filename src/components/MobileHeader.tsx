@@ -57,7 +57,7 @@ export function MobileHeader() {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border pt-safe-top">
       <div className="flex items-center justify-between px-4 py-2.5">
         {/* Left side - Site Logo */}
         <div className="flex items-center">
