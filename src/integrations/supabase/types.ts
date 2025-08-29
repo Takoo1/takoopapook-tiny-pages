@@ -991,12 +991,20 @@ export type Database = {
         Args: { game_id: string }
         Returns: number
       }
+      get_referrer_display_name: {
+        Args: { ref_code: string }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      link_referral: {
+        Args: { ref_code: string }
+        Returns: undefined
       }
       organizer_confirm_fortune_reset: {
         Args: { p_request_id: string }

@@ -56,16 +56,21 @@ export default function Home() {
 
     if (referralCodeToCheck && !session?.user) {
       setReferralCode(referralCodeToCheck);
+      
+      // Store the referral code for later use during signup
+      if (refFromUrl) {
+        localStorage.setItem('ref_code', refFromUrl);
+      }
+      
       try {
-        const { data } = await supabase
-          .from('profiles')
-          .select('display_name, email')
-          .eq('referral_code', referralCodeToCheck)
-          .single();
+        const { data: referrerName, error } = await supabase
+          .rpc('get_referrer_display_name', { ref_code: referralCodeToCheck });
         
-        if (data) {
-          setReferrerName(data.display_name || data.email?.split('@')[0] || 'A friend');
+        if (!error && referrerName) {
+          setReferrerName(referrerName);
           setShowReferralBanner(true);
+        } else {
+          console.error('Error fetching referrer:', error);
         }
       } catch (error) {
         console.error('Error fetching referrer info:', error);

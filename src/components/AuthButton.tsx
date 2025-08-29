@@ -59,15 +59,8 @@ export function AuthButton() {
 
   const createUserProfile = async (user: SupabaseUser) => {
     try {
-      // Store referral code from localStorage in user metadata if it exists
       const refCode = localStorage.getItem('ref_code');
-      if (refCode) {
-        await supabase.auth.updateUser({
-          data: { ref_code: refCode }
-        });
-        localStorage.removeItem('ref_code'); // Clean up
-      }
-
+      
       const { error } = await supabase
         .from('profiles')
         .upsert({
@@ -81,9 +74,30 @@ export function AuthButton() {
 
       if (error) {
         console.error('Error creating profile:', error);
+        return;
+      }
+
+      // Handle referral linking using the new RPC
+      if (refCode) {
+        try {
+          const { error: linkError } = await supabase.rpc('link_referral', { 
+            ref_code: refCode 
+          });
+          
+          if (linkError) {
+            console.error('Error linking referral:', linkError);
+          } else {
+            console.log('Successfully linked referral with code:', refCode);
+          }
+        } catch (linkErr) {
+          console.error('Error in referral linking:', linkErr);
+        } finally {
+          // Clear the referral code from localStorage
+          localStorage.removeItem('ref_code');
+        }
       }
     } catch (error) {
-      console.error('Error creating profile:', error);
+      console.error('Error in createUserProfile:', error);
     }
   };
 
