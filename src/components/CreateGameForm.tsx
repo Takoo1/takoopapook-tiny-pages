@@ -7,9 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
+import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { Plus, Trash2, Upload, Calendar } from "lucide-react";
+import { Plus, Trash2, Upload, Calendar, X } from "lucide-react";
 
 // Generate a random 5-character game code (mix of letters and digits)
 const generateGameCode = (): string => {
@@ -68,6 +69,10 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
 
   const [ticketImage, setTicketImage] = useState<File | null>(null);
   const [organiserLogo, setOrganiserLogo] = useState<File | null>(null);
+  const [ticketImagePreview, setTicketImagePreview] = useState<string | null>(null);
+  const [organiserLogoPreview, setOrganiserLogoPreview] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<{ticket: number, logo: number}>({ticket: 0, logo: 0});
+  const [selectedPriceOption, setSelectedPriceOption] = useState<'200' | '500' | '1000' | 'custom'>('200');
   const [books, setBooks] = useState<Book[]>([
     { id: '1', name: 'Book A', firstTicket: 1, lastTicket: 100, isOnline: true }
   ]);
@@ -94,10 +99,56 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
       return;
     }
 
+    // Simulate upload progress
+    setUploadProgress(prev => ({ ...prev, [type]: 0 }));
+    const progressInterval = setInterval(() => {
+      setUploadProgress(prev => {
+        const newProgress = Math.min(prev[type] + 10, 100);
+        if (newProgress === 100) {
+          clearInterval(progressInterval);
+          // Create preview URL
+          const previewUrl = URL.createObjectURL(file);
+          if (type === 'ticket') {
+            setTicketImagePreview(previewUrl);
+          } else {
+            setOrganiserLogoPreview(previewUrl);
+          }
+        }
+        return { ...prev, [type]: newProgress };
+      });
+    }, 100);
+
     if (type === 'ticket') {
       setTicketImage(file);
     } else {
       setOrganiserLogo(file);
+    }
+  };
+
+  const removeImage = (type: 'ticket' | 'logo') => {
+    if (type === 'ticket') {
+      setTicketImage(null);
+      if (ticketImagePreview) {
+        URL.revokeObjectURL(ticketImagePreview);
+        setTicketImagePreview(null);
+      }
+      setUploadProgress(prev => ({ ...prev, ticket: 0 }));
+    } else {
+      setOrganiserLogo(null);
+      if (organiserLogoPreview) {
+        URL.revokeObjectURL(organiserLogoPreview);
+        setOrganiserLogoPreview(null);
+      }
+      setUploadProgress(prev => ({ ...prev, logo: 0 }));
+    }
+  };
+
+  const handlePriceOptionChange = (option: '200' | '500' | '1000' | 'custom') => {
+    setSelectedPriceOption(option);
+    if (option !== 'custom') {
+      setFormData({...formData, ticketPrice: option});
+    } else {
+      setFormData({...formData, ticketPrice: ''});
     }
   };
 
@@ -447,15 +498,46 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
                 </div>
                 <div>
                   <Label htmlFor="ticketPrice">Ticket Price (₹) *</Label>
-                  <Input
-                    id="ticketPrice"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={formData.ticketPrice}
-                    onChange={(e) => setFormData({...formData, ticketPrice: e.target.value})}
-                    required
-                  />
+                  <div className="space-y-3 mt-2">
+                    <div className="grid grid-cols-2 gap-2">
+                      {(['200', '500', '1000'] as const).map((price) => (
+                        <label key={price} className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="priceOption"
+                            value={price}
+                            checked={selectedPriceOption === price}
+                            onChange={() => handlePriceOptionChange(price)}
+                            className="text-primary"
+                          />
+                          <span className="text-sm">₹{price}</span>
+                        </label>
+                      ))}
+                      <label className="flex items-center space-x-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="priceOption"
+                          value="custom"
+                          checked={selectedPriceOption === 'custom'}
+                          onChange={() => handlePriceOptionChange('custom')}
+                          className="text-primary"
+                        />
+                        <span className="text-sm">Other amount</span>
+                      </label>
+                    </div>
+                    {selectedPriceOption === 'custom' && (
+                      <Input
+                        id="ticketPrice"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={formData.ticketPrice}
+                        onChange={(e) => setFormData({...formData, ticketPrice: e.target.value})}
+                        placeholder="Enter custom price"
+                        required
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -471,19 +553,49 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
                 <div>
                   <Label>Ticket Image * (max 2MB)</Label>
                   <div className="mt-2">
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleImageUpload(file, 'ticket');
-                      }}
-                      className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-lottery-gold file:text-primary-foreground hover:file:bg-lottery-gold/90"
-                    />
-                    {ticketImage && (
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Selected: {ticketImage.name} ({(ticketImage.size / 1024 / 1024).toFixed(2)}MB)
-                      </p>
+                    {!ticketImage ? (
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleImageUpload(file, 'ticket');
+                        }}
+                        className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-lottery-gold file:text-primary-foreground hover:file:bg-lottery-gold/90"
+                      />
+                    ) : (
+                      <div className="space-y-3">
+                        {uploadProgress.ticket < 100 && (
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-sm">
+                              <span>Uploading...</span>
+                              <span>{uploadProgress.ticket}%</span>
+                            </div>
+                            <Progress value={uploadProgress.ticket} />
+                          </div>
+                        )}
+                        {ticketImagePreview && (
+                          <div className="relative inline-block">
+                            <img 
+                              src={ticketImagePreview} 
+                              alt="Ticket preview" 
+                              className="w-24 h-24 object-cover rounded-lg border"
+                            />
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              className="absolute -top-2 -right-2 w-6 h-6 rounded-full p-0"
+                              onClick={() => removeImage('ticket')}
+                            >
+                              <X className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        )}
+                        <p className="text-sm text-muted-foreground">
+                          {ticketImage.name} ({(ticketImage.size / 1024 / 1024).toFixed(2)}MB)
+                        </p>
+                      </div>
                     )}
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
@@ -494,19 +606,49 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
                 <div>
                   <Label>Organiser Logo (optional, max 2MB)</Label>
                   <div className="mt-2">
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleImageUpload(file, 'logo');
-                      }}
-                      className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-lottery-gold file:text-primary-foreground hover:file:bg-lottery-gold/90"
-                    />
-                    {organiserLogo && (
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Selected: {organiserLogo.name} ({(organiserLogo.size / 1024 / 1024).toFixed(2)}MB)
-                      </p>
+                    {!organiserLogo ? (
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleImageUpload(file, 'logo');
+                        }}
+                        className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-lottery-gold file:text-primary-foreground hover:file:bg-lottery-gold/90"
+                      />
+                    ) : (
+                      <div className="space-y-3">
+                        {uploadProgress.logo < 100 && (
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-sm">
+                              <span>Uploading...</span>
+                              <span>{uploadProgress.logo}%</span>
+                            </div>
+                            <Progress value={uploadProgress.logo} />
+                          </div>
+                        )}
+                        {organiserLogoPreview && (
+                          <div className="relative inline-block">
+                            <img 
+                              src={organiserLogoPreview} 
+                              alt="Logo preview" 
+                              className="w-24 h-24 object-cover rounded-lg border"
+                            />
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              className="absolute -top-2 -right-2 w-6 h-6 rounded-full p-0"
+                              onClick={() => removeImage('logo')}
+                            >
+                              <X className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        )}
+                        <p className="text-sm text-muted-foreground">
+                          {organiserLogo.name} ({(organiserLogo.size / 1024 / 1024).toFixed(2)}MB)
+                        </p>
+                      </div>
                     )}
                   </div>
                 </div>
