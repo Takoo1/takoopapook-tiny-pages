@@ -26,44 +26,46 @@ export function MobileStickySearchFAB({
   const buttonRadius = buttonSize / 2;
   const rectWidth = 12; // Flat edge width
 
-  // Quarter-circle expansion constants
-  const expandRadius = 120; // Distance from main button center to expanded buttons
+  // Button positioning along the curved edge
   const expandedButtonSize = 48; // Size of expanded circular buttons
-
-  // Four buttons positioned in a quarter circle (90° arc)
+  const curveRadius = buttonRadius; // Radius of the curved edge
+  
+  // Four buttons positioned along the curved left edge of the D-shape
   const buttons = [
     { 
       label: "Search", 
       value: "search", 
       icon: "🔍", 
-      angle: 90 // Top position (touches right edge)
+      angle: 90 // Top position
     },
     { 
       label: "₹200", 
       value: "200", 
       icon: "200", 
-      angle: 120 // Upper middle
+      angle: 135 // Upper diagonal
     },
     { 
       label: "₹500", 
       value: "500", 
       icon: "500", 
-      angle: 150 // Lower middle
+      angle: 225 // Lower diagonal
     },
     { 
       label: "₹1000", 
       value: "1000", 
       icon: "1K", 
-      angle: 180 // Bottom position (touches right edge)
+      angle: 270 // Bottom position
     }
   ];
 
-  // Calculate button position from angle
+  // Calculate button position along the curved edge
   const getButtonPosition = (angle: number) => {
     const radian = (angle * Math.PI) / 180;
+    // Position buttons on the circumference of the curved edge
+    const centerX = rectWidth; // Center of the curved part
     return {
-      x: -expandRadius * Math.cos(radian), // Negative because expanding left
-      y: -expandRadius * Math.sin(radian)  // Negative because 0° is right, 90° is up
+      x: centerX + curveRadius * Math.cos(radian),
+      y: curveRadius * Math.sin(radian)
     };
   };
 
@@ -139,7 +141,7 @@ export function MobileStickySearchFAB({
             showSearchInput ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
           )}
           style={{
-            right: `${expandRadius + expandedButtonSize + 16}px`,
+            right: `${rectWidth + buttonRadius + expandedButtonSize + 16}px`,
             top: '50%',
             transform: 'translateY(-50%)'
           }}
