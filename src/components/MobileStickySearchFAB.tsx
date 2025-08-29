@@ -74,13 +74,13 @@ export function MobileStickySearchFAB({
     
     switch (value) {
       case "200":
-        return "bg-green-500/90 text-white hover:bg-green-500/95";
+        return "bg-green-500/95 text-white hover:bg-green-500";
       case "500":
-        return "bg-blue-500/90 text-white hover:bg-blue-500/95";
+        return "bg-blue-500/95 text-white hover:bg-blue-500";
       case "1000":
-        return "bg-purple-500/90 text-white hover:bg-purple-500/95";
+        return "bg-purple-500/95 text-white hover:bg-purple-500";
       default:
-        return "bg-secondary/90 text-secondary-foreground hover:bg-secondary/95";
+        return "bg-secondary/95 text-secondary-foreground hover:bg-secondary";
     }
   };
 
