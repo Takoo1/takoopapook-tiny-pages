@@ -58,15 +58,12 @@ export function MobileHeader() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
-      <div className="flex items-center justify-between px-4 py-3">
+      <div className="flex items-center justify-between px-4 py-2.5">
         {/* Left side - Site Logo */}
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-            <span className="text-white font-bold text-sm">FB</span>
+        <div className="flex items-center">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-md">
+            <span className="text-white font-bold text-base">FB</span>
           </div>
-          <h1 className="text-lg font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            Fortune Bridge
-          </h1>
         </div>
 
         {/* Right side - Notification, FC Balance, or Sign Up prompt */}
@@ -89,7 +86,7 @@ export function MobileHeader() {
 
           {user ? (
             /* Logged in - Show FC Balance */
-            <div className="flex items-center gap-1 px-3 py-1.5 bg-primary/10 rounded-full border border-primary/20">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 rounded-full border border-primary/20 shadow-sm">
               <img 
                 src="/src/assets/fc-coin.png" 
                 alt="FC" 
@@ -104,10 +101,10 @@ export function MobileHeader() {
             <Button 
               size="sm"
               onClick={handleSignUpPrompt}
-              className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-medium px-3 py-1.5 text-xs rounded-full shadow-sm"
+              className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-medium px-4 py-2 text-xs rounded-full shadow-md hover:shadow-lg transition-all duration-200"
             >
-              <Gift className="w-3 h-3 mr-1" />
-              Sign Up → 50FC
+              <Gift className="w-3 h-3 mr-1.5" />
+              Get 50FC on Sign Up
             </Button>
           )}
         </div>
