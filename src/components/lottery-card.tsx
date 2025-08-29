@@ -86,26 +86,9 @@ export function LotteryCard({
       className={`overflow-hidden transition-all duration-300 group cursor-pointer md:hover:scale-105 ${themeClasses.card}`}
       onClick={() => onViewDetails(id)}
     >
-      {/* Special Badge for themed cards */}
-      {theme !== 'default' && (
-        <div className="absolute top-2 right-2 z-10">
-          <div className={`px-2 py-1 rounded-full text-xs font-bold text-white ${
-            theme === 'tier-100' ? 'bg-red-500' :
-            theme === 'tier-500' ? 'bg-blue-500' :
-            theme === 'tier-1000' ? 'bg-purple-500' :
-            'bg-green-500'
-          }`}>
-            {theme === 'tier-100' ? 'STARTER' :
-             theme === 'tier-500' ? 'PREMIUM' :
-             theme === 'tier-1000' ? 'ELITE' :
-             'SPECIAL'}
-          </div>
-        </div>
-      )}
-
-      {/* Ticket Image - 4:3 Aspect Ratio on mobile, 16:9 on desktop */}
+      {/* Ticket Image - 16:9 Aspect Ratio */}
       {ticketImageUrl && (
-        <div className="aspect-[4/3] md:aspect-video overflow-hidden bg-muted relative">
+        <div className="aspect-video overflow-hidden bg-muted relative">
           <img 
             src={ticketImageUrl} 
             alt={`${title} ticket`}
@@ -114,7 +97,7 @@ export function LotteryCard({
         </div>
       )}
       
-      <CardContent className="p-3 md:p-4">
+      <CardContent className="p-4">
         {/* Single row with game date, price, and availability */}
         <div className="flex items-center justify-between gap-2 text-xs md:text-sm">
           {/* Game Date */}

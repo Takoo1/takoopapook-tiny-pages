@@ -430,8 +430,8 @@ export default function Home() {
                   <div key={price} className={`relative p-8 rounded-3xl bg-gradient-to-br ${sectionTheme.gradient} border-2 ${sectionTheme.border} overflow-hidden`}>
                     {/* Price Display - Top Center */}
                     <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20">
-                      <div className={`px-6 py-3 rounded-full ${sectionTheme.badge} shadow-lg`}>
-                        <span className="text-white font-bold text-xl">₹{price}</span>
+                      <div className={`w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center shadow-lg ${sectionTheme.badge}`}>
+                        <span className="text-white font-bold text-lg md:text-xl leading-none">₹{price}</span>
                       </div>
                     </div>
 
@@ -443,11 +443,6 @@ export default function Home() {
                           alt={`${sectionTitle} badge`} 
                           className="w-full h-full object-contain drop-shadow-lg" 
                         />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-[8px] font-bold text-center leading-none text-white drop-shadow-md px-1 break-words">
-                            {sectionTitle.replace(' ', '\n')}
-                          </span>
-                        </div>
                       </div>
                     </div>
 
@@ -456,13 +451,7 @@ export default function Home() {
                       <div className="absolute top-4 left-4 text-6xl opacity-30">{sectionTheme.icon}</div>
                     </div>
                     
-                    <div className="relative z-10 text-center mb-8 mt-16">
-                      <div className={`text-3xl font-bold ${sectionTheme.title} mb-2`}>
-                        {sectionTitle}
-                      </div>
-                    </div>
-                    
-                    <div className="relative z-10 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="relative z-10 grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-16">
                       {games.map((game) => (
                         <LotteryCard
                           key={game.id}
