@@ -86,6 +86,8 @@ export default function LotteryDetail() {
     if (gameId) {
       fetchGameDetails();
     }
+    // Scroll to top when page loads
+    window.scrollTo(0, 0);
   }, [gameId]);
 
   const fetchGameDetails = async () => {
@@ -308,11 +310,6 @@ export default function LotteryDetail() {
                   {game.headline}
                 </p>
               )}
-              {game.organising_group_name && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  by {game.organising_group_name}
-                </p>
-              )}
             </div>
             <div className="text-right">
               <div className="text-2xl font-bold text-lottery-gold">
@@ -340,31 +337,65 @@ export default function LotteryDetail() {
 
           {/* Prizes List */}
           {prizes.length > 0 && (
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Gift className="w-4 h-4 text-lottery-gold" />
-                  Prizes
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <div className="space-y-2">
-                  {prizes.map((prize) => (
-                    <div key={prize.id} className="flex justify-between items-center p-2 rounded-lg bg-muted/50">
-                      <div>
-                        <div className="font-medium text-sm">{prize.title}</div>
-                        {prize.description && (
-                          <div className="text-xs text-muted-foreground">{prize.description}</div>
-                        )}
-                      </div>
-                      <div className="text-lottery-gold font-bold">
-                        ₹{prize.amount?.toLocaleString()}
-                      </div>
+            <div className="space-y-4">
+              {/* Main Prizes */}
+              {prizes.filter(prize => prize.prize_type === 'main').length > 0 && (
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-base">
+                      <Gift className="w-4 h-4 text-lottery-gold" />
+                      Main Prizes
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <div className="space-y-2">
+                      {prizes.filter(prize => prize.prize_type === 'main').map((prize) => (
+                        <div key={prize.id} className="flex justify-between items-center p-2 rounded-lg bg-muted/50">
+                          <div>
+                            <div className="font-medium text-sm">{prize.title}</div>
+                            {prize.description && (
+                              <div className="text-xs text-muted-foreground">{prize.description}</div>
+                            )}
+                          </div>
+                          <div className="text-lottery-gold font-bold">
+                            ₹{prize.amount?.toLocaleString()}
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Incentive Prizes */}
+              {prizes.filter(prize => prize.prize_type === 'incentive').length > 0 && (
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-base">
+                      <Gift className="w-4 h-4 text-lottery-gold" />
+                      Incentive Prizes
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <div className="space-y-2">
+                      {prizes.filter(prize => prize.prize_type === 'incentive').map((prize) => (
+                        <div key={prize.id} className="flex justify-between items-center p-2 rounded-lg bg-muted/50">
+                          <div>
+                            <div className="font-medium text-sm">{prize.title}</div>
+                            {prize.description && (
+                              <div className="text-xs text-muted-foreground">{prize.description}</div>
+                            )}
+                          </div>
+                          <div className="text-lottery-gold font-bold">
+                            ₹{prize.amount?.toLocaleString()}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
           )}
 
           {/* Terms & Conditions Button */}
