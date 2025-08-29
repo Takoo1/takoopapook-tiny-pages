@@ -114,7 +114,7 @@ export function MobileStickySearchFAB({
   return (
     <div 
       ref={fabRef}
-      className="fixed right-0 top-3/4 -translate-y-1/2 z-50 md:hidden"
+      className="fixed right-0 top-2/3 -translate-y-1/2 z-50 md:hidden"
     >
       {/* Expanded Rectangular Buttons */}
       {buttons.map((button) => {
