@@ -28,7 +28,7 @@ export function MobileStickySearchFAB({
 
   // Expanded buttons configuration
   const expandedButtonHeight = 36;
-  const expandedButtonWidth = 180;
+  const expandedButtonWidth = 160;
   const expandedButtonSpacing = 6;
   
   // Four buttons in vertical stack
@@ -64,6 +64,24 @@ export function MobileStickySearchFAB({
     return {
       y: position * (expandedButtonHeight + expandedButtonSpacing)
     };
+  };
+
+  // Get button color based on ticket price
+  const getButtonColor = (value: string, isActive: boolean) => {
+    if (isActive) {
+      return "bg-primary text-primary-foreground";
+    }
+    
+    switch (value) {
+      case "200":
+        return "bg-green-500/80 text-white hover:bg-green-500/90";
+      case "500":
+        return "bg-blue-500/80 text-white hover:bg-blue-500/90";
+      case "1000":
+        return "bg-purple-500/80 text-white hover:bg-purple-500/90";
+      default:
+        return "bg-secondary/80 text-secondary-foreground hover:bg-secondary/90";
+    }
   };
 
   // Handle button click
@@ -127,7 +145,7 @@ export function MobileStickySearchFAB({
                   placeholder="Search organizer..."
                   value={searchTerm}
                   onChange={(e) => onSearchChange(e.target.value)}
-                  className="text-sm bg-background/95 backdrop-blur-sm border shadow-lg"
+                  className="text-sm bg-background/95 backdrop-blur-sm border shadow-lg rounded-2xl"
                   style={{ height: `${expandedButtonHeight}px` }}
                 />
               </div>
@@ -135,11 +153,9 @@ export function MobileStickySearchFAB({
               /* Filter Buttons */
               <button
                 className={cn(
-                  "absolute rounded-lg shadow-lg flex items-center justify-center transition-all duration-500 ease-out text-sm font-medium",
+                  "absolute rounded-2xl shadow-lg flex items-center justify-center transition-all duration-500 ease-out text-sm font-medium",
                   isExpanded ? "opacity-100 scale-100" : "opacity-0 scale-75 pointer-events-none",
-                  isActive 
-                    ? "bg-primary text-primary-foreground" 
-                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                  getButtonColor(button.value, isActive)
                 )}
                 style={{
                   width: `${expandedButtonWidth}px`,
