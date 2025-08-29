@@ -30,6 +30,8 @@ interface LotteryGame {
 const GameOrganiserDashboard = () => {
   const [games, setGames] = useState<LotteryGame[]>([]);
   const [loading, setLoading] = useState(false);
+  const [accessLoading, setAccessLoading] = useState(true);
+  const [hasAccess, setHasAccess] = useState(false);
   const [createGameOpen, setCreateGameOpen] = useState(false);
   const [fortuneCounters, setFortuneCounters] = useState<Record<string, number>>({});
   const [selectedGame, setSelectedGame] = useState<LotteryGame | null>(null);
@@ -41,20 +43,15 @@ const GameOrganiserDashboard = () => {
 
   useEffect(() => {
     checkUserAccess();
-    fetchMyGames();
   }, []);
 
   const checkUserAccess = async () => {
     try {
+      setAccessLoading(true);
       const { data: { session } } = await supabase.auth.getSession();
       
       if (!session?.user) {
-        toast({
-          title: "Authentication Required",
-          description: "Please sign in to access the organiser dashboard",
-          variant: "destructive",
-        });
-        navigate('/');
+        setHasAccess(false);
         return;
       }
 
@@ -65,17 +62,17 @@ const GameOrganiserDashboard = () => {
         .single();
 
       if (error || !profile || (profile.role !== 'organiser' && profile.role !== 'admin')) {
-        toast({
-          title: "Access Denied",
-          description: "Only users with organiser or admin role can access this dashboard",
-          variant: "destructive",
-        });
-        navigate('/');
+        setHasAccess(false);
         return;
       }
+
+      setHasAccess(true);
+      fetchMyGames();
     } catch (error) {
       console.error('Access check failed:', error);
-      navigate('/');
+      setHasAccess(false);
+    } finally {
+      setAccessLoading(false);
     }
   };
 
@@ -143,6 +140,34 @@ const GameOrganiserDashboard = () => {
     await supabase.auth.signOut();
     navigate('/');
   };
+
+  if (accessLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background to-background/50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-lottery-gold mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Checking access...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!hasAccess) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background to-background/50 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-6">
+          <div className="text-6xl mb-4">🚫</div>
+          <h1 className="text-2xl font-bold text-foreground mb-4">Access Restricted</h1>
+          <p className="text-muted-foreground mb-6">
+            Sorry, You are not allowed to enter This Page
+          </p>
+          <Button onClick={() => window.location.href = '/'} className="bg-lottery-gold hover:bg-lottery-gold/90">
+            Go Home
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-background/50 py-2 px-2">

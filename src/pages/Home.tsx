@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { AuthButton } from "@/components/AuthButton";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Shield, Trophy, Zap, Search, Gift, UserPlus } from "lucide-react";
 import heroImage from "@/assets/hero-fortune-bridge.jpg";
 import type { User as SupabaseUser } from '@supabase/supabase-js';
@@ -27,6 +28,8 @@ interface LotteryGame {
 }
 
 export default function Home() {
+  const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [lotteryGames, setLotteryGames] = useState<LotteryGame[]>([]);
   const [filteredGames, setFilteredGames] = useState<LotteryGame[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,7 +41,6 @@ export default function Home() {
   const [referralCode, setReferralCode] = useState<string | null>(null);
   const [referrerName, setReferrerName] = useState<string | null>(null);
   const [showReferralBanner, setShowReferralBanner] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetchLotteryGames();
@@ -503,29 +505,32 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="bg-card/30 border-t border-border/30 py-6 md:py-8">
-        <div className="max-w-6xl mx-auto px-3 md:px-6 text-center">
-          <div className="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-6 mb-4">
-            <button 
-              onClick={() => navigate('/admin')}
-              className="text-muted-foreground hover:text-lottery-gold transition-colors text-xs md:text-sm"
-            >
-              Admin
-            </button>
-            <span className="hidden md:inline text-muted-foreground">•</span>
-            <button 
-              onClick={() => navigate('/game-organiser-dashboard')}
-              className="text-muted-foreground hover:text-lottery-gold transition-colors text-xs md:text-sm"
-            >
-              Organizer Dashboard
-            </button>
-            <span className="hidden md:inline text-muted-foreground">•</span>
-            <span className="text-muted-foreground text-xs md:text-sm">
-              © 2024 Fortune Bridge. All rights reserved.
-            </span>
+      {/* Footer - Hidden on mobile */}
+      {!isMobile && (
+        <footer className="bg-card/30 border-t border-border/30 py-6 md:py-8">
+          <div className="max-w-6xl mx-auto px-3 md:px-6 text-center">
+            <div className="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-6 mb-4">
+              <button 
+                onClick={() => navigate('/admin')}
+                className="text-muted-foreground hover:text-lottery-gold transition-colors text-xs md:text-sm"
+              >
+                Admin
+              </button>
+              <span className="hidden md:inline text-muted-foreground">•</span>
+              <button 
+                onClick={() => navigate('/game-organiser-dashboard')}
+                className="text-muted-foreground hover:text-lottery-gold transition-colors text-xs md:text-sm"
+              >
+                Organizer Dashboard
+              </button>
+              <span className="hidden md:inline text-muted-foreground">•</span>
+              <span className="text-muted-foreground text-xs md:text-sm">
+                © 2024 Fortune Bridge. All rights reserved.
+              </span>
+            </div>
           </div>
-        </div>
-      </footer>
+        </footer>
+      )}
     </div>
   );
 }
