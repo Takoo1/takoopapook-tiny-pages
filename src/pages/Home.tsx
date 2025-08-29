@@ -10,6 +10,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Shield, Trophy, Zap, Search, Gift, UserPlus } from "lucide-react";
 import heroImage from "@/assets/hero-fortune-bridge.jpg";
+import eliteBadge from "@/assets/elite-badge.png";
+import premiumBadge from "@/assets/premium-badge.png";
+import budgetBadge from "@/assets/budget-badge.png";
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { ImageCarousel } from "@/components/ImageCarousel";
 import { VideoThumbnailCarousel } from "@/components/VideoThumbnailCarousel";
@@ -414,29 +417,36 @@ export default function Home() {
             <div className="space-y-16">
               {Object.entries(groupGamesByPrice(filteredGames)).map(([price, games]) => {
                 const sectionTheme = getSectionTheme(price);
-                const sectionTitle = price === '100' ? 'STARTER DEALS' :
-                                  price === '500' ? 'PREMIUM COLLECTION' :
-                                  price === '1000' ? 'ELITE SELECTION' :
-                                  'SPECIAL OFFERS';
+                const sectionTitle = price === '100' ? 'Budget Collection' :
+                                  price === '500' ? 'Premium Collection' :
+                                  price === '1000' ? 'Elite Selection' :
+                                  'Budget Collection';
+                const badgeImage = price === '100' ? budgetBadge :
+                                 price === '500' ? premiumBadge :
+                                 price === '1000' ? eliteBadge :
+                                 budgetBadge;
                 
                 return (
                   <div key={price} className={`relative p-8 rounded-3xl bg-gradient-to-br ${sectionTheme.gradient} border-2 ${sectionTheme.border} overflow-hidden`}>
-                    {/* Price Sticker - Spiky Round Ribbon Style */}
-                    <div className="absolute -top-2 -right-2 z-20">
-                      <div className="relative">
-                        {/* Outer spiky decoration */}
-                        <div className={`w-20 h-20 ${sectionTheme.badge} rounded-full flex items-center justify-center transform rotate-12 shadow-xl`}>
-                          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/20 to-transparent"></div>
-                          {/* Spiky edges */}
-                          <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-2 border-r-2 border-b-4 border-transparent border-b-current opacity-60"></div>
-                          <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-2 border-r-2 border-t-4 border-transparent border-t-current opacity-60"></div>
-                          <div className="absolute -left-1 top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-2 border-b-2 border-r-4 border-transparent border-r-current opacity-60"></div>
-                          <div className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-2 border-b-2 border-l-4 border-transparent border-l-current opacity-60"></div>
-                        </div>
-                        {/* Inner price text */}
-                        <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
-                          <span className="text-xs font-bold leading-none">₹</span>
-                          <span className="text-lg font-black leading-none">{price}</span>
+                    {/* Price Display - Top Center */}
+                    <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20">
+                      <div className={`px-6 py-3 rounded-full ${sectionTheme.badge} shadow-lg`}>
+                        <span className="text-white font-bold text-xl">₹{price}</span>
+                      </div>
+                    </div>
+
+                    {/* Collection Badge - Top Right */}
+                    <div className="absolute top-2 right-2 z-20">
+                      <div className="relative w-20 h-20">
+                        <img 
+                          src={badgeImage} 
+                          alt={`${sectionTitle} badge`} 
+                          className="w-full h-full object-contain drop-shadow-lg" 
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-[8px] font-bold text-center leading-none text-white drop-shadow-md px-1 break-words">
+                            {sectionTitle.replace(' ', '\n')}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -446,7 +456,7 @@ export default function Home() {
                       <div className="absolute top-4 left-4 text-6xl opacity-30">{sectionTheme.icon}</div>
                     </div>
                     
-                    <div className="relative z-10 text-center mb-8">
+                    <div className="relative z-10 text-center mb-8 mt-16">
                       <div className={`text-3xl font-bold ${sectionTheme.title} mb-2`}>
                         {sectionTitle}
                       </div>
