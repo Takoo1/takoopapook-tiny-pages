@@ -50,17 +50,17 @@ export function LotteryCard({
         };
       case 'tier-500':
         return {
-          card: 'bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950/20 dark:to-purple-900/20 border-purple-200 dark:border-purple-800/50 hover:border-purple-400 dark:hover:border-purple-600 shadow-purple-100/50 dark:shadow-purple-900/20',
-          price: 'text-purple-600 dark:text-purple-400',
-          progress: 'from-purple-500 to-purple-400',
-          title: 'group-hover:text-purple-600 dark:group-hover:text-purple-400'
-        };
-      case 'tier-1000':
-        return {
           card: 'bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/20 dark:to-blue-900/20 border-blue-200 dark:border-blue-800/50 hover:border-blue-400 dark:hover:border-blue-600 shadow-blue-100/50 dark:shadow-blue-900/20',
           price: 'text-blue-600 dark:text-blue-400',
           progress: 'from-blue-500 to-blue-400',
           title: 'group-hover:text-blue-600 dark:group-hover:text-blue-400'
+        };
+      case 'tier-1000':
+        return {
+          card: 'bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950/20 dark:to-purple-900/20 border-purple-200 dark:border-purple-800/50 hover:border-purple-400 dark:hover:border-purple-600 shadow-purple-100/50 dark:shadow-purple-900/20',
+          price: 'text-purple-600 dark:text-purple-400',
+          progress: 'from-purple-500 to-purple-400',
+          title: 'group-hover:text-purple-600 dark:group-hover:text-purple-400'
         };
       case 'tier-other':
         return {
@@ -83,7 +83,7 @@ export function LotteryCard({
 
   return (
     <Card 
-      className={`overflow-hidden transition-all duration-300 group cursor-pointer hover:scale-105 ${themeClasses.card}`}
+      className={`overflow-hidden transition-all duration-300 group cursor-pointer md:hover:scale-105 ${themeClasses.card}`}
       onClick={() => onViewDetails(id)}
     >
       {/* Special Badge for themed cards */}
@@ -91,8 +91,8 @@ export function LotteryCard({
         <div className="absolute top-2 right-2 z-10">
           <div className={`px-2 py-1 rounded-full text-xs font-bold text-white ${
             theme === 'tier-100' ? 'bg-red-500' :
-            theme === 'tier-500' ? 'bg-purple-500' :
-            theme === 'tier-1000' ? 'bg-blue-500' :
+            theme === 'tier-500' ? 'bg-blue-500' :
+            theme === 'tier-1000' ? 'bg-purple-500' :
             'bg-green-500'
           }`}>
             {theme === 'tier-100' ? 'STARTER' :
@@ -103,13 +103,13 @@ export function LotteryCard({
         </div>
       )}
 
-      {/* Ticket Image - 16:9 Aspect Ratio */}
+      {/* Ticket Image - 4:3 Aspect Ratio on mobile, 16:9 on desktop */}
       {ticketImageUrl && (
-        <div className="aspect-video overflow-hidden bg-muted relative">
+        <div className="aspect-[4/3] md:aspect-video overflow-hidden bg-muted relative">
           <img 
             src={ticketImageUrl} 
             alt={`${title} ticket`}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-cover md:group-hover:scale-105 transition-transform duration-300"
           />
         </div>
       )}
@@ -131,8 +131,8 @@ export function LotteryCard({
           {/* Price with background */}
           <div className={`px-2 md:px-3 py-1 rounded-full font-bold text-white flex-shrink-0 ${
             theme === 'tier-100' ? 'bg-red-500' :
-            theme === 'tier-500' ? 'bg-purple-500' :
-            theme === 'tier-1000' ? 'bg-blue-500' :
+            theme === 'tier-500' ? 'bg-blue-500' :
+            theme === 'tier-1000' ? 'bg-purple-500' :
             theme === 'tier-other' ? 'bg-green-500' :
             'bg-lottery-gold'
           }`}>

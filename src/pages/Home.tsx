@@ -212,20 +212,20 @@ export default function Home() {
         };
       case '500':
         return {
-          gradient: 'from-purple-500/10 via-purple-400/5 to-transparent',
-          border: 'border-purple-200 dark:border-purple-800/30',
-          title: 'text-purple-600 dark:text-purple-400',
-          subtitle: 'text-purple-500/80 dark:text-purple-400/80',
-          badge: 'bg-purple-500 text-white',
-          icon: '👑'
-        };
-      case '1000':
-        return {
           gradient: 'from-blue-500/10 via-blue-400/5 to-transparent',
           border: 'border-blue-200 dark:border-blue-800/30',
           title: 'text-blue-600 dark:text-blue-400',
           subtitle: 'text-blue-500/80 dark:text-blue-400/80',
           badge: 'bg-blue-500 text-white',
+          icon: '👑'
+        };
+      case '1000':
+        return {
+          gradient: 'from-purple-500/10 via-purple-400/5 to-transparent',
+          border: 'border-purple-200 dark:border-purple-800/30',
+          title: 'text-purple-600 dark:text-purple-400',
+          subtitle: 'text-purple-500/80 dark:text-purple-400/80',
+          badge: 'bg-purple-500 text-white',
           icon: '💎'
         };
       default:
@@ -421,26 +421,35 @@ export default function Home() {
                 
                 return (
                   <div key={price} className={`relative p-8 rounded-3xl bg-gradient-to-br ${sectionTheme.gradient} border-2 ${sectionTheme.border} overflow-hidden`}>
+                    {/* Price Sticker - Spiky Round Ribbon Style */}
+                    <div className="absolute -top-2 -right-2 z-20">
+                      <div className="relative">
+                        {/* Outer spiky decoration */}
+                        <div className={`w-20 h-20 ${sectionTheme.badge} rounded-full flex items-center justify-center transform rotate-12 shadow-xl`}>
+                          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/20 to-transparent"></div>
+                          {/* Spiky edges */}
+                          <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-2 border-r-2 border-b-4 border-transparent border-b-current opacity-60"></div>
+                          <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-2 border-r-2 border-t-4 border-transparent border-t-current opacity-60"></div>
+                          <div className="absolute -left-1 top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-2 border-b-2 border-r-4 border-transparent border-r-current opacity-60"></div>
+                          <div className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-2 border-b-2 border-l-4 border-transparent border-l-current opacity-60"></div>
+                        </div>
+                        {/* Inner price text */}
+                        <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
+                          <span className="text-xs font-bold leading-none">₹</span>
+                          <span className="text-lg font-black leading-none">{price}</span>
+                        </div>
+                      </div>
+                    </div>
+
                     <div className="absolute inset-0 opacity-5">
                       <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent" />
-                      <div className="absolute top-4 right-4 text-6xl opacity-30">{sectionTheme.icon}</div>
+                      <div className="absolute top-4 left-4 text-6xl opacity-30">{sectionTheme.icon}</div>
                     </div>
                     
                     <div className="relative z-10 text-center mb-8">
-                      <div className="flex items-center justify-center gap-4 mb-4">
-                        <div className={`px-4 py-2 rounded-full ${sectionTheme.badge} text-sm font-bold tracking-wider`}>
-                          {sectionTheme.icon} {sectionTitle}
-                        </div>
-                        <div className={`text-3xl font-bold ${sectionTheme.title}`}>
-                          ₹{price} TICKETS
-                        </div>
+                      <div className={`text-3xl font-bold ${sectionTheme.title} mb-2`}>
+                        {sectionTitle}
                       </div>
-                      <p className={`text-lg ${sectionTheme.subtitle} font-medium`}>
-                        {price === '100' ? 'Perfect for beginners • Budget-friendly prizes' :
-                         price === '500' ? 'Best value for money • Premium rewards' :
-                         price === '1000' ? 'Exclusive games • Maximum prizes' :
-                         'Limited edition • Unique experiences'}
-                      </p>
                     </div>
                     
                     <div className="relative z-10 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
