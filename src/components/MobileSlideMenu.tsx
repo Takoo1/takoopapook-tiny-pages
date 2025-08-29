@@ -168,50 +168,10 @@ export function MobileSlideMenu({ isOpen, onClose, user }: MobileSlideMenuProps)
   };
 
   const handleOrganiser = async () => {
-    try {
-      // Check if user is authenticated first
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session?.user) {
-        toast({
-          title: "Login Required",
-          description: "Please login first to access organiser dashboard",
-          variant: "destructive",
-        });
-        navigate("/auth");
-        onClose();
-        return;
-      }
-
-      // Check if user has organiser role
-      const { data: userProfile, error: roleError } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('user_id', user.id)
-        .single();
-
-      if (roleError || !userProfile || userProfile.role !== 'organiser') {
-        toast({
-          title: "Access Denied",
-          description: "Only users with organiser role can access this dashboard. Contact admin to get organiser access.",
-          variant: "destructive",
-        });
-        onClose();
-        return;
-      }
-
-      // User has access, navigate to organiser dashboard
-      navigate("/game-organiser-dashboard");
-      onClose();
-    } catch (error) {
-      console.error('Error checking organiser access:', error);
-      toast({
-        title: "Error",
-        description: "Something went wrong. Please try again.",
-        variant: "destructive",
-      });
-      onClose();
-    }
+    // Always navigate to organiser dashboard
+    // Let the dashboard component handle access control and show the restriction page
+    navigate("/game-organiser-dashboard");
+    onClose();
   };
 
   // Close menu when clicking outside
