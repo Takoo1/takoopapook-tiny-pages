@@ -21,65 +21,58 @@ export function MobileStickySearchFAB({
   const [showSearchInput, setShowSearchInput] = useState(false);
   const fabRef = useRef<HTMLDivElement>(null);
 
-  // Geometry constants for D-shaped control
-  const R = 28; // Half-circle radius
-  const rectW = 14; // Rectangle thickness
-  const gap = 0; // No gap - segments touch the D-shape
-  const svgSize = 200;
-  const centerX = svgSize / 2;
-  const centerY = svgSize / 2;
-  const innerRadius = R; // Exactly match the D-shaped button radius
-  const outerRadius = R + 36;
-  const centerOffsetRight = rectW + R;
+  // D-shaped button constants
+  const buttonSize = 56; // Main button diameter
+  const buttonRadius = buttonSize / 2;
+  const rectWidth = 12; // Flat edge width
 
-  // Ring segments configuration - touching segments with enlarged top/bottom
-  const segments = [
-    { label: "Search", value: "search", startAngle: 300, endAngle: 375 }, // Enlarged to touch right edge
-    { label: "₹200", value: "200", startAngle: 269, endAngle: 301 }, // Slight overlap
-    { label: "₹500", value: "500", startAngle: 224, endAngle: 271 }, // Slight overlap
-    { label: "₹1000", value: "1000", startAngle: 165, endAngle: 240 } // Enlarged to touch right edge
+  // Quarter-circle expansion constants
+  const expandRadius = 120; // Distance from main button center to expanded buttons
+  const expandedButtonSize = 48; // Size of expanded circular buttons
+
+  // Four buttons positioned in a quarter circle (90° arc)
+  const buttons = [
+    { 
+      label: "Search", 
+      value: "search", 
+      icon: "🔍", 
+      angle: 90 // Top position (touches right edge)
+    },
+    { 
+      label: "₹200", 
+      value: "200", 
+      icon: "200", 
+      angle: 120 // Upper middle
+    },
+    { 
+      label: "₹500", 
+      value: "500", 
+      icon: "500", 
+      angle: 150 // Lower middle
+    },
+    { 
+      label: "₹1000", 
+      value: "1000", 
+      icon: "1K", 
+      angle: 180 // Bottom position (touches right edge)
+    }
   ];
 
-  // Helper function to convert polar to cartesian coordinates
-  const polarToCartesian = (centerX: number, centerY: number, radius: number, angleInDegrees: number) => {
-    const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
+  // Calculate button position from angle
+  const getButtonPosition = (angle: number) => {
+    const radian = (angle * Math.PI) / 180;
     return {
-      x: centerX + (radius * Math.cos(angleInRadians)),
-      y: centerY + (radius * Math.sin(angleInRadians))
+      x: -expandRadius * Math.cos(radian), // Negative because expanding left
+      y: -expandRadius * Math.sin(radian)  // Negative because 0° is right, 90° is up
     };
   };
 
-  // Helper function to create SVG arc path
-  const createArcPath = (startAngle: number, endAngle: number) => {
-    const start1 = polarToCartesian(centerX, centerY, outerRadius, endAngle);
-    const end1 = polarToCartesian(centerX, centerY, outerRadius, startAngle);
-    const start2 = polarToCartesian(centerX, centerY, innerRadius, endAngle);
-    const end2 = polarToCartesian(centerX, centerY, innerRadius, startAngle);
-
-    const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
-
-    return [
-      "M", start1.x, start1.y,
-      "A", outerRadius, outerRadius, 0, largeArcFlag, 0, end1.x, end1.y,
-      "L", end2.x, end2.y,
-      "A", innerRadius, innerRadius, 0, largeArcFlag, 1, start2.x, start2.y,
-      "Z"
-    ].join(" ");
-  };
-
-  // Get text position for segment labels
-  const getTextPosition = (startAngle: number, endAngle: number) => {
-    const midAngle = (startAngle + endAngle) / 2;
-    const textRadius = (innerRadius + outerRadius) / 2;
-    return polarToCartesian(centerX, centerY, textRadius, midAngle);
-  };
-
-  // Handle segment click
-  const handleSegmentClick = (segment: typeof segments[0]) => {
-    if (segment.value === "search") {
+  // Handle button click
+  const handleButtonClick = (button: typeof buttons[0]) => {
+    if (button.value === "search") {
       setShowSearchInput(!showSearchInput);
     } else {
-      onPriceFilterChange(selectedPriceFilter === segment.value ? "all" : segment.value);
+      onPriceFilterChange(selectedPriceFilter === button.value ? "all" : button.value);
     }
   };
 
@@ -106,66 +99,37 @@ export function MobileStickySearchFAB({
       ref={fabRef}
       className="fixed right-0 top-1/2 -translate-y-1/2 z-50 md:hidden"
     >
-      {/* SVG Ring Menu */}
-      <div 
-        className={cn(
-          "absolute transition-all duration-500 ease-out",
-          isExpanded ? "opacity-100 scale-100" : "opacity-0 scale-75 pointer-events-none"
-        )}
-      >
-        <svg
-          width={svgSize}
-          height={svgSize}
-          viewBox={`0 0 ${svgSize} ${svgSize}`}
-          className="filter drop-shadow-lg"
-          style={{
-            position: 'absolute',
-            right: `${centerOffsetRight - svgSize/2}px`,
-            top: '50%',
-            transform: 'translateY(-50%)',
-            overflow: 'visible'
-          }}
-        >
-          {segments.map((segment) => {
-            const isActive = segment.value === "search" 
-              ? showSearchInput 
-              : selectedPriceFilter === segment.value;
-            const textPos = getTextPosition(segment.startAngle, segment.endAngle);
-            
-            return (
-              <g key={segment.value}>
-                <path
-                  d={createArcPath(segment.startAngle, segment.endAngle)}
-                  className={cn(
-                    "cursor-pointer transition-all duration-300",
-                    isActive 
-                      ? "fill-primary" 
-                      : "fill-secondary hover:fill-secondary/80"
-                  )}
-                  onClick={() => handleSegmentClick(segment)}
-                />
-                <text
-                  x={textPos.x}
-                  y={textPos.y}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  className={cn(
-                    "text-xs font-semibold pointer-events-none select-none transition-colors duration-300",
-                    isActive ? "fill-primary-foreground" : "fill-foreground"
-                  )}
-                  onClick={() => handleSegmentClick(segment)}
-                >
-                  {segment.value === "search" ? (
-                    <tspan className="text-sm">🔍</tspan>
-                  ) : (
-                    segment.label.replace('₹', '')
-                  )}
-                </text>
-              </g>
-            );
-          })}
-        </svg>
-      </div>
+      {/* Expanded Circular Buttons */}
+      {buttons.map((button) => {
+        const position = getButtonPosition(button.angle);
+        const isActive = button.value === "search" 
+          ? showSearchInput 
+          : selectedPriceFilter === button.value;
+        
+        return (
+          <button
+            key={button.value}
+            className={cn(
+              "absolute rounded-full shadow-lg flex items-center justify-center transition-all duration-500 ease-out text-xs font-semibold",
+              isExpanded ? "opacity-100 scale-100" : "opacity-0 scale-50 pointer-events-none",
+              isActive 
+                ? "bg-primary text-primary-foreground" 
+                : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+            )}
+            style={{
+              width: `${expandedButtonSize}px`,
+              height: `${expandedButtonSize}px`,
+              right: `${-position.x - expandedButtonSize/2}px`,
+              top: `50%`,
+              transform: `translateY(calc(-50% + ${position.y}px))`,
+              transitionDelay: isExpanded ? `${buttons.indexOf(button) * 50}ms` : '0ms'
+            }}
+            onClick={() => handleButtonClick(button)}
+          >
+            {button.icon}
+          </button>
+        );
+      })}
 
       {/* Search Input Popover */}
       {showSearchInput && (
@@ -175,7 +139,7 @@ export function MobileStickySearchFAB({
             showSearchInput ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
           )}
           style={{
-            right: `${centerOffsetRight + 24}px`,
+            right: `${expandRadius + expandedButtonSize + 16}px`,
             top: '50%',
             transform: 'translateY(-50%)'
           }}
@@ -201,8 +165,8 @@ export function MobileStickySearchFAB({
           isExpanded ? "scale-110" : "scale-100"
         )}
         style={{
-          width: `${rectW + R}px`,
-          height: `${2 * R}px`,
+          width: `${rectWidth + buttonRadius}px`,
+          height: `${buttonSize}px`,
           position: 'absolute',
           right: 0,
           top: '50%',
@@ -210,11 +174,7 @@ export function MobileStickySearchFAB({
         }}
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        {isExpanded ? (
-          <X className="w-6 h-6 text-primary-foreground" />
-        ) : (
-          <Plus className="w-6 h-6 text-primary-foreground" />
-        )}
+        <Search className="w-6 h-6 text-primary-foreground" />
       </button>
     </div>
   );
