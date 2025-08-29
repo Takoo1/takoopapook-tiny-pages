@@ -305,7 +305,7 @@ export default function Home() {
       )}
 
       {/* Hero Section */}
-      <section className="relative h-[40vh] md:h-[70vh] flex items-center overflow-hidden rounded-b-2xl md:rounded-none -mt-16 md:mt-0 pt-16 md:pt-0">
+      <section className="relative h-[40vh] md:h-[70vh] flex items-center overflow-hidden rounded-b-2xl md:rounded-none -mt-16 md:mt-0 pt-16 md:pt-0 pb-8 md:pb-0">
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${heroImage})` }}
@@ -334,7 +334,7 @@ export default function Home() {
       {/* Image Carousel Section */}
       <ImageCarousel />
 
-      <section id="games" className="py-8 md:py-20 px-3 md:px-6 bg-card/20">
+      <section id="games" className="py-8 md:py-20 px-3 md:px-6 bg-card/20 scroll-mt-16 md:scroll-mt-0">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center mb-8 md:mb-16 text-foreground">
             Choose Your Fortune

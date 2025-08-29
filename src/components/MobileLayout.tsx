@@ -19,7 +19,7 @@ export function MobileLayout({ children }: MobileLayoutProps) {
       {/* Main content with header padding */}
       <main className={cn(
         "flex-1", 
-        isMobile ? "pt-14 pb-20" : "pt-16" // Different padding for mobile vs desktop
+        isMobile ? "pt-14 pb-20" : "pt-0" // Different padding for mobile vs desktop
       )}>
         {children}
       </main>
