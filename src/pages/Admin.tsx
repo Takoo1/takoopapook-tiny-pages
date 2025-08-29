@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Plus, Trash2, Eye, Target, Calendar, Users, Gamepad2, ImageIcon } from "lucide-react";
 import { MediaManager } from "@/components/MediaManager";
+import { BookingsManager } from "@/components/BookingsManager";
 
 interface LotteryGame {
   id: string;
@@ -516,24 +517,8 @@ export default function Admin() {
           </TabsContent>
 
           {/* Bookings Tab */}
-          <TabsContent value="bookings">
-            <Card className="bg-gradient-to-br from-card to-card/80 border-border/50">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  Bookings Management
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <Users className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Coming Soon</h3>
-                  <p className="text-muted-foreground">
-                    Bookings management features will be available soon.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+          <TabsContent value="bookings" className="space-y-6">
+            <BookingsManager />
           </TabsContent>
 
           <TabsContent value="fortune">
