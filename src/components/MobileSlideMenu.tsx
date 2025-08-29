@@ -292,15 +292,24 @@ export function MobileSlideMenu({ isOpen, onClose, user }: MobileSlideMenuProps)
               </span>
             </Button>
 
-            {/* Auth Button - Login/Register only, no logout */}
-            {!user && (
+            {/* Auth Section - Show logout for logged-in users, login/register for others */}
+            {user ? (
+              <Button
+                variant="ghost"
+                onClick={handleSignOut}
+                className="w-full justify-start gap-3 h-12 text-left"
+              >
+                <LogOut className="h-5 w-5" />
+                <span className="text-sm font-medium">Logout</span>
+              </Button>
+            ) : (
               <Dialog>
-                <DialogTrigger asChild>
+                <DialogTrigger asChild data-auth-trigger>
                   <Button
                     variant="ghost"
                     className="w-full justify-start gap-3 h-12 text-left"
                   >
-                    <User className="h-5 w-5" />
+                    <LogIn className="h-5 w-5" />
                     <span className="text-sm font-medium">Login/Register</span>
                   </Button>
                 </DialogTrigger>
