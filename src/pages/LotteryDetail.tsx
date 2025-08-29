@@ -304,11 +304,11 @@ export default function LotteryDetail() {
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <h1 className="text-lg md:text-xl font-bold text-foreground leading-tight mb-1">
+              <h1 className="text-base md:text-lg font-bold text-foreground leading-tight mb-1">
                 {game.title}
               </h1>
               {game.headline && (
-                <p className="text-xs md:text-sm text-muted-foreground leading-snug">
+                <p className="text-xs text-muted-foreground leading-snug">
                   {game.headline}
                 </p>
               )}
@@ -514,7 +514,7 @@ export default function LotteryDetail() {
                 <CardContent className="pt-0">
                   {currentBook ? (
                     currentBook.is_online_available ? (
-                      <div className="grid grid-cols-8 sm:grid-cols-10 gap-1">
+                      <div className="grid grid-cols-7 sm:grid-cols-10 gap-1">
                         {currentBookTickets.map((ticket) => {
                           const isSelected = selectedTickets.some(t => t.id === ticket.id);
                           return (
@@ -527,7 +527,7 @@ export default function LotteryDetail() {
                                   ? () => handleTicketClick(ticket.id, ticket.ticket_number)
                                   : undefined
                               }
-                              className={`${isSelected ? "ring-2 ring-lottery-gold ring-offset-1" : ""} w-10 h-10 text-xs sm:w-12 sm:h-12`}
+                              className={`${isSelected ? "ring-2 ring-lottery-gold ring-offset-1" : ""} w-8 h-8 text-xs sm:w-12 sm:h-12`}
                             />
                           );
                         })}

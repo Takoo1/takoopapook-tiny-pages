@@ -338,7 +338,7 @@ export default function Home() {
 
       <section id="games" className="py-8 md:py-20 px-3 md:px-6 bg-card/20 scroll-mt-16 md:scroll-mt-0">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl md:text-4xl font-bold text-center mb-8 md:mb-16 text-foreground">
+          <h2 className="text-2xl md:text-4xl font-bold text-center mb-4 md:mb-8 text-foreground">
             Choose Your Fortune
           </h2>
           
@@ -423,7 +423,7 @@ export default function Home() {
                   <div key={price} className={`relative p-4 md:p-8 rounded-3xl bg-gradient-to-br ${sectionTheme.gradient} border-2 ${sectionTheme.border} overflow-hidden`}>
                     {/* Tier & Price Display - Top Center */}
                     <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20">
-                      <div className="flex rounded-full overflow-hidden shadow-lg bg-white/10 backdrop-blur-sm border border-white/20 w-64 md:w-80 h-8 md:h-12">
+                      <div className="flex rounded-full overflow-hidden shadow-2xl bg-white/10 backdrop-blur-sm border border-white/20 w-64 md:w-80 h-8 md:h-12 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] drop-shadow-lg" style={{boxShadow: '0 10px 25px -5px rgba(0,0,0,0.3), 0 4px 6px -2px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.1)'}}>
                         {/* Tier Name - 70% */}
                         <div className={`${sectionTheme.badge} flex-[7] flex items-center justify-center rounded-l-full`}>
                           <span className="text-white font-bold text-xs md:text-base leading-none">{sectionTitle}</span>
