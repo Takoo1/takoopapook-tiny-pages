@@ -305,7 +305,7 @@ export default function Home() {
       )}
 
       {/* Hero Section */}
-      <section className="relative h-[40vh] md:h-[70vh] flex items-center overflow-hidden">
+      <section className="relative h-[40vh] md:h-[70vh] flex items-center overflow-hidden rounded-b-2xl md:rounded-none -mt-16 md:mt-0 pt-16 md:pt-0">
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${heroImage})` }}
@@ -320,8 +320,7 @@ export default function Home() {
             Experience premium lottery games with complete transparency, instant results, and life-changing prizes
           </p>
           <Button 
-            size="lg"
-            className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground font-semibold px-8 py-3 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+            className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-primary-foreground font-semibold px-4 py-2 md:px-8 md:py-3 text-sm md:text-base rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
             onClick={() => {
               const gamesSection = document.getElementById('games');
               gamesSection?.scrollIntoView({ behavior: 'smooth' });
