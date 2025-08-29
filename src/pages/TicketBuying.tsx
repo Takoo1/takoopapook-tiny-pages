@@ -36,6 +36,7 @@ export default function TicketBuying() {
   const [discountApplied, setDiscountApplied] = useState(false);
   const [applyingDiscount, setApplyingDiscount] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [ticketPrice, setTicketPrice] = useState<number>(200); // Default fallback price
 
   useEffect(() => {
     // Get selected tickets from location state
@@ -50,6 +51,28 @@ export default function TicketBuying() {
       return;
     }
     setSelectedTickets(tickets);
+
+    // Fetch the actual ticket price from the lottery game
+    const fetchTicketPrice = async () => {
+      if (!gameId) return;
+      try {
+        const { data, error } = await supabase
+          .from('lottery_games')
+          .select('ticket_price')
+          .eq('id', gameId)
+          .maybeSingle();
+        
+        if (error) throw error;
+        if (data?.ticket_price) {
+          setTicketPrice(Number(data.ticket_price));
+        }
+      } catch (error) {
+        console.error('Error fetching ticket price:', error);
+        // Keep the default fallback price
+      }
+    };
+
+    fetchTicketPrice();
   }, [location.state, gameId, navigate, toast]);
 
   const handleInputChange = (field: string, value: string) => {
@@ -83,7 +106,7 @@ export default function TicketBuying() {
 
   // Suggest discount based on 3 FC = Rs 1, only if FC >= 50
   useEffect(() => {
-    const totalRs = selectedTickets.length * 200; // Assume Rs 200 per ticket (example)
+    const totalRs = selectedTickets.length * ticketPrice;
     if (fcBalance !== null && fcBalance >= 50) {
       const maxDiscount = Math.min(Math.floor(fcBalance / 3), totalRs);
       setSuggestedDiscountRs(maxDiscount);
@@ -92,7 +115,7 @@ export default function TicketBuying() {
       setSuggestedDiscountRs(0);
       setSuggestedFcToUse(0);
     }
-  }, [selectedTickets, fcBalance]);
+  }, [selectedTickets, fcBalance, ticketPrice]);
 
   const handleApplyDiscount = async () => {
     if (!userId) {
@@ -159,7 +182,7 @@ export default function TicketBuying() {
 
       try {
         if (userId) {
-          const prices = selectedTickets.map(() => 200);
+          const prices = selectedTickets.map(() => ticketPrice);
           await supabase.rpc('award_purchase_bonus', { ticket_prices: prices });
           await supabase.rpc('award_referrer_bonus_if_applicable');
         }
@@ -180,7 +203,7 @@ export default function TicketBuying() {
     }
   };
 
-  const totalPriceRs = selectedTickets.length * 200; // Rs 200 per ticket (example)
+  const totalPriceRs = selectedTickets.length * ticketPrice;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-background/50 py-4 md:py-8">

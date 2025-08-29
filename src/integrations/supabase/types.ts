@@ -1002,6 +1002,13 @@ export type Database = {
         Args: { p_request_id: string }
         Returns: undefined
       }
+      purchase_fc: {
+        Args: { amount_fc: number; payment_details?: Json }
+        Returns: {
+          new_balance: number
+          transaction_id: string
+        }[]
+      }
       purge_lottery_game: {
         Args: { p_game_id: string }
         Returns: undefined

@@ -124,19 +124,25 @@ export function AuthButton() {
       // Mock FC purchase - in real implementation this would integrate with payment gateway
       const fcToAdd = Math.floor(rupees * 2.5); // 1 INR = 2.5 FC
       
-      // Add FC transaction
-      const { error } = await supabase.rpc('award_purchase_bonus', { 
-        ticket_prices: [rupees] // Using ticket_prices array format, but this is for FC top-up
+      // Use the new purchase_fc RPC function
+      const { data, error } = await supabase.rpc('purchase_fc', { 
+        amount_fc: fcToAdd,
+        payment_details: { 
+          amount_inr: rupees, 
+          payment_method: 'mock_payment',
+          timestamp: new Date().toISOString()
+        }
       });
       
       if (error) throw error;
       
-      // Refresh FC balance
-      await loadFcData(user.id);
+      // Update FC balance from the returned data
+      const newBalance = data && data.length > 0 ? data[0].new_balance : fcToAdd;
+      setFcBalance(newBalance);
       
       toast({ 
         title: "FC Added Successfully!", 
-        description: `Added ${fcToAdd} FC for ₹${rupees}. New balance: ${(fcBalance || 0) + fcToAdd} FC` 
+        description: `Added ${fcToAdd} FC for ₹${rupees}. New balance: ${newBalance} FC` 
       });
       
       setFcModalOpen(false);
