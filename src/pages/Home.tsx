@@ -420,17 +420,17 @@ export default function Home() {
                                   'Budget Collection';
                 
                 return (
-                  <div key={price} className={`relative p-8 rounded-3xl bg-gradient-to-br ${sectionTheme.gradient} border-2 ${sectionTheme.border} overflow-hidden`}>
+                  <div key={price} className={`relative p-4 md:p-8 rounded-3xl bg-gradient-to-br ${sectionTheme.gradient} border-2 ${sectionTheme.border} overflow-hidden`}>
                     {/* Tier & Price Display - Top Center */}
                     <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20">
-                      <div className="flex rounded-lg overflow-hidden shadow-lg bg-white/10 backdrop-blur-sm border border-white/20">
+                      <div className="flex rounded-full overflow-hidden shadow-lg bg-white/10 backdrop-blur-sm border border-white/20 w-64 md:w-80 h-8 md:h-12">
                         {/* Tier Name - 70% */}
-                        <div className={`px-6 py-3 ${sectionTheme.badge} flex-[7] flex items-center justify-center`}>
-                          <span className="text-white font-bold text-sm md:text-base leading-none">{sectionTitle}</span>
+                        <div className={`${sectionTheme.badge} flex-[7] flex items-center justify-center rounded-l-full`}>
+                          <span className="text-white font-bold text-xs md:text-base leading-none">{sectionTitle}</span>
                         </div>
                         {/* Price - 30% */}
-                        <div className="bg-white/90 flex-[3] flex items-center justify-center px-4 py-3">
-                          <span className="text-gray-900 font-bold text-sm md:text-base leading-none">₹{price}</span>
+                        <div className="bg-white/90 flex-[3] flex items-center justify-center rounded-r-full">
+                          <span className="text-gray-900 font-bold text-xs md:text-base leading-none">₹{price}</span>
                         </div>
                       </div>
                     </div>

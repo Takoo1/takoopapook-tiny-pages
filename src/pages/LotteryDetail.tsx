@@ -256,19 +256,21 @@ export default function LotteryDetail() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
-        <div className="max-w-4xl mx-auto px-4 py-3">
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate('/')}
-            className="p-2"
-            size="sm"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
+      {!isMobile && (
+        <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
+          <div className="max-w-4xl mx-auto px-4 py-3">
+            <Button 
+              variant="ghost" 
+              onClick={() => navigate('/')}
+              className="p-2"
+              size="sm"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="max-w-4xl mx-auto px-4 pb-24">
         {/* Detail Section */}
@@ -302,17 +304,17 @@ export default function LotteryDetail() {
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <h1 className="text-xl font-bold text-foreground leading-tight mb-1">
+              <h1 className="text-lg md:text-xl font-bold text-foreground leading-tight mb-1">
                 {game.title}
               </h1>
               {game.headline && (
-                <p className="text-sm text-muted-foreground leading-snug">
+                <p className="text-xs md:text-sm text-muted-foreground leading-snug">
                   {game.headline}
                 </p>
               )}
             </div>
             <div className="text-right">
-              <div className="text-2xl font-bold text-lottery-gold">
+              <div className="text-xl md:text-2xl font-bold text-lottery-gold">
                 ₹{game.ticket_price}
               </div>
               <div className="text-xs text-muted-foreground">per ticket</div>
