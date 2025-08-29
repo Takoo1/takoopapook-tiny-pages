@@ -1,6 +1,7 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import { MobileBottomNav } from "./MobileBottomNav";
 import { MobileHeader } from "./MobileHeader";
+import { DesktopHeader } from "./DesktopHeader";
 import { cn } from "@/lib/utils";
 
 interface MobileLayoutProps {
@@ -12,13 +13,13 @@ export function MobileLayout({ children }: MobileLayoutProps) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Mobile Header */}
-      <MobileHeader />
+      {/* Conditional Header - Mobile or Desktop */}
+      {isMobile ? <MobileHeader /> : <DesktopHeader />}
       
       {/* Main content with header padding */}
       <main className={cn(
-        "flex-1 pt-14", // Add top padding for fixed header
-        isMobile ? "pb-20" : ""
+        "flex-1", 
+        isMobile ? "pt-14 pb-20" : "pt-16" // Different padding for mobile vs desktop
       )}>
         {children}
       </main>

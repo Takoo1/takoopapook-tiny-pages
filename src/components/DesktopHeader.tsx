@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { LogOut, LogIn, User } from "lucide-react";
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import fcCoin from "@/assets/fc-coin.png";
 
-export function MobileHeader() {
+export function DesktopHeader() {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [fcBalance, setFcBalance] = useState<number>(0);
   const navigate = useNavigate();
@@ -53,8 +53,12 @@ export function MobileHeader() {
     }
   };
 
-  const handleSignUpPrompt = () => {
-    // Trigger the auth dialog by finding and clicking the auth button
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+  };
+
+  const handleAuthAction = () => {
+    // Trigger the auth dialog by finding and clicking the auth button in mobile menu
     const authButton = document.querySelector('[data-auth-trigger]') as HTMLElement;
     authButton?.click();
   };
@@ -64,52 +68,54 @@ export function MobileHeader() {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border pt-safe-top">
-      <div className="flex items-center justify-between px-4 py-2.5">
-        {/* Left side - Site Logo */}
-        <div className="flex items-center">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-md">
-            <span className="text-white font-bold text-base">FB</span>
+    <header className="hidden md:block bg-background/95 backdrop-blur-sm border-b border-border">
+      <div className="container mx-auto flex items-center justify-between px-6 py-3">
+        {/* Left side - Site Logo and Name */}
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg">
+            <span className="text-white font-bold text-lg">FB</span>
           </div>
+          <h1 className="text-xl font-bold text-foreground">Fortune Bridge</h1>
         </div>
 
-        {/* Right side - Notification and FC Balance/Sign Up */}
-        <div className="flex items-center gap-2">
-          {/* Notification Icon */}
-          <Button 
-            variant="ghost" 
-            size="sm"
-            className="relative p-2 h-9 w-9 flex items-center justify-center"
-            disabled
-          >
-            <Bell className="h-5 w-5 text-blue-900 dark:text-blue-400" />
-          </Button>
-
-          {user ? (
-            /* Logged in - Show FC Balance */
+        {/* Right side - FC Balance, Theme Toggle, Auth */}
+        <div className="flex items-center gap-4">
+          {user && (
             <Button
               variant="ghost"
               onClick={handleWalletClick}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 rounded-full border border-primary/20 shadow-sm hover:bg-primary/15 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full border border-primary/20 shadow-sm hover:bg-primary/15 transition-colors"
             >
               <img 
                 src={fcCoin} 
                 alt="FC" 
-                className="w-4 h-4"
+                className="w-5 h-5"
               />
               <span className="text-sm font-semibold text-primary">
                 {fcBalance.toLocaleString()}
               </span>
             </Button>
-          ) : (
-            /* Logged out - Show Sign Up prompt */
-            <Button 
-              size="sm"
-              onClick={handleSignUpPrompt}
-              className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-medium px-4 py-2 text-xs rounded-full shadow-md hover:shadow-lg transition-all duration-200"
+          )}
+
+          <ThemeToggle />
+
+          {user ? (
+            <Button
+              variant="ghost"
+              onClick={handleSignOut}
+              className="flex items-center gap-2"
             >
-              <Gift className="w-3 h-3 mr-1.5" />
-              Get 50FC on Sign Up
+              <LogOut className="h-4 w-4" />
+              <span>Logout</span>
+            </Button>
+          ) : (
+            <Button
+              variant="default"
+              onClick={handleAuthAction}
+              className="flex items-center gap-2"
+            >
+              <LogIn className="h-4 w-4" />
+              <span>Login</span>
             </Button>
           )}
         </div>
