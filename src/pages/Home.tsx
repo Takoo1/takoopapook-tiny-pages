@@ -10,9 +10,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Shield, Trophy, Zap, Search, Gift, UserPlus } from "lucide-react";
 import heroImage from "@/assets/hero-fortune-bridge.jpg";
-import eliteBadge from "@/assets/elite-badge.png";
-import premiumBadge from "@/assets/premium-badge.png";
-import budgetBadge from "@/assets/budget-badge.png";
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { ImageCarousel } from "@/components/ImageCarousel";
 import { VideoThumbnailCarousel } from "@/components/VideoThumbnailCarousel";
@@ -421,28 +418,20 @@ export default function Home() {
                                   price === '500' ? 'Premium Collection' :
                                   price === '1000' ? 'Elite Selection' :
                                   'Budget Collection';
-                const badgeImage = price === '100' ? budgetBadge :
-                                 price === '500' ? premiumBadge :
-                                 price === '1000' ? eliteBadge :
-                                 budgetBadge;
                 
                 return (
                   <div key={price} className={`relative p-8 rounded-3xl bg-gradient-to-br ${sectionTheme.gradient} border-2 ${sectionTheme.border} overflow-hidden`}>
-                    {/* Price Display - Top Center */}
+                    {/* Tier & Price Display - Top Center */}
                     <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20">
-                      <div className={`w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center shadow-lg ${sectionTheme.badge}`}>
-                        <span className="text-white font-bold text-lg md:text-xl leading-none">₹{price}</span>
-                      </div>
-                    </div>
-
-                    {/* Collection Badge - Top Right */}
-                    <div className="absolute top-2 right-2 z-20">
-                      <div className="relative w-20 h-20">
-                        <img 
-                          src={badgeImage} 
-                          alt={`${sectionTitle} badge`} 
-                          className="w-full h-full object-contain drop-shadow-lg" 
-                        />
+                      <div className="flex rounded-lg overflow-hidden shadow-lg bg-white/10 backdrop-blur-sm border border-white/20">
+                        {/* Tier Name - 70% */}
+                        <div className={`px-6 py-3 ${sectionTheme.badge} flex-[7] flex items-center justify-center`}>
+                          <span className="text-white font-bold text-sm md:text-base leading-none">{sectionTitle}</span>
+                        </div>
+                        {/* Price - 30% */}
+                        <div className="bg-white/90 flex-[3] flex items-center justify-center px-4 py-3">
+                          <span className="text-gray-900 font-bold text-sm md:text-base leading-none">₹{price}</span>
+                        </div>
                       </div>
                     </div>
 
