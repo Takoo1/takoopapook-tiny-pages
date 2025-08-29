@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { LogOut, LogIn, User } from "lucide-react";
+import { AuthButton } from "@/components/AuthButton";
+import { LogOut } from "lucide-react";
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import fcCoin from "@/assets/fc-coin.png";
 
@@ -57,11 +58,6 @@ export function DesktopHeader() {
     await supabase.auth.signOut();
   };
 
-  const handleAuthAction = () => {
-    // Trigger the auth dialog by finding and clicking the auth button in mobile menu
-    const authButton = document.querySelector('[data-auth-trigger]') as HTMLElement;
-    authButton?.click();
-  };
 
   const handleWalletClick = () => {
     navigate('/wallet');
@@ -109,14 +105,7 @@ export function DesktopHeader() {
               <span>Logout</span>
             </Button>
           ) : (
-            <Button
-              variant="default"
-              onClick={handleAuthAction}
-              className="flex items-center gap-2"
-            >
-              <LogIn className="h-4 w-4" />
-              <span>Login</span>
-            </Button>
+            <AuthButton />
           )}
         </div>
       </div>

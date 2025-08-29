@@ -266,7 +266,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-background/50">
       {showReferralBanner && (
-        <div className="fixed top-16 left-0 right-0 z-40 bg-gradient-to-r from-primary/20 to-accent/20 border-b border-primary/30 backdrop-blur-sm">
+        <div className="fixed top-16 left-0 right-0 z-50 bg-gradient-to-r from-primary/20 to-accent/20 border-b border-primary/30 backdrop-blur-sm">
           <div className="max-w-4xl mx-auto p-4">
             <Alert className="border-primary/50 bg-primary/10">
               <Gift className="h-4 w-4 text-primary" />
