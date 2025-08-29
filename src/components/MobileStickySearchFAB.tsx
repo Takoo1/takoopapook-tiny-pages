@@ -26,46 +26,42 @@ export function MobileStickySearchFAB({
   const buttonRadius = buttonSize / 2;
   const rectWidth = 12; // Flat edge width
 
-  // Button positioning along the curved edge
-  const expandedButtonSize = 48; // Size of expanded circular buttons
-  const curveRadius = buttonRadius; // Radius of the curved edge
+  // Expanded buttons configuration
+  const expandedButtonHeight = 48;
+  const expandedButtonSpacing = 8;
   
-  // Four buttons positioned along the curved left edge of the D-shape
+  // Four buttons in vertical stack
   const buttons = [
     { 
       label: "Search", 
       value: "search", 
-      icon: "🔍", 
-      angle: 90 // Top position
+      type: "search",
+      position: -2 // 2 positions above center
     },
     { 
-      label: "₹200", 
+      label: "Rs. 200 Tickets", 
       value: "200", 
-      icon: "200", 
-      angle: 135 // Upper diagonal
+      type: "filter",
+      position: -1 // 1 position above center
     },
     { 
-      label: "₹500", 
+      label: "Rs. 500 Tickets", 
       value: "500", 
-      icon: "500", 
-      angle: 225 // Lower diagonal
+      type: "filter",
+      position: 1 // 1 position below center
     },
     { 
-      label: "₹1000", 
+      label: "Rs. 1000 Tickets", 
       value: "1000", 
-      icon: "1K", 
-      angle: 270 // Bottom position
+      type: "filter",
+      position: 2 // 2 positions below center
     }
   ];
 
-  // Calculate button position along the curved edge
-  const getButtonPosition = (angle: number) => {
-    const radian = (angle * Math.PI) / 180;
-    // Position buttons on the circumference of the curved edge
-    const centerX = rectWidth; // Center of the curved part
+  // Calculate button position
+  const getButtonPosition = (position: number) => {
     return {
-      x: centerX + curveRadius * Math.cos(radian),
-      y: curveRadius * Math.sin(radian)
+      y: position * (expandedButtonHeight + expandedButtonSpacing)
     };
   };
 
@@ -101,64 +97,65 @@ export function MobileStickySearchFAB({
       ref={fabRef}
       className="fixed right-0 top-1/2 -translate-y-1/2 z-50 md:hidden"
     >
-      {/* Expanded Circular Buttons */}
+      {/* Expanded Rectangular Buttons */}
       {buttons.map((button) => {
-        const position = getButtonPosition(button.angle);
+        const position = getButtonPosition(button.position);
         const isActive = button.value === "search" 
           ? showSearchInput 
           : selectedPriceFilter === button.value;
         
         return (
-          <button
-            key={button.value}
-            className={cn(
-              "absolute rounded-full shadow-lg flex items-center justify-center transition-all duration-500 ease-out text-xs font-semibold",
-              isExpanded ? "opacity-100 scale-100" : "opacity-0 scale-50 pointer-events-none",
-              isActive 
-                ? "bg-primary text-primary-foreground" 
-                : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+          <div key={button.value}>
+            {button.type === "search" ? (
+              /* Search Input */
+              <div
+                className={cn(
+                  "absolute w-64 transition-all duration-500 ease-out",
+                  isExpanded ? "opacity-100 scale-100" : "opacity-0 scale-75 pointer-events-none"
+                )}
+                style={{
+                  right: 0,
+                  top: `50%`,
+                  transform: `translateY(calc(-50% + ${position.y}px))`,
+                  transitionDelay: isExpanded ? `${buttons.indexOf(button) * 50}ms` : '0ms'
+                }}
+              >
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                  <Input
+                    type="text"
+                    placeholder="Search organizer..."
+                    value={searchTerm}
+                    onChange={(e) => onSearchChange(e.target.value)}
+                    className="pl-10 pr-4 text-sm bg-background/95 backdrop-blur-sm border shadow-lg"
+                  />
+                </div>
+              </div>
+            ) : (
+              /* Filter Buttons */
+              <button
+                className={cn(
+                  "absolute w-64 rounded-lg shadow-lg flex items-center justify-center transition-all duration-500 ease-out text-sm font-medium",
+                  isExpanded ? "opacity-100 scale-100" : "opacity-0 scale-75 pointer-events-none",
+                  isActive 
+                    ? "bg-primary text-primary-foreground" 
+                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                )}
+                style={{
+                  height: `${expandedButtonHeight}px`,
+                  right: 0,
+                  top: `50%`,
+                  transform: `translateY(calc(-50% + ${position.y}px))`,
+                  transitionDelay: isExpanded ? `${buttons.indexOf(button) * 50}ms` : '0ms'
+                }}
+                onClick={() => handleButtonClick(button)}
+              >
+                {button.label}
+              </button>
             )}
-            style={{
-              width: `${expandedButtonSize}px`,
-              height: `${expandedButtonSize}px`,
-              right: `${-position.x - expandedButtonSize/2}px`,
-              top: `50%`,
-              transform: `translateY(calc(-50% + ${position.y}px))`,
-              transitionDelay: isExpanded ? `${buttons.indexOf(button) * 50}ms` : '0ms'
-            }}
-            onClick={() => handleButtonClick(button)}
-          >
-            {button.icon}
-          </button>
+          </div>
         );
       })}
-
-      {/* Search Input Popover */}
-      {showSearchInput && (
-        <div 
-          className={cn(
-            "absolute w-64 transition-all duration-300 ease-out",
-            showSearchInput ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
-          )}
-          style={{
-            right: `${rectWidth + buttonRadius + expandedButtonSize + 16}px`,
-            top: '50%',
-            transform: 'translateY(-50%)'
-          }}
-        >
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-            <Input
-              type="text"
-              placeholder="Search organizer..."
-              value={searchTerm}
-              onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-10 pr-4 text-sm bg-background/95 backdrop-blur-sm border-white/20 shadow-lg"
-              autoFocus
-            />
-          </div>
-        </div>
-      )}
 
       {/* Main D-shaped Button */}
       <button
