@@ -16,12 +16,14 @@ interface LotteryGame {
   title: string;
   description: string;
   game_date: string;
+  stop_booking_time: string;
   ticket_image_url: string;
   ticket_price: number;
   total_tickets: number;
   headline: string;
   organiser_logo_url: string;
   organising_group_name: string;
+  status: 'pending' | 'online' | 'booking_stopped' | 'live' | 'archived';
 }
 
 interface LotteryTicketData {
@@ -253,6 +255,87 @@ export default function LotteryDetail() {
     });
   };
 
+  // Countdown timer for booking stopped status
+  const [timeRemaining, setTimeRemaining] = useState<string>('');
+  
+  useEffect(() => {
+    if (game?.status === 'booking_stopped' && game.game_date) {
+      const updateCountdown = () => {
+        const now = new Date().getTime();
+        const gameTime = new Date(game.game_date).getTime();
+        const difference = gameTime - now;
+
+        if (difference > 0) {
+          const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+          if (days > 0) {
+            setTimeRemaining(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+          } else if (hours > 0) {
+            setTimeRemaining(`${hours}h ${minutes}m ${seconds}s`);
+          } else {
+            setTimeRemaining(`${minutes}m ${seconds}s`);
+          }
+        } else {
+          setTimeRemaining('Game is live');
+        }
+      };
+
+      updateCountdown();
+      const timer = setInterval(updateCountdown, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [game?.status, game?.game_date]);
+
+  // Function to render status-specific content
+  const renderStatusContent = () => {
+    if (!game) return null;
+
+    switch (game.status) {
+      case 'booking_stopped':
+        return (
+          <Card className="bg-orange-50 border-orange-200 dark:bg-orange-900/20 dark:border-orange-800">
+            <CardContent className="text-center py-8">
+              <Clock className="w-12 h-12 mx-auto text-orange-600 mb-4" />
+              <h3 className="font-semibold text-orange-800 dark:text-orange-200 mb-2">
+                Booking Stopped for this game
+              </h3>
+              <p className="text-orange-700 dark:text-orange-300 text-sm mb-4">
+                Approx. Time Remaining For the Game
+              </p>
+              <div className="text-2xl font-bold text-orange-800 dark:text-orange-200">
+                {timeRemaining}
+              </div>
+            </CardContent>
+          </Card>
+        );
+      
+      case 'live':
+        return (
+          <Card className="bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800">
+            <CardContent className="text-center py-8">
+              <div className="animate-pulse">
+                <div className="w-12 h-12 mx-auto bg-green-600 rounded-full flex items-center justify-center mb-4">
+                  <div className="w-3 h-3 bg-white rounded-full animate-ping"></div>
+                </div>
+              </div>
+              <Button 
+                className="bg-green-600 hover:bg-green-700 text-white animate-pulse"
+                size="lg"
+              >
+                Game is Live
+              </Button>
+            </CardContent>
+          </Card>
+        );
+      
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -454,23 +537,27 @@ export default function LotteryDetail() {
           </Dialog>
         </div>
 
-        {/* Tickets Section */}
-        <div ref={ticketsRef} className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold flex items-center gap-2">
-              <Ticket className="w-5 h-5 text-lottery-gold" />
-              Select Tickets
-            </h2>
-            {/* Desktop Buy Button */}
-            {!isMobile && (
-              <Button 
-                onClick={handleBuyNow}
-                className="bg-lottery-gold hover:bg-lottery-gold/90 text-primary-foreground"
-              >
-                {selectedTickets.length > 0 ? `Buy ${selectedTickets.length} Tickets` : 'Select Tickets to Buy'}
-              </Button>
-            )}
-          </div>
+        {/* Status-specific Content */}
+        {renderStatusContent()}
+
+        {/* Tickets Section - Only show for online status */}
+        {game.status === 'online' && (
+          <div ref={ticketsRef} className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold flex items-center gap-2">
+                <Ticket className="w-5 h-5 text-lottery-gold" />
+                Select Tickets
+              </h2>
+              {/* Desktop Buy Button */}
+              {!isMobile && (
+                <Button 
+                  onClick={handleBuyNow}
+                  className="bg-lottery-gold hover:bg-lottery-gold/90 text-primary-foreground"
+                >
+                  {selectedTickets.length > 0 ? `Buy ${selectedTickets.length} Tickets` : 'Select Tickets to Buy'}
+                </Button>
+              )}
+            </div>
           
           {allBooks.length > 0 ? (
             <div className="space-y-4">
@@ -584,11 +671,12 @@ export default function LotteryDetail() {
               </CardContent>
             </Card>
           )}
-        </div>
+          </div>
+        )}
       </div>
 
-      {/* Sticky Buy Now Button - Mobile Only */}
-      {isMobile && (
+      {/* Sticky Buy Now Button - Mobile Only - Only show for online status */}
+      {isMobile && game.status === 'online' && (
         <div className="fixed bottom-16 left-0 right-0 z-30 bg-background/95 backdrop-blur-sm border-t border-border p-4">
           <Button 
             onClick={handleBuyNow}

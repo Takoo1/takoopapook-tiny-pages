@@ -255,6 +255,7 @@ export type Database = {
           organising_group_name: string | null
           starting_ticket_number: number | null
           status: Database["public"]["Enums"]["game_status"]
+          stop_booking_time: string | null
           ticket_image_url: string | null
           ticket_price: number | null
           title: string
@@ -278,6 +279,7 @@ export type Database = {
           organising_group_name?: string | null
           starting_ticket_number?: number | null
           status?: Database["public"]["Enums"]["game_status"]
+          stop_booking_time?: string | null
           ticket_image_url?: string | null
           ticket_price?: number | null
           title: string
@@ -301,6 +303,7 @@ export type Database = {
           organising_group_name?: string | null
           starting_ticket_number?: number | null
           status?: Database["public"]["Enums"]["game_status"]
+          stop_booking_time?: string | null
           ticket_image_url?: string | null
           ticket_price?: number | null
           title?: string
@@ -747,7 +750,13 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user" | "organiser"
-      game_status: "pending" | "live" | "ended"
+      game_status:
+        | "pending"
+        | "live"
+        | "ended"
+        | "online"
+        | "booking_stopped"
+        | "archived"
       prize_type: "main" | "incentive"
     }
     CompositeTypes: {
@@ -877,7 +886,14 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user", "organiser"],
-      game_status: ["pending", "live", "ended"],
+      game_status: [
+        "pending",
+        "live",
+        "ended",
+        "online",
+        "booking_stopped",
+        "archived",
+      ],
       prize_type: ["main", "incentive"],
     },
   },

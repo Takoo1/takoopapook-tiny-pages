@@ -59,6 +59,7 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
     title: '',
     description: '',
     gameDate: '',
+    stopBookingTime: '',
     ticketPrice: '',
     organisingGroupName: '',
     headline: '',
@@ -283,6 +284,7 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
           title: formData.title,
           description: formData.description,
           game_date: formData.gameDate,
+          stop_booking_time: formData.stopBookingTime,
           ticket_price: parseFloat(formData.ticketPrice),
           total_tickets: totalTickets,
           starting_ticket_number: startingTicketNumber,
@@ -496,6 +498,19 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
                     required
                   />
                 </div>
+                <div>
+                  <Label htmlFor="stopBookingTime">Stop Booking Time *</Label>
+                  <Input
+                    id="stopBookingTime"
+                    type="datetime-local"
+                    value={formData.stopBookingTime}
+                    onChange={(e) => setFormData({...formData, stopBookingTime: e.target.value})}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4">
                 <div>
                   <Label htmlFor="ticketPrice">Ticket Price (₹) *</Label>
                   <div className="space-y-3 mt-2">

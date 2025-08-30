@@ -29,7 +29,7 @@ interface LotteryGame {
   last_ticket_number: number;
   organising_group_name: string;
   game_code: string | null;
-  status: 'pending' | 'live' | 'ended';
+  status: 'pending' | 'online' | 'booking_stopped' | 'live' | 'archived';
 }
 
 interface LotteryBook {
@@ -208,7 +208,7 @@ export default function Admin() {
       // Update local state
       setGames(prev => prev.map(game => 
         game.id === gameId 
-          ? { ...game, status: newStatus as 'pending' | 'live' | 'ended' }
+          ? { ...game, status: newStatus as 'pending' | 'online' | 'booking_stopped' | 'live' | 'archived' }
           : game
       ));
 
@@ -298,11 +298,15 @@ export default function Admin() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'pending':
-        return <Badge variant="secondary" className="bg-yellow-500/10 text-yellow-700 dark:text-yellow-400">Pending Approval</Badge>;
+        return <Badge variant="secondary" className="bg-yellow-500/10 text-yellow-700 dark:text-yellow-400">Pending</Badge>;
+      case 'online':
+        return <Badge variant="default" className="bg-blue-500/10 text-blue-700 dark:text-blue-400">Online</Badge>;
+      case 'booking_stopped':
+        return <Badge variant="secondary" className="bg-orange-500/10 text-orange-700 dark:text-orange-400">Booking Stopped</Badge>;
       case 'live':
         return <Badge variant="default" className="bg-green-500/10 text-green-700 dark:text-green-400">Live</Badge>;
-      case 'ended':
-        return <Badge variant="outline" className="bg-gray-500/10 text-gray-700 dark:text-gray-400">Ended</Badge>;
+      case 'archived':
+        return <Badge variant="outline" className="bg-gray-500/10 text-gray-700 dark:text-gray-400">Archived</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -450,8 +454,10 @@ export default function Admin() {
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectItem value="pending">Pending</SelectItem>
+                                  <SelectItem value="online">Online</SelectItem>
+                                  <SelectItem value="booking_stopped">Booking Stopped</SelectItem>
                                   <SelectItem value="live">Live</SelectItem>
-                                  <SelectItem value="ended">Ended</SelectItem>
+                                  <SelectItem value="archived">Archived</SelectItem>
                                 </SelectContent>
                               </Select>
                             </div>
