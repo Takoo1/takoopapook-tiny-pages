@@ -1,38 +1,28 @@
 export interface SerialConfig {
   position: { xPct: number; yPct: number };
   size: { wPct: number; hPct: number };
-  rotation: number;
   prefix: string;
   digitCount: number;
   background: {
     type: 'none' | 'color' | 'preset';
     color: string;
-    opacity: number;
-    radiusPct: number;
     preset: 'pill' | 'tag' | 'rounded';
   };
   text: {
     fontFamily: string;
-    fontWeight: number;
-    fontSizePctOfHeight: number;
     color: string;
     align: 'left' | 'center' | 'right';
   };
-  paddingPct: { x: number; y: number };
 }
 
-/**
- * Generate a downloadable ticket image with the serial number overlaid
- */
-export async function generateTicketImage(
+export const generateTicketImage = async (
   ticketImageUrl: string,
-  serialNumber: number,
+  serialNumber: string,
   config: SerialConfig
-): Promise<string> {
+): Promise<string> => {
   return new Promise((resolve, reject) => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    
     if (!ctx) {
       reject(new Error('Could not get canvas context'));
       return;
@@ -41,20 +31,29 @@ export async function generateTicketImage(
     const img = new Image();
     img.crossOrigin = 'anonymous';
     
-    img.onload = () => {
-      try {
-        // Set canvas size to match image
+    const stampImg = new Image();
+    stampImg.crossOrigin = 'anonymous';
+    
+    let imagesLoaded = 0;
+    const totalImages = 2;
+    
+    const onImageLoad = () => {
+      imagesLoaded++;
+      if (imagesLoaded === totalImages) {
+        // Set canvas size to match ticket image
         canvas.width = img.width;
         canvas.height = img.height;
         
-        // Draw the ticket image
+        // Draw ticket image
         ctx.drawImage(img, 0, 0);
         
-        // Format the serial number
-        const formattedNumber = serialNumber.toString().padStart(config.digitCount, '0');
-        const displayText = `${config.prefix} ${formattedNumber}`;
+        // Draw stamp image in center
+        const stampSize = Math.min(canvas.width, canvas.height) * 0.15; // 15% of the smaller dimension
+        const stampX = (canvas.width - stampSize) / 2;
+        const stampY = (canvas.height - stampSize) / 2;
+        ctx.drawImage(stampImg, stampX, stampY, stampSize, stampSize);
         
-        // Calculate overlay position and size
+        // Calculate serial number position and size
         const x = (config.position.xPct / 100) * canvas.width;
         const y = (config.position.yPct / 100) * canvas.height;
         const width = (config.size.wPct / 100) * canvas.width;
@@ -62,86 +61,66 @@ export async function generateTicketImage(
 
         ctx.save();
         
-        // Apply rotation
-        ctx.translate(x + width/2, y + height/2);
-        ctx.rotate((config.rotation * Math.PI) / 180);
-        ctx.translate(-width/2, -height/2);
+        // Translate to position
+        ctx.translate(x, y);
 
-        // Draw background if specified
+        // Draw background
         if (config.background.type !== 'none') {
-          ctx.globalAlpha = config.background.opacity;
-          
-          let bgColor = '#1f2937'; // Default
           if (config.background.type === 'color') {
-            bgColor = config.background.color;
-          } else if (config.background.type === 'preset') {
-            switch (config.background.preset) {
-              case 'pill':
-                bgColor = '#1f2937';
-                break;
-              case 'tag':
-                bgColor = '#059669';
-                break;
-              case 'rounded':
-                bgColor = '#374151';
-                break;
-            }
+            ctx.fillStyle = config.background.color;
+          } else {
+            // Preset backgrounds
+            ctx.fillStyle = config.background.preset === 'pill' ? '#1f2937' : 
+                            config.background.preset === 'tag' ? '#059669' : '#374151';
           }
-          
-          ctx.fillStyle = bgColor;
-          
-          const radius = (config.background.radiusPct / 100) * Math.min(width, height) / 2;
-          
-          // Draw rounded rectangle background
-          ctx.beginPath();
-          ctx.roundRect(0, 0, width, height, radius);
-          ctx.fill();
-          
-          ctx.globalAlpha = 1;
+
+          // Rectangle without border radius
+          ctx.fillRect(0, 0, width, height);
         }
 
-        // Draw the serial number text
-        const fontSize = (config.text.fontSizePctOfHeight / 100) * height;
-        ctx.font = `${config.text.fontWeight} ${fontSize}px ${config.text.fontFamily}`;
+        // Draw text with auto-resizing font
+        const displayText = `${config.prefix} ${serialNumber}`;
+        const fontSize = Math.min(width / displayText.length * 1.2, height * 0.7);
+        ctx.font = `bold ${fontSize}px ${config.text.fontFamily}`;
         ctx.fillStyle = config.text.color;
         ctx.textBaseline = 'middle';
         
-        // Calculate text position based on alignment
-        let textX = width / 2; // center default
-        if (config.text.align === 'left') {
-          textX = (config.paddingPct.x / 100) * width;
-        } else if (config.text.align === 'right') {
-          textX = width - (config.paddingPct.x / 100) * width;
-        }
+        const textX = config.text.align === 'left' ? 0 :
+                      config.text.align === 'right' ? width :
+                      width / 2;
         
         ctx.textAlign = config.text.align;
-        
-        // Add text shadow for better readability
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-        ctx.shadowBlur = 2;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 1;
-        
         ctx.fillText(displayText, textX, height / 2);
 
         ctx.restore();
         
-        // Convert canvas to data URL
-        const dataUrl = canvas.toDataURL('image/png', 0.95);
-        resolve(dataUrl);
-        
-      } catch (error) {
-        reject(error);
+        // Convert to blob and create download URL
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const url = URL.createObjectURL(blob);
+            resolve(url);
+          } else {
+            reject(new Error('Failed to create blob'));
+          }
+        }, 'image/png');
       }
     };
+    
+    img.onload = onImageLoad;
+    stampImg.onload = onImageLoad;
     
     img.onerror = () => {
       reject(new Error('Failed to load ticket image'));
     };
     
+    stampImg.onerror = () => {
+      reject(new Error('Failed to load stamp image'));
+    };
+    
     img.src = ticketImageUrl;
+    stampImg.src = 'https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/Stamp.png';
   });
-}
+};
 
 /**
  * Download a data URL as a file
@@ -165,8 +144,9 @@ export async function generateAndDownloadTicket(
   gameTitle: string = 'Lottery'
 ) {
   try {
-    const ticketDataUrl = await generateTicketImage(ticketImageUrl, serialNumber, config);
-    const filename = `${gameTitle.replace(/[^a-z0-9]/gi, '_')}_Ticket_${serialNumber.toString().padStart(config.digitCount, '0')}.png`;
+    const formattedNumber = serialNumber.toString().padStart(config.digitCount, '0');
+    const ticketDataUrl = await generateTicketImage(ticketImageUrl, formattedNumber, config);
+    const filename = `${gameTitle.replace(/[^a-z0-9]/gi, '_')}_Ticket_${formattedNumber}.png`;
     downloadImage(ticketDataUrl, filename);
     return ticketDataUrl;
   } catch (error) {

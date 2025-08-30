@@ -95,24 +95,18 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
   const [serialConfig, setSerialConfig] = useState<SerialConfig>({
     position: { xPct: 70, yPct: 85 },
     size: { wPct: 25, hPct: 8 },
-    rotation: 0,
     prefix: "Sl. No.",
     digitCount: 5,
     background: {
       type: 'preset',
       color: '#000000',
-      opacity: 0.85,
-      radiusPct: 50,
       preset: 'pill'
     },
     text: {
       fontFamily: 'Inter',
-      fontWeight: 700,
-      fontSizePctOfHeight: 60,
       color: '#ffffff',
       align: 'center'
-    },
-    paddingPct: { x: 6, y: 4 }
+    }
   });
 
   const handleImageUpload = (file: File, type: 'ticket' | 'logo') => {

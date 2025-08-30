@@ -20,15 +20,11 @@ interface Size {
 interface Background {
   type: 'none' | 'color' | 'preset';
   color: string;
-  opacity: number;
-  radiusPct: number;
   preset: 'pill' | 'tag' | 'rounded';
 }
 
 interface TextStyle {
   fontFamily: string;
-  fontWeight: number;
-  fontSizePctOfHeight: number;
   color: string;
   align: 'left' | 'center' | 'right';
 }
@@ -36,12 +32,10 @@ interface TextStyle {
 export interface SerialConfig {
   position: Position;
   size: Size;
-  rotation: number;
   prefix: string;
   digitCount: number;
   background: Background;
   text: TextStyle;
-  paddingPct: { x: number; y: number };
 }
 
 interface SerialNumberEditorProps {
@@ -53,24 +47,18 @@ interface SerialNumberEditorProps {
 const defaultConfig: SerialConfig = {
   position: { xPct: 50, yPct: 80 },
   size: { wPct: 25, hPct: 8 },
-  rotation: 0,
   prefix: "Sl. No.",
   digitCount: 5,
   background: {
     type: 'preset',
     color: '#000000',
-    opacity: 0.85,
-    radiusPct: 50,
     preset: 'pill'
   },
   text: {
     fontFamily: 'Inter',
-    fontWeight: 700,
-    fontSizePctOfHeight: 60,
     color: '#ffffff',
     align: 'center'
-  },
-  paddingPct: { x: 6, y: 4 }
+  }
 };
 
 export default function SerialNumberEditor({ ticketImageUrl, config, onConfigChange }: SerialNumberEditorProps) {
@@ -113,15 +101,11 @@ export default function SerialNumberEditor({ ticketImageUrl, config, onConfigCha
 
     ctx.save();
     
-    // Apply rotation
-    ctx.translate(x + width/2, y + height/2);
-    ctx.rotate((config.rotation * Math.PI) / 180);
-    ctx.translate(-width/2, -height/2);
+    // Translate to position
+    ctx.translate(x, y);
 
     // Draw background
     if (config.background.type !== 'none') {
-      ctx.globalAlpha = config.background.opacity;
-      
       if (config.background.type === 'color') {
         ctx.fillStyle = config.background.color;
       } else {
@@ -130,24 +114,18 @@ export default function SerialNumberEditor({ ticketImageUrl, config, onConfigCha
                         config.background.preset === 'tag' ? '#059669' : '#374151';
       }
 
-      const radius = (config.background.radiusPct / 100) * Math.min(width, height) / 2;
-      
-      // Rounded rectangle
-      ctx.beginPath();
-      ctx.roundRect(0, 0, width, height, radius);
-      ctx.fill();
-      
-      ctx.globalAlpha = 1;
+      // Rectangle without border radius
+      ctx.fillRect(0, 0, width, height);
     }
 
-    // Draw text
-    const fontSize = (config.text.fontSizePctOfHeight / 100) * height;
-    ctx.font = `${config.text.fontWeight} ${fontSize}px ${config.text.fontFamily}`;
+    // Draw text with auto-resizing font
+    const fontSize = Math.min(width / displayText.length * 1.2, height * 0.7);
+    ctx.font = `bold ${fontSize}px ${config.text.fontFamily}`;
     ctx.fillStyle = config.text.color;
     ctx.textBaseline = 'middle';
     
-    const textX = config.text.align === 'left' ? (config.paddingPct.x / 100) * width :
-                  config.text.align === 'right' ? width - (config.paddingPct.x / 100) * width :
+    const textX = config.text.align === 'left' ? 0 :
+                  config.text.align === 'right' ? width :
                   width / 2;
     
     ctx.textAlign = config.text.align;
@@ -333,26 +311,6 @@ export default function SerialNumberEditor({ ticketImageUrl, config, onConfigCha
                 />
               </div>
             </div>
-
-            <div>
-              <Label>Font Weight</Label>
-              <Select 
-                value={config.text.fontWeight.toString()} 
-                onValueChange={(v) => updateConfig({ 
-                  text: { ...config.text, fontWeight: parseInt(v) }
-                })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="400">Normal</SelectItem>
-                  <SelectItem value="600">Semi Bold</SelectItem>
-                  <SelectItem value="700">Bold</SelectItem>
-                  <SelectItem value="800">Extra Bold</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </div>
 
           {/* Background Settings */}
@@ -420,38 +378,6 @@ export default function SerialNumberEditor({ ticketImageUrl, config, onConfigCha
                 </Select>
               </div>
             )}
-
-            {config.background.type !== 'none' && (
-              <div>
-                <Label>Background Opacity: {Math.round(config.background.opacity * 100)}%</Label>
-                <Slider
-                  value={[config.background.opacity]}
-                  onValueChange={([value]) => updateConfig({ 
-                    background: { ...config.background, opacity: value }
-                  })}
-                  min={0}
-                  max={1}
-                  step={0.1}
-                  className="mt-2"
-                />
-              </div>
-            )}
-
-            {/* Rotation */}
-            <div>
-              <Label className="flex items-center gap-2">
-                <RotateCw className="w-4 h-4" />
-                Rotation: {config.rotation}°
-              </Label>
-              <Slider
-                value={[config.rotation]}
-                onValueChange={([value]) => updateConfig({ rotation: value })}
-                min={-45}
-                max={45}
-                step={1}
-                className="mt-2"
-              />
-            </div>
           </div>
         </div>
 
