@@ -143,7 +143,7 @@ export default function Home() {
           total_tickets,
           organising_group_name
         `)
-        .eq('status', 'live')
+        .in('status', ['live', 'online', 'booking_stopped'])
         .order('game_date', { ascending: true });
 
       if (error) throw error;
