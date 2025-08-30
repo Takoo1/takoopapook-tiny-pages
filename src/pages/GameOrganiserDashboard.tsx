@@ -12,7 +12,7 @@ import { CreateGameForm } from "@/components/CreateGameForm";
 import { FortuneCounterModal } from "@/components/FortuneCounterModal";
 import { BookingsManager } from "@/components/BookingsManager";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Calendar, Users, Target, LogOut, Coins } from "lucide-react";
+import { Plus, Calendar, Users, Target, LogOut, Coins, Edit } from "lucide-react";
 import { format } from "date-fns";
 
 interface LotteryGame {
@@ -25,14 +25,17 @@ interface LotteryGame {
   organising_group_name: string;
   created_by_user_id: string;
   game_code: string | null;
+  status: 'pending' | 'online' | 'booking_stopped' | 'live' | 'archived';
 }
 
 const GameOrganiserDashboard = () => {
   const [games, setGames] = useState<LotteryGame[]>([]);
+  const [archivedGames, setArchivedGames] = useState<LotteryGame[]>([]);
   const [loading, setLoading] = useState(false);
   const [accessLoading, setAccessLoading] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
   const [createGameOpen, setCreateGameOpen] = useState(false);
+  const [editingGame, setEditingGame] = useState<LotteryGame | null>(null);
   const [fortuneCounters, setFortuneCounters] = useState<Record<string, number>>({});
   const [selectedGame, setSelectedGame] = useState<LotteryGame | null>(null);
   const [fortuneModalOpen, setFortuneModalOpen] = useState(false);
@@ -100,9 +103,15 @@ const GameOrganiserDashboard = () => {
       const { data, error } = await query;
 
       if (error) throw error;
-      setGames(data || []);
+      
+      // Separate active and archived games
+      const activeGames = (data || []).filter(game => game.status !== 'archived');
+      const archived = (data || []).filter(game => game.status === 'archived');
+      
+      setGames(activeGames);
+      setArchivedGames(archived);
 
-      // Fetch fortune counters
+      // Fetch fortune counters for all games
       const counters: Record<string, number> = {};
       for (const game of data || []) {
         try {
@@ -134,6 +143,11 @@ const GameOrganiserDashboard = () => {
   const handleBookingsClick = (game: LotteryGame) => {
     setSelectedBookingsGame(game);
     setBookingsModalOpen(true);
+  };
+
+  const handleEditGame = (game: LotteryGame) => {
+    setEditingGame(game);
+    setCreateGameOpen(true);
   };
 
   const handleLogout = async () => {
@@ -241,7 +255,16 @@ const GameOrganiserDashboard = () => {
                       </div>
 
                       {/* Action Buttons */}
-                      <div className="flex gap-2 pt-1">
+                      <div className="flex gap-1 pt-1">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleEditGame(game)}
+                          className="flex-1 text-xs h-8"
+                        >
+                          <Edit className="h-3 w-3 mr-1" />
+                          Edit
+                        </Button>
                         <Button
                           size="sm"
                           variant="outline"
@@ -249,7 +272,7 @@ const GameOrganiserDashboard = () => {
                           className="flex-1 text-xs h-8"
                         >
                           <Target className="h-3 w-3 mr-1" />
-                          Fortune Counter
+                          Fortune
                         </Button>
                         <Button
                           size="sm"
@@ -285,15 +308,84 @@ const GameOrganiserDashboard = () => {
           </CardContent>
         </Card>
 
+        {/* Completed Games Section */}
+        {archivedGames.length > 0 && (
+          <Card className="bg-gradient-to-br from-card to-card/80 border-border/50">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                Completed Games ({archivedGames.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <div className="space-y-3">
+                {archivedGames.map((game) => (
+                  <div
+                    key={game.id}
+                    className="p-3 border rounded-lg transition-all bg-muted/20"
+                  >
+                    <div className="space-y-3">
+                      {/* Game Title & Fortune Counter */}
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-semibold text-sm truncate pr-2 text-muted-foreground">{game.title}</h3>
+                        <Badge variant="outline" className="text-xs shrink-0">
+                          Archived
+                        </Badge>
+                      </div>
+                      
+                      {/* Game Code */}
+                      {game.game_code && (
+                        <div>
+                          <Badge variant="outline" className="text-xs font-mono">
+                            {game.game_code}
+                          </Badge>
+                        </div>
+                      )}
+                      
+                      {/* Game Info */}
+                      <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          {format(new Date(game.game_date), 'MMM dd')}
+                        </div>
+                        <div>₹{game.ticket_price}/ticket</div>
+                        <div>{game.total_tickets} tickets</div>
+                        <div className="truncate">{game.organising_group_name}</div>
+                      </div>
 
-        {/* Create Game Modal */}
+                      {/* View Bookings Only */}
+                      <div className="pt-1">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleBookingsClick(game)}
+                          className="w-full text-xs h-8"
+                        >
+                          <Users className="h-3 w-3 mr-1" />
+                          View Bookings
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Create/Edit Game Modal */}
         <CreateGameForm
           isOpen={createGameOpen}
-          onClose={() => setCreateGameOpen(false)}
+          onClose={() => {
+            setCreateGameOpen(false);
+            setEditingGame(null);
+          }}
           onSuccess={() => {
             fetchMyGames();
             setCreateGameOpen(false);
+            setEditingGame(null);
           }}
+          editingGame={editingGame}
         />
 
         {/* Fortune Counter Modal */}

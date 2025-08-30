@@ -45,6 +45,7 @@ interface LotteryBook {
 
 export default function Admin() {
   const [games, setGames] = useState<LotteryGame[]>([]);
+  const [archivedGames, setArchivedGames] = useState<LotteryGame[]>([]);
   const [books, setBooks] = useState<LotteryBook[]>([]);
   const [selectedGameId, setSelectedGameId] = useState<string | null>(null);
   const [selectedGame, setSelectedGame] = useState<LotteryGame | null>(null);
@@ -114,7 +115,13 @@ export default function Admin() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setGames(data || []);
+      
+      // Separate active and archived games
+      const activeGames = (data || []).filter(game => game.status !== 'archived');
+      const archived = (data || []).filter(game => game.status === 'archived');
+      
+      setGames(activeGames);
+      setArchivedGames(archived);
 
       // Fetch fortune counters for all games
       const counters: Record<string, number> = {};
@@ -205,12 +212,8 @@ export default function Admin() {
 
       if (error) throw error;
 
-      // Update local state
-      setGames(prev => prev.map(game => 
-        game.id === gameId 
-          ? { ...game, status: newStatus as 'pending' | 'online' | 'booking_stopped' | 'live' | 'archived' }
-          : game
-      ));
+      // Refresh games to handle archived/active separation
+      fetchGames();
 
       toast({
         title: "Success",
@@ -219,7 +222,7 @@ export default function Admin() {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to update game status",
+        description: error.message || "Failed to update game status",
         variant: "destructive",
       });
     }
@@ -455,8 +458,6 @@ export default function Admin() {
                                 <SelectContent>
                                   <SelectItem value="pending">Pending</SelectItem>
                                   <SelectItem value="online">Online</SelectItem>
-                                  <SelectItem value="booking_stopped">Booking Stopped</SelectItem>
-                                  <SelectItem value="live">Live</SelectItem>
                                   <SelectItem value="archived">Archived</SelectItem>
                                 </SelectContent>
                               </Select>
@@ -608,6 +609,84 @@ export default function Admin() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Completed Games Section */}
+        {archivedGames.length > 0 && (
+          <Card className="bg-gradient-to-br from-card to-card/80 border-border/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Eye className="h-5 w-5" />
+                Completed Games ({archivedGames.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Game Title</TableHead>
+                      <TableHead>Code</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Price</TableHead>
+                      <TableHead>Tickets</TableHead>
+                      <TableHead>Organiser</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {archivedGames.map((game) => (
+                      <TableRow key={game.id} className="opacity-60">
+                        <TableCell>
+                          <div className="font-medium text-muted-foreground">{game.title}</div>
+                          {game.description && (
+                            <div className="text-xs text-muted-foreground truncate max-w-[200px]">
+                              {game.description}
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {game.game_code && (
+                            <Badge variant="outline" className="text-xs font-mono">
+                              {game.game_code}
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1">
+                            <Calendar className="h-3 w-3" />
+                            {format(new Date(game.game_date), 'MMM dd, yyyy')}
+                          </div>
+                        </TableCell>
+                        <TableCell>₹{game.ticket_price}</TableCell>
+                        <TableCell>{game.total_tickets}</TableCell>
+                        <TableCell>
+                          <div className="truncate max-w-[150px]">
+                            {game.organising_group_name}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {getStatusBadge(game.status)}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-1">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleViewGame(game.id)}
+                            >
+                              <Eye className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Create Game Modal */}
         <CreateGameForm

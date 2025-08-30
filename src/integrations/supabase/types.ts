@@ -760,6 +760,10 @@ export type Database = {
           new_balance: number
         }[]
       }
+      update_lottery_statuses: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       user_has_ticket_in_game: {
         Args: { p_game_id: string; p_user_id?: string }
         Returns: boolean

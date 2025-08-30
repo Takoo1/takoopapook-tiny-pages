@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,24 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Trash2, Upload, Calendar, X } from "lucide-react";
 import SerialNumberEditor, { type SerialConfig } from "./SerialNumberEditor";
+
+interface LotteryGame {
+  id: string;
+  title: string;
+  description: string;
+  game_date: string;
+  ticket_price: number;
+  total_tickets: number;
+  organising_group_name: string;
+  created_by_user_id: string;
+  game_code: string | null;
+  status: 'pending' | 'online' | 'booking_stopped' | 'live' | 'archived';
+  headline?: string;
+  live_draw_url?: string;
+  contact_phone?: string;
+  contact_email?: string;
+  stop_booking_time?: string;
+}
 
 // Generate a random 5-character game code (mix of letters and digits)
 const generateGameCode = (): string => {
@@ -53,9 +71,10 @@ interface CreateGameFormProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  editingGame?: LotteryGame | null;
 }
 
-export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormProps) {
+export function CreateGameForm({ isOpen, onClose, onSuccess, editingGame }: CreateGameFormProps) {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -108,6 +127,31 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
       align: 'center'
     }
   });
+
+  // Initialize form with editing game data
+  useEffect(() => {
+    if (editingGame) {
+      setFormData({
+        title: editingGame.title || '',
+        description: editingGame.description || '',
+        gameDate: editingGame.game_date ? new Date(editingGame.game_date).toISOString().slice(0, 16) : '',
+        stopBookingTime: editingGame.stop_booking_time ? new Date(editingGame.stop_booking_time).toISOString().slice(0, 16) : '',
+        ticketPrice: editingGame.ticket_price ? editingGame.ticket_price.toString() : '',
+        organisingGroupName: editingGame.organising_group_name || '',
+        headline: editingGame.headline || '',
+        liveDrawUrl: editingGame.live_draw_url || '',
+        contactPhone: editingGame.contact_phone || '',
+        contactEmail: editingGame.contact_email || ''
+      });
+      
+      // Set price option
+      if (editingGame.ticket_price && ['200', '500', '1000'].includes(editingGame.ticket_price.toString())) {
+        setSelectedPriceOption(editingGame.ticket_price.toString() as '200' | '500' | '1000');
+      } else {
+        setSelectedPriceOption('custom');
+      }
+    }
+  }, [editingGame]);
 
   const handleImageUpload = (file: File, type: 'ticket' | 'logo') => {
     if (file.size > 2 * 1024 * 1024) {
@@ -275,7 +319,7 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!ticketImage) {
+    if (!ticketImage && !editingGame) {
       toast({
         title: "Missing required image",
         description: "Please upload a ticket image",
@@ -289,156 +333,194 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) throw new Error('Not authenticated');
 
-      // Calculate total tickets
-      const totalTickets = books.reduce((sum, book) => 
-        sum + (book.lastTicket - book.firstTicket + 1), 0
-      );
-      const startingTicketNumber = Math.min(...books.map(b => b.firstTicket));
-      const lastTicketNumber = Math.max(...books.map(b => b.lastTicket));
-
-      // Create the game
-      const { data: game, error: gameError } = await supabase
-        .from('lottery_games')
-        .insert({
+      if (editingGame) {
+        // Edit mode - update existing game
+        const updateData: any = {
           title: formData.title,
           description: formData.description,
           game_date: formData.gameDate,
           stop_booking_time: formData.stopBookingTime,
           ticket_price: parseFloat(formData.ticketPrice),
-          total_tickets: totalTickets,
-          starting_ticket_number: startingTicketNumber,
-          last_ticket_number: lastTicketNumber,
           organising_group_name: formData.organisingGroupName,
           headline: formData.headline,
           live_draw_url: formData.liveDrawUrl || null,
           contact_phone: formData.contactPhone || null,
           contact_email: formData.contactEmail || null,
-          created_by_user_id: session.user.id,
-          game_code: generateGameCode()
-        })
-        .select()
-        .single();
-
-      if (gameError) throw gameError;
-
-      // Upload images and update game
-      const ticketImageUrl = await uploadImage(ticketImage, game.id, 'ticket');
-      let organiserLogoUrl = null;
-      if (organiserLogo) {
-        organiserLogoUrl = await uploadImage(organiserLogo, game.id, 'logo');
-      }
-
-      await supabase
-        .from('lottery_games')
-        .update({
-          ticket_image_url: ticketImageUrl,
-          organiser_logo_url: organiserLogoUrl,
           ticket_serial_config: serialConfig
-        })
-        .eq('id', game.id);
+        };
 
-      // Create books and generate tickets
-      for (const book of books) {
-        const { data: bookData, error: bookError } = await supabase
-          .from('lottery_books')
+        // Upload new images if provided
+        if (ticketImage) {
+          updateData.ticket_image_url = await uploadImage(ticketImage, editingGame.id, 'ticket');
+        }
+        if (organiserLogo) {
+          updateData.organiser_logo_url = await uploadImage(organiserLogo, editingGame.id, 'logo');
+        }
+
+        const { error: gameError } = await supabase
+          .from('lottery_games')
+          .update(updateData)
+          .eq('id', editingGame.id);
+
+        if (gameError) throw gameError;
+
+        toast({
+          title: "Success!",
+          description: "Lottery game updated successfully. Status reset to pending for admin review.",
+        });
+      } else {
+        // Create mode - original logic
+        // Calculate total tickets
+        const totalTickets = books.reduce((sum, book) => 
+          sum + (book.lastTicket - book.firstTicket + 1), 0
+        );
+        const startingTicketNumber = Math.min(...books.map(b => b.firstTicket));
+        const lastTicketNumber = Math.max(...books.map(b => b.lastTicket));
+
+        // Create the game
+        const { data: game, error: gameError } = await supabase
+          .from('lottery_games')
           .insert({
-            lottery_game_id: game.id,
-            book_name: book.name,
-            first_ticket_number: book.firstTicket,
-            last_ticket_number: book.lastTicket,
-            is_online_available: book.isOnline
+            title: formData.title,
+            description: formData.description,
+            game_date: formData.gameDate,
+            stop_booking_time: formData.stopBookingTime,
+            ticket_price: parseFloat(formData.ticketPrice),
+            total_tickets: totalTickets,
+            starting_ticket_number: startingTicketNumber,
+            last_ticket_number: lastTicketNumber,
+            organising_group_name: formData.organisingGroupName,
+            headline: formData.headline,
+            live_draw_url: formData.liveDrawUrl || null,
+            contact_phone: formData.contactPhone || null,
+            contact_email: formData.contactEmail || null,
+            created_by_user_id: session.user.id,
+            game_code: generateGameCode()
           })
           .select()
           .single();
 
-        if (bookError) throw bookError;
+        if (gameError) throw gameError;
 
-        // Generate tickets for this book
-        const { error: ticketsError } = await supabase.rpc(
-          'generate_lottery_tickets_for_book',
-          {
-            game_id: game.id,
-            book_id: bookData.id,
-            start_num: book.firstTicket,
-            end_num: book.lastTicket
-          }
-        );
+        // Upload images and update game
+        const ticketImageUrl = await uploadImage(ticketImage, game.id, 'ticket');
+        let organiserLogoUrl = null;
+        if (organiserLogo) {
+          organiserLogoUrl = await uploadImage(organiserLogo, game.id, 'logo');
+        }
 
-        if (ticketsError) throw ticketsError;
+        await supabase
+          .from('lottery_games')
+          .update({
+            ticket_image_url: ticketImageUrl,
+            organiser_logo_url: organiserLogoUrl,
+            ticket_serial_config: serialConfig
+          })
+          .eq('id', game.id);
+
+        // Create books and generate tickets
+        for (const book of books) {
+          const { data: bookData, error: bookError } = await supabase
+            .from('lottery_books')
+            .insert({
+              lottery_game_id: game.id,
+              book_name: book.name,
+              first_ticket_number: book.firstTicket,
+              last_ticket_number: book.lastTicket,
+              is_online_available: book.isOnline
+            })
+            .select()
+            .single();
+
+          if (bookError) throw bookError;
+
+          // Generate tickets for this book
+          const { error: ticketsError } = await supabase.rpc(
+            'generate_lottery_tickets_for_book',
+            {
+              game_id: game.id,
+              book_id: bookData.id,
+              start_num: book.firstTicket,
+              end_num: book.lastTicket
+            }
+          );
+
+          if (ticketsError) throw ticketsError;
+        }
+
+        // Create prizes
+        const allPrizes = [
+          ...mainPrizes.map((prize, index) => ({
+            lottery_game_id: game.id,
+            prize_type: 'main' as const,
+            title: prize.title,
+            amount: prize.amount ? parseFloat(prize.amount) : null,
+            description: prize.description || null,
+            display_order: index + 1
+          })),
+          ...incentivePrizes.map((prize, index) => ({
+            lottery_game_id: game.id,
+            prize_type: 'incentive' as const,
+            title: prize.title,
+            amount: prize.amount ? parseFloat(prize.amount) : null,
+            description: prize.description || null,
+            display_order: index + 1
+          }))
+        ];
+
+        if (allPrizes.length > 0) {
+          const { error: prizesError } = await supabase
+            .from('lottery_prizes')
+            .insert(allPrizes);
+          if (prizesError) throw prizesError;
+        }
+
+        // Create committee members
+        const committeeData = committee
+          .filter(member => member.designation && member.name)
+          .map((member, index) => ({
+            lottery_game_id: game.id,
+            designation: member.designation,
+            member_name: member.name,
+            display_order: index + 1
+          }));
+
+        if (committeeData.length > 0) {
+          const { error: committeeError } = await supabase
+            .from('lottery_organising_committee')
+            .insert(committeeData);
+          if (committeeError) throw committeeError;
+        }
+
+        // Create terms
+        const termsData = terms
+          .filter(term => term.content.trim())
+          .map((term, index) => ({
+            lottery_game_id: game.id,
+            content: term.content,
+            display_order: index + 1
+          }));
+
+        if (termsData.length > 0) {
+          const { error: termsError } = await supabase
+            .from('lottery_terms')
+            .insert(termsData);
+          if (termsError) throw termsError;
+        }
+
+        toast({
+          title: "Success!",
+          description: "Lottery game created successfully",
+        });
       }
-
-      // Create prizes
-      const allPrizes = [
-        ...mainPrizes.map((prize, index) => ({
-          lottery_game_id: game.id,
-          prize_type: 'main' as const,
-          title: prize.title,
-          amount: prize.amount ? parseFloat(prize.amount) : null,
-          description: prize.description || null,
-          display_order: index + 1
-        })),
-        ...incentivePrizes.map((prize, index) => ({
-          lottery_game_id: game.id,
-          prize_type: 'incentive' as const,
-          title: prize.title,
-          amount: prize.amount ? parseFloat(prize.amount) : null,
-          description: prize.description || null,
-          display_order: index + 1
-        }))
-      ];
-
-      if (allPrizes.length > 0) {
-        const { error: prizesError } = await supabase
-          .from('lottery_prizes')
-          .insert(allPrizes);
-        if (prizesError) throw prizesError;
-      }
-
-      // Create committee members
-      const committeeData = committee
-        .filter(member => member.designation && member.name)
-        .map((member, index) => ({
-          lottery_game_id: game.id,
-          designation: member.designation,
-          member_name: member.name,
-          display_order: index + 1
-        }));
-
-      if (committeeData.length > 0) {
-        const { error: committeeError } = await supabase
-          .from('lottery_organising_committee')
-          .insert(committeeData);
-        if (committeeError) throw committeeError;
-      }
-
-      // Create terms
-      const termsData = terms
-        .filter(term => term.content.trim())
-        .map((term, index) => ({
-          lottery_game_id: game.id,
-          content: term.content,
-          display_order: index + 1
-        }));
-
-      if (termsData.length > 0) {
-        const { error: termsError } = await supabase
-          .from('lottery_terms')
-          .insert(termsData);
-        if (termsError) throw termsError;
-      }
-
-      toast({
-        title: "Success!",
-        description: "Lottery game created successfully",
-      });
 
       onSuccess();
       onClose();
     } catch (error) {
-      console.error('Error creating game:', error);
+      console.error('Error saving game:', error);
       toast({
         title: "Error",
-        description: "Failed to create lottery game",
+        description: `Failed to ${editingGame ? 'update' : 'create'} lottery game`,
         variant: "destructive",
       });
     } finally {
@@ -454,7 +536,7 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create New Lottery Game</DialogTitle>
+          <DialogTitle>{editingGame ? 'Edit Lottery Game' : 'Create New Lottery Game'}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -700,171 +782,111 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
             />
           )}
 
-          {/* Books and Tickets */}
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <CardTitle className="text-lg">Books & Ticket Range</CardTitle>
-                <div className="text-sm text-muted-foreground">
-                  Total Tickets: {totalTickets}
+          {/* Books and Tickets - Hide in edit mode since editing ticket structure is complex */}
+          {!editingGame && (
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <CardTitle className="text-lg">Books & Ticket Range</CardTitle>
+                  <div className="text-sm text-muted-foreground">
+                    Total Tickets: {totalTickets}
+                  </div>
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {books.map((book, index) => (
-                <div key={book.id} className="p-4 border rounded-lg">
-                  <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-                    <div>
-                      <Label>Book Name</Label>
-                      <Input
-                        value={book.name}
-                        onChange={(e) => updateBook(book.id, 'name', e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <Label>First Ticket</Label>
-                      <Input
-                        type="number"
-                        value={book.firstTicket}
-                        onChange={(e) => updateBook(book.id, 'firstTicket', parseInt(e.target.value))}
-                      />
-                    </div>
-                    <div>
-                      <Label>Last Ticket</Label>
-                      <Input
-                        type="number"
-                        value={book.lastTicket}
-                        onChange={(e) => updateBook(book.id, 'lastTicket', parseInt(e.target.value))}
-                      />
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Switch
-                        checked={book.isOnline}
-                        onCheckedChange={(checked) => updateBook(book.id, 'isOnline', checked)}
-                      />
-                      <Label className="text-sm">
-                        {book.isOnline ? 'Online' : 'Offline'}
-                      </Label>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={addBook}
-                      >
-                        <Plus className="w-4 h-4" />
-                      </Button>
-                      {books.length > 1 && (
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {books.map((book, index) => (
+                  <div key={book.id} className="p-4 border rounded-lg">
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                      <div>
+                        <Label>Book Name</Label>
+                        <Input
+                          value={book.name}
+                          onChange={(e) => updateBook(book.id, 'name', e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <Label>First Ticket</Label>
+                        <Input
+                          type="number"
+                          value={book.firstTicket}
+                          onChange={(e) => updateBook(book.id, 'firstTicket', parseInt(e.target.value))}
+                        />
+                      </div>
+                      <div>
+                        <Label>Last Ticket</Label>
+                        <Input
+                          type="number"
+                          value={book.lastTicket}
+                          onChange={(e) => updateBook(book.id, 'lastTicket', parseInt(e.target.value))}
+                        />
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          checked={book.isOnline}
+                          onCheckedChange={(checked) => updateBook(book.id, 'isOnline', checked)}
+                        />
+                        <Label className="text-sm">
+                          {book.isOnline ? 'Online' : 'Offline'}
+                        </Label>
+                      </div>
+                      <div className="flex gap-2">
                         <Button
                           type="button"
                           variant="outline"
                           size="sm"
-                          onClick={() => removeBook(book.id)}
+                          onClick={addBook}
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Plus className="w-4 h-4" />
                         </Button>
-                      )}
+                        {books.length > 1 && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => removeBook(book.id)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-2">
+                      Tickets: {book.lastTicket - book.firstTicket + 1} | 
+                      Mode: {book.isOnline ? 'Available online' : 'Offline only'}
                     </div>
                   </div>
-                  <div className="text-xs text-muted-foreground mt-2">
-                    Tickets: {book.lastTicket - book.firstTicket + 1} | 
-                    Mode: {book.isOnline ? 'Available online' : 'Offline only'}
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+                ))}
+              </CardContent>
+            </Card>
+          )}
 
-          {/* Main Prizes */}
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <CardTitle className="text-lg">Main Prizes</CardTitle>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => addPrize('main')}
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Prize
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {mainPrizes.map((prize, index) => (
-                <div key={prize.id} className="p-4 border rounded-lg">
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                    <div>
-                      <Label>Prize Title</Label>
-                      <Input
-                        value={prize.title}
-                        onChange={(e) => updatePrize(prize.id, 'title', e.target.value, 'main')}
-                        placeholder="e.g. 1st Prize"
-                      />
-                    </div>
-                    <div>
-                      <Label>Amount (₹)</Label>
-                      <Input
-                        type="number"
-                        value={prize.amount}
-                        onChange={(e) => updatePrize(prize.id, 'amount', e.target.value, 'main')}
-                      />
-                    </div>
-                    <div>
-                      <Label>Description</Label>
-                      <Input
-                        value={prize.description}
-                        onChange={(e) => updatePrize(prize.id, 'description', e.target.value, 'main')}
-                        placeholder="Optional description"
-                      />
-                    </div>
-                    <div>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => removePrize(prize.id, 'main')}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
+          {/* Main Prizes - Hide complex data editing in edit mode */}
+          {!editingGame && (
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <CardTitle className="text-lg">Main Prizes</CardTitle>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => addPrize('main')}
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Prize
+                  </Button>
                 </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          {/* Incentive Prizes */}
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <CardTitle className="text-lg">Incentive Prizes</CardTitle>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => addPrize('incentive')}
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Incentive Prize
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {incentivePrizes.length === 0 ? (
-                <p className="text-muted-foreground text-sm">No incentive prizes added yet</p>
-              ) : (
-                incentivePrizes.map((prize, index) => (
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {mainPrizes.map((prize, index) => (
                   <div key={prize.id} className="p-4 border rounded-lg">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                       <div>
                         <Label>Prize Title</Label>
                         <Input
                           value={prize.title}
-                          onChange={(e) => updatePrize(prize.id, 'title', e.target.value, 'incentive')}
-                          placeholder="e.g. Early Bird Prize"
+                          onChange={(e) => updatePrize(prize.id, 'title', e.target.value, 'main')}
+                          placeholder="e.g. 1st Prize"
                         />
                       </div>
                       <div>
@@ -872,14 +894,14 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
                         <Input
                           type="number"
                           value={prize.amount}
-                          onChange={(e) => updatePrize(prize.id, 'amount', e.target.value, 'incentive')}
+                          onChange={(e) => updatePrize(prize.id, 'amount', e.target.value, 'main')}
                         />
                       </div>
                       <div>
                         <Label>Description</Label>
                         <Input
                           value={prize.description}
-                          onChange={(e) => updatePrize(prize.id, 'description', e.target.value, 'incentive')}
+                          onChange={(e) => updatePrize(prize.id, 'description', e.target.value, 'main')}
                           placeholder="Optional description"
                         />
                       </div>
@@ -888,118 +910,188 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
                           type="button"
                           variant="outline"
                           size="sm"
-                          onClick={() => removePrize(prize.id, 'incentive')}
+                          onClick={() => removePrize(prize.id, 'main')}
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
                     </div>
                   </div>
-                ))
-              )}
-            </CardContent>
-          </Card>
+                ))}
+              </CardContent>
+            </Card>
+          )}
 
-          {/* Organising Committee */}
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <CardTitle className="text-lg">Organising Committee</CardTitle>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={addCommitteeMember}
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Member
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {committee.map((member, index) => (
-                <div key={member.id} className="p-4 border rounded-lg">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                    <div>
-                      <Label>Designation</Label>
-                      <Input
-                        value={member.designation}
-                        onChange={(e) => updateCommitteeMember(member.id, 'designation', e.target.value)}
-                        placeholder="e.g. President, Secretary"
-                      />
+          {/* Incentive Prizes - Hide complex data editing in edit mode */}
+          {!editingGame && (
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <CardTitle className="text-lg">Incentive Prizes</CardTitle>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => addPrize('incentive')}
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Incentive Prize
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {incentivePrizes.length === 0 ? (
+                  <p className="text-muted-foreground text-sm">No incentive prizes added yet</p>
+                ) : (
+                  incentivePrizes.map((prize, index) => (
+                    <div key={prize.id} className="p-4 border rounded-lg">
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                        <div>
+                          <Label>Prize Title</Label>
+                          <Input
+                            value={prize.title}
+                            onChange={(e) => updatePrize(prize.id, 'title', e.target.value, 'incentive')}
+                            placeholder="e.g. Early Bird Prize"
+                          />
+                        </div>
+                        <div>
+                          <Label>Amount (₹)</Label>
+                          <Input
+                            type="number"
+                            value={prize.amount}
+                            onChange={(e) => updatePrize(prize.id, 'amount', e.target.value, 'incentive')}
+                          />
+                        </div>
+                        <div>
+                          <Label>Description</Label>
+                          <Input
+                            value={prize.description}
+                            onChange={(e) => updatePrize(prize.id, 'description', e.target.value, 'incentive')}
+                            placeholder="Optional description"
+                          />
+                        </div>
+                        <div>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => removePrize(prize.id, 'incentive')}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <Label>Name</Label>
-                      <Input
-                        value={member.name}
-                        onChange={(e) => updateCommitteeMember(member.id, 'name', e.target.value)}
-                        placeholder="Enter member name"
-                      />
-                    </div>
-                    <div>
-                      {committee.length > 1 && (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => removeCommitteeMember(member.id)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      )}
+                  ))
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Organising Committee - Hide complex data editing in edit mode */}
+          {!editingGame && (
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <CardTitle className="text-lg">Organising Committee</CardTitle>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={addCommitteeMember}
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Member
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {committee.map((member, index) => (
+                  <div key={member.id} className="p-4 border rounded-lg">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                      <div>
+                        <Label>Designation</Label>
+                        <Input
+                          value={member.designation}
+                          onChange={(e) => updateCommitteeMember(member.id, 'designation', e.target.value)}
+                          placeholder="e.g. President, Secretary"
+                        />
+                      </div>
+                      <div>
+                        <Label>Name</Label>
+                        <Input
+                          value={member.name}
+                          onChange={(e) => updateCommitteeMember(member.id, 'name', e.target.value)}
+                          placeholder="Enter member name"
+                        />
+                      </div>
+                      <div>
+                        {committee.length > 1 && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => removeCommitteeMember(member.id)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+                ))}
+              </CardContent>
+            </Card>
+          )}
 
-          {/* Terms and Conditions */}
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <CardTitle className="text-lg">Terms and Conditions</CardTitle>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={addTerm}
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Term
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {terms.map((term, index) => (
-                <div key={term.id} className="p-4 border rounded-lg">
-                  <div className="flex gap-4 items-start">
-                    <div className="flex-1">
-                      <Label>Term {index + 1}</Label>
-                      <Textarea
-                        value={term.content}
-                        onChange={(e) => updateTerm(term.id, e.target.value)}
-                        placeholder="Enter term or condition"
-                        rows={2}
-                      />
-                    </div>
-                    <div className="pt-6">
-                      {terms.length > 1 && (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => removeTerm(term.id)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      )}
+          {/* Terms and Conditions - Hide complex data editing in edit mode */}
+          {!editingGame && (
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <CardTitle className="text-lg">Terms and Conditions</CardTitle>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={addTerm}
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Term
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {terms.map((term, index) => (
+                  <div key={term.id} className="p-4 border rounded-lg">
+                    <div className="flex gap-4 items-start">
+                      <div className="flex-1">
+                        <Label>Term {index + 1}</Label>
+                        <Textarea
+                          value={term.content}
+                          onChange={(e) => updateTerm(term.id, e.target.value)}
+                          placeholder="Enter term or condition"
+                          rows={2}
+                        />
+                      </div>
+                      <div className="pt-6">
+                        {terms.length > 1 && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => removeTerm(term.id)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+                ))}
+              </CardContent>
+            </Card>
+          )}
 
           {/* Contact Information */}
           <Card>
@@ -1054,7 +1146,7 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
               Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Creating..." : "Create Game"}
+              {isSubmitting ? `${editingGame ? 'Updating' : 'Creating'}...` : `${editingGame ? 'Update' : 'Create'} Game`}
             </Button>
           </div>
         </form>
