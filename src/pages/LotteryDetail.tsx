@@ -423,19 +423,28 @@ export default function LotteryDetail() {
           </div>
 
           {/* Game Date & Books Count Row */}
-          <div className="flex justify-between items-center text-sm py-3 border-y border-border">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-muted-foreground" />
-              <span className="text-muted-foreground">Draw Date:</span>
-              <span className="font-medium text-foreground">{formatDate(game.game_date)}</span>
+          <div className="space-y-3 py-3 border-y border-border">
+            <div className="flex justify-between items-center text-sm">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-muted-foreground" />
+                <span className="text-muted-foreground">Draw Date:</span>
+                <span className="font-medium text-foreground">{formatDate(game.game_date)}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-muted-foreground" />
+                <span className="text-muted-foreground">Books:</span>
+                <span className="font-medium text-foreground">
+                  {onlineBookCount} online, {offlineBookCount} offline
+                </span>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-muted-foreground" />
-              <span className="text-muted-foreground">Books:</span>
-              <span className="font-medium text-foreground">
-                {onlineBookCount} online, {offlineBookCount} offline
-              </span>
-            </div>
+            {game.stop_booking_time && (
+              <div className="flex items-center gap-2 text-sm">
+                <Clock className="w-4 h-4 text-muted-foreground" />
+                <span className="text-muted-foreground">Booking Stops:</span>
+                <span className="font-medium text-foreground">{formatDate(game.stop_booking_time)}</span>
+              </div>
+            )}
           </div>
 
           {/* Prizes List */}
