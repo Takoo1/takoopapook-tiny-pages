@@ -697,6 +697,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      game_is_live_or_owned: {
+        Args: { p_game_id: string; p_user_id?: string }
+        Returns: boolean
+      }
       generate_lottery_tickets: {
         Args:
           | { end_num: number; game_id: string; start_num: number }
@@ -755,6 +759,10 @@ export type Database = {
         Returns: {
           new_balance: number
         }[]
+      }
+      user_has_ticket_in_game: {
+        Args: { p_game_id: string; p_user_id?: string }
+        Returns: boolean
       }
     }
     Enums: {
