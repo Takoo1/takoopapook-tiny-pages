@@ -257,6 +257,20 @@ export default function LotteryDetail() {
 
   // Countdown timer for booking stopped status
   const [timeRemaining, setTimeRemaining] = useState<string>('');
+  useEffect(() => {
+    fetchGameDetails();
+  }, [gameId]);
+
+  // Status polling for real-time updates
+  useEffect(() => {
+    const statusInterval = setInterval(() => {
+      if (game?.id) {
+        fetchGameDetails();
+      }
+    }, 30000); // Poll every 30 seconds
+
+    return () => clearInterval(statusInterval);
+  }, [game?.id]);
   
   useEffect(() => {
     if (game?.status === 'booking_stopped' && game.game_date) {

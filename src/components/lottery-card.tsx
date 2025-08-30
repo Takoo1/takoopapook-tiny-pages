@@ -14,6 +14,7 @@ interface LotteryCardProps {
   organizingGroup: string;
   onViewDetails: (id: string) => void;
   theme?: 'tier-100' | 'tier-500' | 'tier-1000' | 'tier-other' | 'default';
+  status?: 'online' | 'booking_stopped' | 'live';
 }
 
 export function LotteryCard({ 
@@ -27,7 +28,8 @@ export function LotteryCard({
   availableTickets, 
   organizingGroup,
   onViewDetails,
-  theme = 'default'
+  theme = 'default',
+  status
 }: LotteryCardProps) {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -94,6 +96,17 @@ export function LotteryCard({
             alt={`${title} ticket`}
             className="w-full h-full object-cover md:group-hover:scale-105 transition-transform duration-300"
           />
+          {/* Status Badge */}
+          {status === 'booking_stopped' && (
+            <div className="absolute top-2 right-2 bg-orange-500 text-white px-2 py-1 rounded-md text-xs font-semibold shadow-lg">
+              Booking Stopped
+            </div>
+          )}
+          {status === 'live' && (
+            <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs font-semibold shadow-lg animate-pulse">
+              Live
+            </div>
+          )}
         </div>
       )}
       

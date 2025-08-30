@@ -25,6 +25,7 @@ interface LotteryGame {
   total_tickets: number;
   available_tickets: number;
   organising_group_name: string;
+  status: 'online' | 'booking_stopped' | 'live';
 }
 
 export default function Home() {
@@ -45,6 +46,15 @@ export default function Home() {
   useEffect(() => {
     fetchLotteryGames();
     checkAuthAndReferral();
+  }, []);
+
+  // Add polling for real-time status updates
+  useEffect(() => {
+    const statusInterval = setInterval(() => {
+      fetchLotteryGames();
+    }, 30000); // Poll every 30 seconds
+
+    return () => clearInterval(statusInterval);
   }, []);
 
   const checkAuthAndReferral = async () => {
@@ -141,7 +151,8 @@ export default function Home() {
           ticket_image_url,
           ticket_price,
           total_tickets,
-          organising_group_name
+          organising_group_name,
+          status
         `)
         .in('status', ['live', 'online', 'booking_stopped'])
         .order('game_date', { ascending: true });
@@ -455,6 +466,7 @@ export default function Home() {
                           organizingGroup={game.organising_group_name}
                           onViewDetails={handleViewDetails}
                           theme={getThemeForPrice(game.ticket_price)}
+                          status={game.status}
                         />
                       ))}
                     </div>
