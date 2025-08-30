@@ -11,6 +11,7 @@ import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Trash2, Upload, Calendar, X } from "lucide-react";
+import SerialNumberEditor, { type SerialConfig } from "./SerialNumberEditor";
 
 // Generate a random 5-character game code (mix of letters and digits)
 const generateGameCode = (): string => {
@@ -88,7 +89,31 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
   const [terms, setTerms] = useState<Term[]>([
     { id: '1', content: '' }
   ]);
-  const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Serial number configuration
+  const [serialConfig, setSerialConfig] = useState<SerialConfig>({
+    position: { xPct: 70, yPct: 85 },
+    size: { wPct: 25, hPct: 8 },
+    rotation: 0,
+    prefix: "Sl. No.",
+    digitCount: 5,
+    background: {
+      type: 'preset',
+      color: '#000000',
+      opacity: 0.85,
+      radiusPct: 50,
+      preset: 'pill'
+    },
+    text: {
+      fontFamily: 'Inter',
+      fontWeight: 700,
+      fontSizePctOfHeight: 60,
+      color: '#ffffff',
+      align: 'center'
+    },
+    paddingPct: { x: 6, y: 4 }
+  });
 
   const handleImageUpload = (file: File, type: 'ticket' | 'logo') => {
     if (file.size > 2 * 1024 * 1024) {
@@ -265,7 +290,7 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
       return;
     }
 
-    setLoading(true);
+    setIsSubmitting(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) throw new Error('Not authenticated');
@@ -313,7 +338,8 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
         .from('lottery_games')
         .update({
           ticket_image_url: ticketImageUrl,
-          organiser_logo_url: organiserLogoUrl
+          organiser_logo_url: organiserLogoUrl,
+          ticket_serial_config: serialConfig
         })
         .eq('id', game.id);
 
@@ -422,7 +448,7 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
         variant: "destructive",
       });
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -670,6 +696,15 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
               </div>
             </CardContent>
           </Card>
+
+          {/* Serial Number Editor */}
+          {ticketImagePreview && (
+            <SerialNumberEditor
+              ticketImageUrl={ticketImagePreview}
+              config={serialConfig}
+              onConfigChange={setSerialConfig}
+            />
+          )}
 
           {/* Books and Tickets */}
           <Card>
@@ -1024,8 +1059,8 @@ export function CreateGameForm({ isOpen, onClose, onSuccess }: CreateGameFormPro
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
-              {loading ? "Creating..." : "Create Game"}
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Creating..." : "Create Game"}
             </Button>
           </div>
         </form>

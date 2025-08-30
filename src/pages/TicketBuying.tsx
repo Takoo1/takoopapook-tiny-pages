@@ -6,9 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, ShoppingCart } from "lucide-react";
+import { ArrowLeft, ShoppingCart, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import fcCoin from "@/assets/fc-coin.png";
+import { generateAndDownloadTicket, type SerialConfig } from "@/lib/generateTicketImage";
 
 interface SelectedTicket {
   id: string;
@@ -37,6 +38,11 @@ export default function TicketBuying() {
   const [applyingDiscount, setApplyingDiscount] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [ticketPrice, setTicketPrice] = useState<number>(200); // Default fallback price
+  const [gameData, setGameData] = useState<{
+    title: string;
+    ticket_image_url: string | null;
+    ticket_serial_config: SerialConfig | null;
+  } | null>(null);
 
   useEffect(() => {
     // Get selected tickets from location state
@@ -52,27 +58,32 @@ export default function TicketBuying() {
     }
     setSelectedTickets(tickets);
 
-    // Fetch the actual ticket price from the lottery game
-    const fetchTicketPrice = async () => {
+    // Fetch game data including ticket price and serial config
+    const fetchGameData = async () => {
       if (!gameId) return;
       try {
         const { data, error } = await supabase
           .from('lottery_games')
-          .select('ticket_price')
+          .select('title, ticket_price, ticket_image_url, ticket_serial_config')
           .eq('id', gameId)
           .maybeSingle();
         
         if (error) throw error;
-        if (data?.ticket_price) {
-          setTicketPrice(Number(data.ticket_price));
+        if (data) {
+          setTicketPrice(Number(data.ticket_price) || 200);
+          setGameData({
+            title: data.title || 'Lottery Game',
+            ticket_image_url: data.ticket_image_url,
+            ticket_serial_config: data.ticket_serial_config as SerialConfig || null
+          });
         }
       } catch (error) {
-        console.error('Error fetching ticket price:', error);
+        console.error('Error fetching game data:', error);
         // Keep the default fallback price
       }
     };
 
-    fetchTicketPrice();
+    fetchGameData();
   }, [location.state, gameId, navigate, toast]);
 
   const handleInputChange = (field: string, value: string) => {
@@ -188,6 +199,31 @@ export default function TicketBuying() {
         }
       } catch (e) {
         console.error('FC award error', e);
+      }
+
+      // Generate downloadable tickets if image and config available
+      if (gameData?.ticket_image_url && gameData?.ticket_serial_config) {
+        try {
+          for (const ticket of selectedTickets) {
+            await generateAndDownloadTicket(
+              gameData.ticket_image_url,
+              ticket.number,
+              gameData.ticket_serial_config,
+              gameData.title
+            );
+          }
+          toast({
+            title: "Tickets Downloaded",
+            description: "Your ticket images have been downloaded to your device.",
+          });
+        } catch (error) {
+          console.error('Error generating tickets:', error);
+          toast({
+            title: "Download Error",
+            description: "Tickets booked successfully, but download failed. You can download them from My Tickets page.",
+            variant: "destructive",
+          });
+        }
       }
 
       navigate(`/lottery/${gameId}`);

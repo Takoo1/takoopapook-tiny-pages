@@ -258,6 +258,7 @@ export type Database = {
           stop_booking_time: string | null
           ticket_image_url: string | null
           ticket_price: number | null
+          ticket_serial_config: Json
           title: string
           total_tickets: number
           updated_at: string
@@ -282,6 +283,7 @@ export type Database = {
           stop_booking_time?: string | null
           ticket_image_url?: string | null
           ticket_price?: number | null
+          ticket_serial_config?: Json
           title: string
           total_tickets?: number
           updated_at?: string
@@ -306,6 +308,7 @@ export type Database = {
           stop_booking_time?: string | null
           ticket_image_url?: string | null
           ticket_price?: number | null
+          ticket_serial_config?: Json
           title?: string
           total_tickets?: number
           updated_at?: string
@@ -441,6 +444,8 @@ export type Database = {
           created_at: string
           id: string
           lottery_game_id: string
+          rendered_at: string | null
+          rendered_ticket_url: string | null
           status: string
           ticket_number: number
         }
@@ -455,6 +460,8 @@ export type Database = {
           created_at?: string
           id?: string
           lottery_game_id: string
+          rendered_at?: string | null
+          rendered_ticket_url?: string | null
           status?: string
           ticket_number: number
         }
@@ -469,6 +476,8 @@ export type Database = {
           created_at?: string
           id?: string
           lottery_game_id?: string
+          rendered_at?: string | null
+          rendered_ticket_url?: string | null
           status?: string
           ticket_number?: number
         }
