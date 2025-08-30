@@ -94,6 +94,7 @@ export default function LotteryDetail() {
 
   const fetchGameDetails = async () => {
     try {
+      console.log('Fetching game details for gameId:', gameId);
       // Fetch game details
       const { data: gameData, error: gameError } = await supabase
         .from('lottery_games')
@@ -101,7 +102,11 @@ export default function LotteryDetail() {
         .eq('id', gameId)
         .single();
 
-      if (gameError) throw gameError;
+      if (gameError) {
+        console.error('Game fetch error:', gameError);
+        throw gameError;
+      }
+      console.log('Game data loaded:', gameData);
       setGame(gameData);
 
       // Fetch books for this game
@@ -257,10 +262,7 @@ export default function LotteryDetail() {
 
   // Countdown timer for booking stopped status
   const [timeRemaining, setTimeRemaining] = useState<string>('');
-  useEffect(() => {
-    fetchGameDetails();
-  }, [gameId]);
-
+  
   // Status polling for real-time updates
   useEffect(() => {
     const statusInterval = setInterval(() => {
