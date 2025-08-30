@@ -81,6 +81,7 @@ export default function LotteryDetail() {
   const [currentBookIndex, setCurrentBookIndex] = useState(0);
   const [onlineBookCount, setOnlineBookCount] = useState(0);
   const [offlineBookCount, setOfflineBookCount] = useState(0);
+  const [timeRemaining, setTimeRemaining] = useState<string>('');
   
   const ticketsRef = useRef<HTMLDivElement>(null);
 
@@ -91,6 +92,51 @@ export default function LotteryDetail() {
     // Scroll to top when page loads
     window.scrollTo(0, 0);
   }, [gameId]);
+
+  // Status polling for real-time updates
+  useEffect(() => {
+    if (!gameId) return;
+    
+    const statusInterval = setInterval(() => {
+      if (game?.id) {
+        fetchGameDetails();
+      }
+    }, 30000); // Poll every 30 seconds
+
+    return () => clearInterval(statusInterval);
+  }, [game?.id, gameId]);
+  
+  // Countdown timer for booking stopped status
+  useEffect(() => {
+    if (game?.status === 'booking_stopped' && game.game_date) {
+      const updateCountdown = () => {
+        const now = new Date().getTime();
+        const gameTime = new Date(game.game_date).getTime();
+        const difference = gameTime - now;
+
+        if (difference > 0) {
+          const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+          if (days > 0) {
+            setTimeRemaining(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+          } else if (hours > 0) {
+            setTimeRemaining(`${hours}h ${minutes}m ${seconds}s`);
+          } else {
+            setTimeRemaining(`${minutes}m ${seconds}s`);
+          }
+        } else {
+          setTimeRemaining('Game is live');
+        }
+      };
+
+      updateCountdown();
+      const timer = setInterval(updateCountdown, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [game?.status, game?.game_date]);
 
   const fetchGameDetails = async () => {
     try {
@@ -260,50 +306,6 @@ export default function LotteryDetail() {
     });
   };
 
-  // Countdown timer for booking stopped status
-  const [timeRemaining, setTimeRemaining] = useState<string>('');
-  
-  // Status polling for real-time updates
-  useEffect(() => {
-    const statusInterval = setInterval(() => {
-      if (game?.id) {
-        fetchGameDetails();
-      }
-    }, 30000); // Poll every 30 seconds
-
-    return () => clearInterval(statusInterval);
-  }, [game?.id]);
-  
-  useEffect(() => {
-    if (game?.status === 'booking_stopped' && game.game_date) {
-      const updateCountdown = () => {
-        const now = new Date().getTime();
-        const gameTime = new Date(game.game_date).getTime();
-        const difference = gameTime - now;
-
-        if (difference > 0) {
-          const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-          const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-          const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-          const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
-          if (days > 0) {
-            setTimeRemaining(`${days}d ${hours}h ${minutes}m ${seconds}s`);
-          } else if (hours > 0) {
-            setTimeRemaining(`${hours}h ${minutes}m ${seconds}s`);
-          } else {
-            setTimeRemaining(`${minutes}m ${seconds}s`);
-          }
-        } else {
-          setTimeRemaining('Game is live');
-        }
-      };
-
-      updateCountdown();
-      const timer = setInterval(updateCountdown, 1000);
-      return () => clearInterval(timer);
-    }
-  }, [game?.status, game?.game_date]);
 
   // Function to render status-specific content
   const renderStatusContent = () => {
