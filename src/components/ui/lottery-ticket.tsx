@@ -6,10 +6,14 @@ interface LotteryTicketProps {
   onClick?: () => void;
   className?: string;
   forceClickable?: boolean; // Allow parent to override clickable logic
+  isSelected?: boolean; // Whether this ticket is selected
 }
 
-export function LotteryTicket({ ticketNumber, status, onClick, className, forceClickable }: LotteryTicketProps) {
+export function LotteryTicket({ ticketNumber, status, onClick, className, forceClickable, isSelected }: LotteryTicketProps) {
   const getStatusColor = () => {
+    if (isSelected) {
+      return 'bg-lottery-gold text-primary-foreground'; // Yellow when selected
+    }
     switch (status) {
       case 'sold_online':
         return 'bg-lottery-sold-online text-white'; // Green
@@ -23,7 +27,7 @@ export function LotteryTicket({ ticketNumber, status, onClick, className, forceC
   return (
     <div
       className={cn(
-        "w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-200",
+        "w-14 h-14 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-200",
         getStatusColor(),
         isClickable && "cursor-pointer hover:scale-110 hover:shadow-lg",
         className

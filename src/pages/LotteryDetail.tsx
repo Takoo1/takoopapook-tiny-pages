@@ -636,12 +636,12 @@ export default function LotteryDetail() {
                               key={ticket.id}
                               ticketNumber={ticket.ticket_number}
                               status={ticket.status}
+                              isSelected={isSelected}
                               onClick={
                                 ticket.status === 'available'
                                   ? () => handleTicketClick(ticket.id, ticket.ticket_number)
                                   : undefined
                               }
-                              className={`${isSelected ? "ring-2 ring-lottery-gold ring-offset-1" : ""} w-8 h-8 text-xs sm:w-12 sm:h-12`}
                             />
                           );
                         })}
