@@ -12,7 +12,7 @@ import { CreateGameForm } from "@/components/CreateGameForm";
 import { FortuneCounterModal } from "@/components/FortuneCounterModal";
 import { BookingsManager } from "@/components/BookingsManager";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Calendar, Users, Target, LogOut, Coins, Edit } from "lucide-react";
+import { Plus, Calendar, Users, Target, LogOut, Coins, Edit, UserPlus } from "lucide-react";
 import { format } from "date-fns";
 
 interface LotteryGame {
@@ -41,6 +41,10 @@ const GameOrganiserDashboard = () => {
   const [fortuneModalOpen, setFortuneModalOpen] = useState(false);
   const [bookingsModalOpen, setBookingsModalOpen] = useState(false);
   const [selectedBookingsGame, setSelectedBookingsGame] = useState<LotteryGame | null>(null);
+  const [joinGameOpen, setJoinGameOpen] = useState(false);
+  const [gameCode, setGameCode] = useState("");
+  const [gamePassword, setGamePassword] = useState("");
+  const [joiningGame, setJoiningGame] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -95,9 +99,9 @@ const GameOrganiserDashboard = () => {
         .select('*')
         .order('created_at', { ascending: false });
 
-      // If user is not admin, only show their own games
+      // If user is not admin, show their own games + games they're a member of
       if (profile?.role !== 'admin') {
-        query = query.eq('created_by_user_id', session.user.id);
+        query = query.or(`created_by_user_id.eq.${session.user.id},id.in.(${await getMemberGameIds(session.user.id)})`);
       }
 
       const { data, error } = await query;
@@ -134,6 +138,58 @@ const GameOrganiserDashboard = () => {
     }
   };
 
+  const getMemberGameIds = async (userId: string): Promise<string> => {
+    try {
+      const { data } = await supabase
+        .from('lottery_game_members')
+        .select('lottery_game_id')
+        .eq('user_id', userId);
+      
+      return data?.map(m => m.lottery_game_id).join(',') || '';
+    } catch (error) {
+      console.error('Error fetching member games:', error);
+      return '';
+    }
+  };
+
+  const handleJoinGame = async () => {
+    if (!gameCode.trim() || !gamePassword.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter both game code and password",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setJoiningGame(true);
+    try {
+      const { data, error } = await supabase.rpc('join_lottery_game_by_code', {
+        p_game_code: gameCode.trim(),
+        p_password: gamePassword.trim()
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Successfully joined the game!",
+      });
+      
+      setJoinGameOpen(false);
+      setGameCode("");
+      setGamePassword("");
+      fetchMyGames(); // Refresh the games list
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to join game",
+        variant: "destructive",
+      });
+    } finally {
+      setJoiningGame(false);
+    }
+  };
 
   const handleFortuneCounterClick = (game: LotteryGame) => {
     setSelectedGame(game);
@@ -201,6 +257,14 @@ const GameOrganiserDashboard = () => {
           >
             <Plus className="w-4 h-4 mr-1" />
             Create Game
+          </Button>
+          <Button 
+            onClick={() => setJoinGameOpen(true)} 
+            size="sm"
+            variant="outline"
+          >
+            <UserPlus className="w-4 h-4 mr-1" />
+            Add Existing Game
           </Button>
           <Button onClick={handleLogout} variant="outline" size="sm">
             <LogOut className="w-4 h-4 mr-1" />
@@ -406,6 +470,52 @@ const GameOrganiserDashboard = () => {
             }}
           />
         )}
+
+        {/* Join Game Modal */}
+        <Dialog open={joinGameOpen} onOpenChange={setJoinGameOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Add Existing Game</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="gameCode">Game Code</Label>
+                <Input
+                  id="gameCode"
+                  placeholder="Enter game code"
+                  value={gameCode}
+                  onChange={(e) => setGameCode(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="gamePassword">Password</Label>
+                <Input
+                  id="gamePassword"
+                  type="password"
+                  placeholder="Enter game password"
+                  value={gamePassword}
+                  onChange={(e) => setGamePassword(e.target.value)}
+                />
+              </div>
+              <div className="flex gap-2 pt-2">
+                <Button
+                  onClick={handleJoinGame}
+                  disabled={joiningGame}
+                  className="flex-1"
+                >
+                  {joiningGame ? "Joining..." : "Join Game"}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setJoinGameOpen(false)}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Bookings Modal */}
         <Dialog open={bookingsModalOpen} onOpenChange={setBookingsModalOpen}>
