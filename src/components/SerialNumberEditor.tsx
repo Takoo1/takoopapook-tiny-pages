@@ -53,7 +53,7 @@ const defaultConfig: SerialConfig = {
   size: { wPct: 14, hPct: 12 },
   prefix: "Sl. No.",
   digitCount: 5,
-  fontSize: 30,
+  fontSize: 60,
   text: {
     fontFamily: 'Inter',
     color: '#000000',
@@ -363,6 +363,11 @@ export default function SerialNumberEditor({ ticketImageUrl, config, onConfigCha
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          {/* Font & Color Settings */}
+          <div className="space-y-4">
+            <h4 className="font-semibold">Font & Color</h4>
 
             <div>
               <Label>Font Size</Label>
@@ -370,8 +375,8 @@ export default function SerialNumberEditor({ ticketImageUrl, config, onConfigCha
                 <Slider
                   value={[config.fontSize]}
                   onValueChange={(value) => updateConfig({ fontSize: value[0] })}
-                  max={60}
-                  min={30}
+                  max={80}
+                  min={50}
                   step={1}
                   className="w-full"
                 />
@@ -400,27 +405,7 @@ export default function SerialNumberEditor({ ticketImageUrl, config, onConfigCha
                 />
               </div>
             </div>
-
-            <div>
-              <Label>Text Alignment</Label>
-              <Select 
-                value={config.text.align} 
-                onValueChange={(v: 'left' | 'center' | 'right') => updateConfig({ 
-                  text: { ...config.text, align: v }
-                })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="left">Left</SelectItem>
-                  <SelectItem value="center">Center</SelectItem>
-                  <SelectItem value="right">Right</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </div>
-
         </div>
 
         {/* Reset Button */}
