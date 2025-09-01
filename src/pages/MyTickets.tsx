@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Download, Ticket, Calendar, Trophy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { generateAndDownloadTicket, type SerialConfig } from "@/lib/generateTicketImage";
+import { generateAndDownloadTicket, generateTicketImage, type SerialConfig } from "@/lib/generateTicketImage";
 import { format } from "date-fns";
 
 interface TicketData {
@@ -29,11 +29,53 @@ export default function MyTickets() {
   const [tickets, setTickets] = useState<TicketData[]>([]);
   const [loading, setLoading] = useState(true);
   const [downloading, setDownloading] = useState<Set<string>>(new Set());
+  const [ticketPreviews, setTicketPreviews] = useState<Map<string, string>>(new Map());
+  const [generatingPreviews, setGeneratingPreviews] = useState<Set<string>>(new Set());
   const { toast } = useToast();
 
   useEffect(() => {
     fetchMyTickets();
   }, []);
+
+  useEffect(() => {
+    // Generate preview images for tickets when tickets are loaded
+    generateTicketPreviews();
+  }, [tickets]);
+
+  const generateTicketPreviews = async () => {
+    const newPreviews = new Map<string, string>();
+    const previewPromises: Promise<void>[] = [];
+
+    for (const ticket of tickets) {
+      if (ticket.lottery_game.ticket_image_url && ticket.lottery_game.ticket_serial_config && !ticketPreviews.has(ticket.id)) {
+        setGeneratingPreviews(prev => new Set(prev).add(ticket.id));
+        
+        const previewPromise = generateTicketImage(
+          ticket.lottery_game.ticket_image_url,
+          ticket.ticket_number.toString().padStart(ticket.lottery_game.ticket_serial_config.digitCount, '0'),
+          ticket.lottery_game.ticket_serial_config
+        ).then(dataUrl => {
+          newPreviews.set(ticket.id, dataUrl);
+        }).catch(error => {
+          console.error('Error generating preview for ticket', ticket.id, error);
+        }).finally(() => {
+          setGeneratingPreviews(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(ticket.id);
+            return newSet;
+          });
+        });
+
+        previewPromises.push(previewPromise);
+      }
+    }
+
+    await Promise.all(previewPromises);
+    
+    if (newPreviews.size > 0) {
+      setTicketPreviews(prev => new Map([...prev, ...newPreviews]));
+    }
+  };
 
   const fetchMyTickets = async () => {
     try {
@@ -249,16 +291,47 @@ export default function MyTickets() {
                       </div>
 
                       {game.ticket_image_url && game.ticket_serial_config && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="w-full"
-                          onClick={() => handleDownloadTicket(ticket)}
-                          disabled={downloading.has(ticket.id)}
-                        >
-                          <Download className="w-4 h-4 mr-2" />
-                          {downloading.has(ticket.id) ? 'Downloading...' : 'Download Ticket'}
-                        </Button>
+                        <div className="space-y-2">
+                          {/* Ticket Preview */}
+                          {ticketPreviews.has(ticket.id) ? (
+                            <div className="relative group">
+                              <img 
+                                src={ticketPreviews.get(ticket.id)} 
+                                alt={`Ticket #${ticket.ticket_number}`}
+                                className="w-full h-32 object-contain bg-muted rounded border"
+                              />
+                              <Button
+                                size="icon"
+                                variant="secondary"
+                                className="absolute top-2 right-2 opacity-90 hover:opacity-100 shadow-lg"
+                                onClick={() => handleDownloadTicket(ticket)}
+                                disabled={downloading.has(ticket.id)}
+                                title="Download Ticket"
+                              >
+                                {downloading.has(ticket.id) ? (
+                                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                                ) : (
+                                  <Download className="w-4 h-4" />
+                                )}
+                              </Button>
+                            </div>
+                          ) : generatingPreviews.has(ticket.id) ? (
+                            <div className="w-full h-32 bg-muted rounded border flex items-center justify-center">
+                              <div className="text-sm text-muted-foreground">Generating preview...</div>
+                            </div>
+                          ) : (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="w-full"
+                              onClick={() => handleDownloadTicket(ticket)}
+                              disabled={downloading.has(ticket.id)}
+                            >
+                              <Download className="w-4 h-4 mr-2" />
+                              {downloading.has(ticket.id) ? 'Downloading...' : 'Download Ticket'}
+                            </Button>
+                          )}
+                        </div>
                       )}
                     </CardContent>
                   </Card>

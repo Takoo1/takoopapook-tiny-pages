@@ -281,30 +281,7 @@ export default function TicketBuying() {
         console.error('FC award error', e);
       }
 
-      // Generate downloadable tickets if image and config available
-      if (gameData?.ticket_image_url && gameData?.ticket_serial_config) {
-        try {
-          for (const ticket of selectedTickets) {
-            await generateAndDownloadTicket(
-              gameData.ticket_image_url,
-              ticket.number,
-              gameData.ticket_serial_config,
-              gameData.title
-            );
-          }
-          toast({
-            title: "Tickets Downloaded",
-            description: "Your ticket images have been downloaded to your device.",
-          });
-        } catch (error) {
-          console.error('Error generating tickets:', error);
-          toast({
-            title: "Download Error",
-            description: "Tickets booked successfully, but download failed. You can download them from My Tickets page.",
-            variant: "destructive",
-          });
-        }
-      }
+      // Tickets available for download in MyTickets page
 
       navigate(`/lottery/${gameId}`);
     } catch (error) {
