@@ -339,12 +339,14 @@ export default function TicketBuying() {
                 <span>Subtotal:</span>
                 <span>Rs {totalPriceRs}</span>
               </div>
-              <div className="flex justify-between text-xs md:text-sm mb-1">
-                <span>Discount:</span>
-                <span>- Rs {discountApplied ? suggestedDiscountRs : 0}</span>
-              </div>
-              <div className="flex justify-between font-bold text-sm md:text-base">
-                <span>Payable:</span>
+              {discountApplied && suggestedDiscountRs > 0 && (
+                <div className="flex justify-between text-xs md:text-sm mb-1 text-green-600">
+                  <span>FC Discount Applied:</span>
+                  <span>- Rs {suggestedDiscountRs}</span>
+                </div>
+              )}
+              <div className="flex justify-between font-bold text-sm md:text-base border-t border-border/30 pt-2">
+                <span>Total Payable:</span>
                 <span className="text-lottery-gold">Rs {discountApplied ? (totalPriceRs - suggestedDiscountRs) : totalPriceRs}</span>
               </div>
             </div>
