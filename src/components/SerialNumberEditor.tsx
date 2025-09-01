@@ -50,13 +50,13 @@ interface SerialNumberEditorProps {
 
 const defaultConfig: SerialConfig = {
   position: { xPct: 50, yPct: 80 },
-  size: { wPct: 25, hPct: 8 },
+  size: { wPct: 18, hPct: 8 },
   prefix: "Sl. No.",
   digitCount: 5,
-  fontSize: 16,
+  fontSize: 30,
   text: {
     fontFamily: 'Inter',
-    color: '#ffffff',
+    color: '#000000',
     align: 'center'
   }
 };
@@ -141,7 +141,7 @@ export default function SerialNumberEditor({ ticketImageUrl, config, onConfigCha
       ctx.strokeRect(x, y, width, height);
       
       // Right edge handle
-      const handleSize = 8;
+      const handleSize = 16;
       ctx.fillStyle = '#3b82f6';
       ctx.setLineDash([]);
       ctx.fillRect(x + width - handleSize/2, y + height/2 - handleSize/2, handleSize, handleSize);
@@ -167,7 +167,7 @@ export default function SerialNumberEditor({ ticketImageUrl, config, onConfigCha
     const overlayWidth = (config.size.wPct / 100) * canvas.width;
     const overlayHeight = (config.size.hPct / 100) * canvas.height;
 
-    const handleSize = 8;
+    const handleSize = 16;
     
     // Check if clicking on right edge handle
     const rightHandleX = overlayX + overlayWidth - handleSize/2;
@@ -319,8 +319,8 @@ export default function SerialNumberEditor({ ticketImageUrl, config, onConfigCha
                 <Slider
                   value={[config.fontSize]}
                   onValueChange={(value) => updateConfig({ fontSize: value[0] })}
-                  max={36}
-                  min={8}
+                  max={60}
+                  min={30}
                   step={1}
                   className="w-full"
                 />
@@ -370,13 +370,6 @@ export default function SerialNumberEditor({ ticketImageUrl, config, onConfigCha
             </div>
           </div>
 
-          {/* Background Info */}
-          <div className="space-y-4">
-            <h4 className="font-semibold">Background</h4>
-            <p className="text-sm text-muted-foreground">
-              Using fixed background image for serial number box.
-            </p>
-          </div>
         </div>
 
         {/* Reset Button */}
