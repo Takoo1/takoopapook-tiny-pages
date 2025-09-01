@@ -649,6 +649,71 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_attachments: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          media_type: Database["public"]["Enums"]["notification_media_type"]
+          notification_id: string
+          preview_url: string | null
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          media_type: Database["public"]["Enums"]["notification_media_type"]
+          notification_id: string
+          preview_url?: string | null
+          url: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          media_type?: Database["public"]["Enums"]["notification_media_type"]
+          notification_id?: string
+          preview_url?: string | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_attachments_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: false
+            referencedRelation: "notifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          details: string
+          id: string
+          is_active: boolean
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          details: string
+          id?: string
+          is_active?: boolean
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          details?: string
+          id?: string
+          is_active?: boolean
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null
@@ -844,6 +909,7 @@ export type Database = {
         | "online"
         | "booking_stopped"
         | "archived"
+      notification_media_type: "image" | "video" | "pdf"
       prize_type: "main" | "incentive"
     }
     CompositeTypes: {
@@ -981,6 +1047,7 @@ export const Constants = {
         "booking_stopped",
         "archived",
       ],
+      notification_media_type: ["image", "video", "pdf"],
       prize_type: ["main", "incentive"],
     },
   },

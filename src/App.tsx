@@ -20,6 +20,7 @@ import Terms from "./pages/Terms";
 import Profile from "./pages/Profile";
 import Wallet from "./pages/Wallet";
 import NotFound from "./pages/NotFound";
+import NotificationDetail from "./pages/NotificationDetail";
 import { MobileLayout } from "./components/MobileLayout";
 
 const queryClient = new QueryClient();
@@ -47,6 +48,7 @@ const App = () => (
               <Route path="/terms" element={<Terms />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/wallet" element={<Wallet />} />
+              <Route path="/notifications/:id" element={<NotificationDetail />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

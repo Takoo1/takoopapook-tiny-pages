@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, Gift } from "lucide-react";
+import { Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
+import { NotificationBell } from "@/components/NotificationBell";
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import fcCoin from "@/assets/fc-coin.png";
 
@@ -84,15 +85,8 @@ export function MobileHeader() {
 
         {/* Right side - Notification and FC Balance/Sign Up */}
         <div className="flex items-center gap-2">
-          {/* Notification Icon */}
-          <Button 
-            variant="ghost" 
-            size="sm"
-            className="relative p-2 h-9 w-9 flex items-center justify-center"
-            disabled
-          >
-            <Bell className="h-5 w-5 text-blue-900 dark:text-blue-400" />
-          </Button>
+          {/* Notification Bell */}
+          <NotificationBell />
 
           {user ? (
             /* Logged in - Show FC Balance and Referral Button */
