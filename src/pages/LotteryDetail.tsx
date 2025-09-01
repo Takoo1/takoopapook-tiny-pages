@@ -628,7 +628,7 @@ export default function LotteryDetail() {
                 <CardContent className="pt-0">
                   {currentBook ? (
                     currentBook.is_online_available ? (
-                      <div className="grid grid-cols-7 sm:grid-cols-10 gap-1">
+                      <div className="grid grid-cols-6 sm:grid-cols-10 gap-1">
                         {currentBookTickets.map((ticket) => {
                           const isSelected = selectedTickets.some(t => t.id === ticket.id);
                           return (
