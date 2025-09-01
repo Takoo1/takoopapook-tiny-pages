@@ -405,33 +405,33 @@ export default function LotteryDetail() {
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <h1 className="text-base md:text-lg font-bold text-foreground leading-tight mb-1">
+              <h1 className="text-sm md:text-lg font-bold text-foreground leading-tight mb-1">
                 {game.title}
               </h1>
               {game.headline && (
-                <p className="text-xs text-muted-foreground leading-snug">
+                <p className="text-[10px] md:text-xs text-muted-foreground leading-snug">
                   {game.headline}
                 </p>
               )}
             </div>
             <div className="text-right">
-              <div className="text-xl md:text-2xl font-bold text-lottery-gold">
+              <div className="text-lg md:text-2xl font-bold text-lottery-gold">
                 ₹{game.ticket_price}
               </div>
-              <div className="text-xs text-muted-foreground">per ticket</div>
+              <div className="text-[10px] md:text-xs text-muted-foreground">per ticket</div>
             </div>
           </div>
 
           {/* Game Date & Books Count Row */}
           <div className="space-y-3 py-3 border-y border-border">
-            <div className="flex justify-between items-center text-sm">
-              <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-muted-foreground" />
+            <div className="flex justify-between items-center text-xs md:text-sm">
+              <div className="flex items-center gap-1 md:gap-2">
+                <Calendar className="w-3 h-3 md:w-4 md:h-4 text-muted-foreground" />
                 <span className="text-muted-foreground">Draw Date:</span>
                 <span className="font-medium text-foreground">{formatDate(game.game_date)}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-muted-foreground" />
+              <div className="flex items-center gap-1 md:gap-2">
+                <BookOpen className="w-3 h-3 md:w-4 md:h-4 text-muted-foreground" />
                 <span className="text-muted-foreground">Books:</span>
                 <span className="font-medium text-foreground">
                   {onlineBookCount} online, {offlineBookCount} offline
@@ -439,8 +439,8 @@ export default function LotteryDetail() {
               </div>
             </div>
             {game.stop_booking_time && (
-              <div className="flex items-center gap-2 text-sm">
-                <Clock className="w-4 h-4 text-muted-foreground" />
+              <div className="flex items-center gap-1 md:gap-2 text-xs md:text-sm">
+                <Clock className="w-3 h-3 md:w-4 md:h-4 text-muted-foreground" />
                 <span className="text-muted-foreground">Booking Stops:</span>
                 <span className="font-medium text-foreground">{formatDate(game.stop_booking_time)}</span>
               </div>
@@ -454,8 +454,8 @@ export default function LotteryDetail() {
               {prizes.filter(prize => prize.prize_type === 'main').length > 0 && (
                 <Card>
                   <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-base">
-                      <Gift className="w-4 h-4 text-lottery-gold" />
+                    <CardTitle className="flex items-center gap-2 text-sm md:text-base">
+                      <Gift className="w-3 h-3 md:w-4 md:h-4 text-lottery-gold" />
                       Main Prizes
                     </CardTitle>
                   </CardHeader>
@@ -464,12 +464,12 @@ export default function LotteryDetail() {
                       {prizes.filter(prize => prize.prize_type === 'main').map((prize) => (
                         <div key={prize.id} className="flex justify-between items-center p-2 rounded-lg bg-muted/50">
                           <div>
-                            <div className="font-medium text-sm">{prize.title}</div>
+                            <div className="font-medium text-xs md:text-sm">{prize.title}</div>
                             {prize.description && (
-                              <div className="text-xs text-muted-foreground">{prize.description}</div>
+                              <div className="text-[10px] md:text-xs text-muted-foreground">{prize.description}</div>
                             )}
                           </div>
-                          <div className="text-lottery-gold font-bold">
+                          <div className="text-lottery-gold font-bold text-xs md:text-sm">
                             ₹{prize.amount?.toLocaleString()}
                           </div>
                         </div>
@@ -483,8 +483,8 @@ export default function LotteryDetail() {
               {prizes.filter(prize => prize.prize_type === 'incentive').length > 0 && (
                 <Card>
                   <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-base">
-                      <Gift className="w-4 h-4 text-lottery-gold" />
+                    <CardTitle className="flex items-center gap-2 text-sm md:text-base">
+                      <Gift className="w-3 h-3 md:w-4 md:h-4 text-lottery-gold" />
                       Incentive Prizes
                     </CardTitle>
                   </CardHeader>

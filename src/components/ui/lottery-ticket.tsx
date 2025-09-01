@@ -27,7 +27,7 @@ export function LotteryTicket({ ticketNumber, status, onClick, className, forceC
   return (
     <div
       className={cn(
-        "w-14 h-14 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-200",
+        "w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center text-[10px] md:text-xs font-bold transition-all duration-200",
         getStatusColor(),
         isClickable && "cursor-pointer hover:scale-110 hover:shadow-lg",
         className
