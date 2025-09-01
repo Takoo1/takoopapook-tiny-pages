@@ -134,16 +134,75 @@ export default function TicketBuying() {
       return;
     }
     if (!suggestedDiscountRs || suggestedDiscountRs <= 0) return;
+    
     setApplyingDiscount(true);
     try {
-      const { data, error } = await supabase.rpc('redeem_fc_by_rupees', { discount_rupees: suggestedDiscountRs });
+      // First, refresh the current FC balance to ensure accuracy
+      const { data: balanceData } = await supabase
+        .from('fc_balances')
+        .select('balance')
+        .eq('user_id', userId)
+        .maybeSingle();
+      
+      const currentBalance = balanceData?.balance ?? 0;
+      setFcBalance(currentBalance);
+      
+      // Recalculate the maximum possible discount with fresh balance
+      const totalRs = selectedTickets.length * ticketPrice;
+      const maxPossibleDiscount = Math.min(Math.floor(currentBalance / 3), totalRs);
+      
+      if (maxPossibleDiscount <= 0) {
+        toast({ 
+          title: "Insufficient FC balance", 
+          description: `You need at least 3 FC to get a discount. Current balance: ${currentBalance} FC.`,
+          variant: "destructive" 
+        });
+        return;
+      }
+      
+      // Use the maximum possible discount (could be less than originally suggested)
+      const discountToApply = Math.min(suggestedDiscountRs, maxPossibleDiscount);
+      const fcToUse = discountToApply * 3;
+      
+      const { data, error } = await supabase.rpc('redeem_fc_by_rupees', { discount_rupees: discountToApply });
       if (error) throw error;
-      const newBal = Array.isArray(data) && data.length ? (data as any)[0].new_balance : (fcBalance ?? 0) - suggestedFcToUse;
+      
+      const newBal = Array.isArray(data) && data.length ? (data as any)[0].new_balance : currentBalance - fcToUse;
       setFcBalance(newBal);
       setDiscountApplied(true);
-      toast({ title: "Discount applied", description: `Used ${suggestedFcToUse} FC for Rs ${suggestedDiscountRs} discount.` });
+      
+      // Update the suggested values for UI consistency
+      setSuggestedDiscountRs(discountToApply);
+      setSuggestedFcToUse(fcToUse);
+      
+      toast({ 
+        title: "Discount applied", 
+        description: `Used ${fcToUse} FC for Rs ${discountToApply} discount.` 
+      });
     } catch (error: any) {
-      toast({ title: "Unable to apply discount", description: error.message, variant: "destructive" });
+      // If there's still an error, refresh balance and show current state
+      try {
+        const { data: balanceData } = await supabase
+          .from('fc_balances')
+          .select('balance')
+          .eq('user_id', userId)
+          .maybeSingle();
+        
+        const refreshedBalance = balanceData?.balance ?? 0;
+        setFcBalance(refreshedBalance);
+        
+        toast({ 
+          title: "Unable to apply discount", 
+          description: `${error.message}. Current FC balance: ${refreshedBalance}`,
+          variant: "destructive" 
+        });
+      } catch {
+        toast({ 
+          title: "Unable to apply discount", 
+          description: error.message, 
+          variant: "destructive" 
+        });
+      }
     } finally {
       setApplyingDiscount(false);
     }
