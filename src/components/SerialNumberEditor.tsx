@@ -34,8 +34,12 @@ export interface SerialConfig {
   size: Size;
   prefix: string;
   digitCount: number;
-  background: Background;
-  text: TextStyle;
+  fontSize: number;
+  text: {
+    fontFamily: string;
+    color: string;
+    align: 'left' | 'center' | 'right';
+  };
 }
 
 interface SerialNumberEditorProps {
@@ -49,11 +53,7 @@ const defaultConfig: SerialConfig = {
   size: { wPct: 25, hPct: 8 },
   prefix: "Sl. No.",
   digitCount: 5,
-  background: {
-    type: 'preset',
-    color: '#000000',
-    preset: 'pill'
-  },
+  fontSize: 16,
   text: {
     fontFamily: 'Inter',
     color: '#ffffff',
@@ -64,14 +64,24 @@ const defaultConfig: SerialConfig = {
 export default function SerialNumberEditor({ ticketImageUrl, config, onConfigChange }: SerialNumberEditorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [isResizing, setIsResizing] = useState(false);
+  const [isResizingRight, setIsResizingRight] = useState(false);
+  const [isResizingTop, setIsResizingTop] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [backgroundImage, setBackgroundImage] = useState<HTMLImageElement | null>(null);
 
   const sampleNumber = "12345".padStart(config.digitCount, '0');
   const displayText = `${config.prefix} ${sampleNumber}`;
 
   useEffect(() => {
-    if (!ticketImageUrl || !canvasRef.current) return;
+    // Load background image
+    const bgImg = new Image();
+    bgImg.crossOrigin = 'anonymous';
+    bgImg.onload = () => setBackgroundImage(bgImg);
+    bgImg.src = 'https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/SerialNo%20Back.webp';
+  }, []);
+
+  useEffect(() => {
+    if (!ticketImageUrl || !canvasRef.current || !backgroundImage) return;
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
@@ -91,7 +101,7 @@ export default function SerialNumberEditor({ ticketImageUrl, config, onConfigCha
       drawSerialOverlay(ctx, canvas.width, canvas.height);
     };
     img.src = ticketImageUrl;
-  }, [ticketImageUrl, config]);
+  }, [ticketImageUrl, config, backgroundImage]);
 
   const drawSerialOverlay = (ctx: CanvasRenderingContext2D, canvasWidth: number, canvasHeight: number) => {
     const x = (config.position.xPct / 100) * canvasWidth;
@@ -104,28 +114,18 @@ export default function SerialNumberEditor({ ticketImageUrl, config, onConfigCha
     // Translate to position
     ctx.translate(x, y);
 
-    // Draw background
-    if (config.background.type !== 'none') {
-      if (config.background.type === 'color') {
-        ctx.fillStyle = config.background.color;
-      } else {
-        // Preset backgrounds
-        ctx.fillStyle = config.background.preset === 'pill' ? '#1f2937' : 
-                        config.background.preset === 'tag' ? '#059669' : '#374151';
-      }
-
-      // Rectangle without border radius
-      ctx.fillRect(0, 0, width, height);
+    // Draw background image
+    if (backgroundImage) {
+      ctx.drawImage(backgroundImage, 0, 0, width, height);
     }
 
-    // Draw text with auto-resizing font
-    const fontSize = Math.min(width / displayText.length * 1.2, height * 0.7);
-    ctx.font = `bold ${fontSize}px ${config.text.fontFamily}`;
+    // Draw text with configured font size
+    ctx.font = `bold ${config.fontSize}px ${config.text.fontFamily}`;
     ctx.fillStyle = config.text.color;
     ctx.textBaseline = 'middle';
     
-    const textX = config.text.align === 'left' ? 0 :
-                  config.text.align === 'right' ? width :
+    const textX = config.text.align === 'left' ? 5 :
+                  config.text.align === 'right' ? width - 5 :
                   width / 2;
     
     ctx.textAlign = config.text.align;
@@ -134,17 +134,20 @@ export default function SerialNumberEditor({ ticketImageUrl, config, onConfigCha
     ctx.restore();
 
     // Draw resize handles when not dragging
-    if (!isDragging) {
+    if (!isDragging && !isResizingRight && !isResizingTop) {
       ctx.strokeStyle = '#3b82f6';
       ctx.lineWidth = 2;
       ctx.setLineDash([5, 5]);
       ctx.strokeRect(x, y, width, height);
       
-      // Corner handles
+      // Right edge handle
       const handleSize = 8;
       ctx.fillStyle = '#3b82f6';
       ctx.setLineDash([]);
-      ctx.fillRect(x + width - handleSize/2, y + height - handleSize/2, handleSize, handleSize);
+      ctx.fillRect(x + width - handleSize/2, y + height/2 - handleSize/2, handleSize, handleSize);
+      
+      // Top edge handle
+      ctx.fillRect(x + width/2 - handleSize/2, y - handleSize/2, handleSize, handleSize);
     }
   };
 
@@ -164,13 +167,20 @@ export default function SerialNumberEditor({ ticketImageUrl, config, onConfigCha
     const overlayWidth = (config.size.wPct / 100) * canvas.width;
     const overlayHeight = (config.size.hPct / 100) * canvas.height;
 
-    // Check if clicking on resize handle
     const handleSize = 8;
-    const handleX = overlayX + overlayWidth - handleSize/2;
-    const handleY = overlayY + overlayHeight - handleSize/2;
     
-    if (x >= handleX && x <= handleX + handleSize && y >= handleY && y <= handleY + handleSize) {
-      setIsResizing(true);
+    // Check if clicking on right edge handle
+    const rightHandleX = overlayX + overlayWidth - handleSize/2;
+    const rightHandleY = overlayY + overlayHeight/2 - handleSize/2;
+    
+    // Check if clicking on top edge handle
+    const topHandleX = overlayX + overlayWidth/2 - handleSize/2;
+    const topHandleY = overlayY - handleSize/2;
+    
+    if (x >= rightHandleX && x <= rightHandleX + handleSize && y >= rightHandleY && y <= rightHandleY + handleSize) {
+      setIsResizingRight(true);
+    } else if (x >= topHandleX && x <= topHandleX + handleSize && y >= topHandleY && y <= topHandleY + handleSize) {
+      setIsResizingTop(true);
     } else if (x >= overlayX && x <= overlayX + overlayWidth && y >= overlayY && y <= overlayY + overlayHeight) {
       setIsDragging(true);
       setDragStart({ x: x - overlayX, y: y - overlayY });
@@ -178,7 +188,7 @@ export default function SerialNumberEditor({ ticketImageUrl, config, onConfigCha
   };
 
   const handleCanvasMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!canvasRef.current || (!isDragging && !isResizing)) return;
+    if (!canvasRef.current || (!isDragging && !isResizingRight && !isResizingTop)) return;
 
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
@@ -196,26 +206,37 @@ export default function SerialNumberEditor({ ticketImageUrl, config, onConfigCha
         ...config,
         position: { xPct: newXPct, yPct: newYPct }
       });
-    } else if (isResizing) {
+    } else if (isResizingRight) {
       const overlayX = (config.position.xPct / 100) * canvas.width;
-      const overlayY = (config.position.yPct / 100) * canvas.height;
-      
       const newWidth = Math.max(50, x - overlayX); // Minimum 50px width
-      const newHeight = Math.max(20, y - overlayY); // Minimum 20px height
-      
       const newWPct = Math.min(50, (newWidth / canvas.width) * 100); // Max 50% width
-      const newHPct = Math.min(20, (newHeight / canvas.height) * 100); // Max 20% height
       
       onConfigChange({
         ...config,
-        size: { wPct: newWPct, hPct: newHPct }
+        size: { ...config.size, wPct: newWPct }
+      });
+    } else if (isResizingTop) {
+      const overlayY = (config.position.yPct / 100) * canvas.height;
+      const currentHeight = (config.size.hPct / 100) * canvas.height;
+      const currentBottom = overlayY + currentHeight;
+      
+      const newY = Math.max(0, Math.min(currentBottom - 20, y)); // Minimum 20px height
+      const newHeight = currentBottom - newY;
+      const newYPct = (newY / canvas.height) * 100;
+      const newHPct = (newHeight / canvas.height) * 100;
+      
+      onConfigChange({
+        ...config,
+        position: { ...config.position, yPct: newYPct },
+        size: { ...config.size, hPct: newHPct }
       });
     }
   };
 
   const handleCanvasMouseUp = () => {
     setIsDragging(false);
-    setIsResizing(false);
+    setIsResizingRight(false);
+    setIsResizingTop(false);
   };
 
   const updateConfig = (updates: Partial<SerialConfig>) => {
@@ -246,7 +267,7 @@ export default function SerialNumberEditor({ ticketImageUrl, config, onConfigCha
           Serial Number Editor
         </CardTitle>
         <p className="text-sm text-muted-foreground">
-          Drag the serial number component to position it on your ticket. Use the corner handle to resize.
+          Drag the serial number component to position it. Use the right edge handle to resize width and top edge handle to resize height.
         </p>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -293,6 +314,23 @@ export default function SerialNumberEditor({ ticketImageUrl, config, onConfigCha
             </div>
 
             <div>
+              <Label>Font Size</Label>
+              <div className="space-y-2">
+                <Slider
+                  value={[config.fontSize]}
+                  onValueChange={(value) => updateConfig({ fontSize: value[0] })}
+                  max={36}
+                  min={8}
+                  step={1}
+                  className="w-full"
+                />
+                <div className="text-xs text-muted-foreground text-center">
+                  {config.fontSize}px
+                </div>
+              </div>
+            </div>
+
+            <div>
               <Label>Text Color</Label>
               <div className="flex items-center gap-2">
                 <Input
@@ -311,73 +349,33 @@ export default function SerialNumberEditor({ ticketImageUrl, config, onConfigCha
                 />
               </div>
             </div>
-          </div>
 
-          {/* Background Settings */}
-          <div className="space-y-4">
-            <h4 className="font-semibold">Background Settings</h4>
-            
             <div>
-              <Label>Background Type</Label>
+              <Label>Text Alignment</Label>
               <Select 
-                value={config.background.type} 
-                onValueChange={(v: 'none' | 'color' | 'preset') => updateConfig({ 
-                  background: { ...config.background, type: v }
+                value={config.text.align} 
+                onValueChange={(v: 'left' | 'center' | 'right') => updateConfig({ 
+                  text: { ...config.text, align: v }
                 })}
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">No Background</SelectItem>
-                  <SelectItem value="color">Custom Color</SelectItem>
-                  <SelectItem value="preset">Preset Style</SelectItem>
+                  <SelectItem value="left">Left</SelectItem>
+                  <SelectItem value="center">Center</SelectItem>
+                  <SelectItem value="right">Right</SelectItem>
                 </SelectContent>
               </Select>
             </div>
+          </div>
 
-            {config.background.type === 'color' && (
-              <div>
-                <Label>Background Color</Label>
-                <div className="flex items-center gap-2">
-                  <Input
-                    type="color"
-                    value={config.background.color}
-                    onChange={(e) => updateConfig({ 
-                      background: { ...config.background, color: e.target.value }
-                    })}
-                    className="w-12 h-8 p-0 border-0"
-                  />
-                  <Input
-                    value={config.background.color}
-                    onChange={(e) => updateConfig({ 
-                      background: { ...config.background, color: e.target.value }
-                    })}
-                  />
-                </div>
-              </div>
-            )}
-
-            {config.background.type === 'preset' && (
-              <div>
-                <Label>Preset Style</Label>
-                <Select 
-                  value={config.background.preset} 
-                  onValueChange={(v: 'pill' | 'tag' | 'rounded') => updateConfig({ 
-                    background: { ...config.background, preset: v }
-                  })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="pill">Pill (Dark Gray)</SelectItem>
-                    <SelectItem value="tag">Tag (Green)</SelectItem>
-                    <SelectItem value="rounded">Rounded (Gray)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+          {/* Background Info */}
+          <div className="space-y-4">
+            <h4 className="font-semibold">Background</h4>
+            <p className="text-sm text-muted-foreground">
+              Using fixed background image for serial number box.
+            </p>
           </div>
         </div>
 

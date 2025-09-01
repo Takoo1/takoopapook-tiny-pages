@@ -116,11 +116,7 @@ export function CreateGameForm({ isOpen, onClose, onSuccess, editingGame }: Crea
     size: { wPct: 25, hPct: 8 },
     prefix: "Sl. No.",
     digitCount: 5,
-    background: {
-      type: 'preset',
-      color: '#000000',
-      preset: 'pill'
-    },
+    fontSize: 16,
     text: {
       fontFamily: 'Inter',
       color: '#ffffff',

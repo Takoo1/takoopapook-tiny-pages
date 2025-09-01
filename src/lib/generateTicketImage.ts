@@ -3,11 +3,7 @@ export interface SerialConfig {
   size: { wPct: number; hPct: number };
   prefix: string;
   digitCount: number;
-  background: {
-    type: 'none' | 'color' | 'preset';
-    color: string;
-    preset: 'pill' | 'tag' | 'rounded';
-  };
+  fontSize: number;
   text: {
     fontFamily: string;
     color: string;
@@ -34,8 +30,11 @@ export const generateTicketImage = async (
     const stampImg = new Image();
     stampImg.crossOrigin = 'anonymous';
     
+    const backgroundImg = new Image();
+    backgroundImg.crossOrigin = 'anonymous';
+    
     let imagesLoaded = 0;
-    const totalImages = 2;
+    const totalImages = 3;
     
     const onImageLoad = () => {
       imagesLoaded++;
@@ -47,8 +46,8 @@ export const generateTicketImage = async (
         // Draw ticket image
         ctx.drawImage(img, 0, 0);
         
-        // Draw stamp image in center
-        const stampSize = Math.min(canvas.width, canvas.height) * 0.15; // 15% of the smaller dimension
+        // Draw stamp image in center (3 times larger than before)
+        const stampSize = Math.min(canvas.width, canvas.height) * 0.45; // 45% of the smaller dimension (3x larger)
         const stampX = (canvas.width - stampSize) / 2;
         const stampY = (canvas.height - stampSize) / 2;
         ctx.drawImage(stampImg, stampX, stampY, stampSize, stampSize);
@@ -64,29 +63,17 @@ export const generateTicketImage = async (
         // Translate to position
         ctx.translate(x, y);
 
-        // Draw background
-        if (config.background.type !== 'none') {
-          if (config.background.type === 'color') {
-            ctx.fillStyle = config.background.color;
-          } else {
-            // Preset backgrounds
-            ctx.fillStyle = config.background.preset === 'pill' ? '#1f2937' : 
-                            config.background.preset === 'tag' ? '#059669' : '#374151';
-          }
+        // Draw background image
+        ctx.drawImage(backgroundImg, 0, 0, width, height);
 
-          // Rectangle without border radius
-          ctx.fillRect(0, 0, width, height);
-        }
-
-        // Draw text with auto-resizing font
+        // Draw text with configured font size
         const displayText = `${config.prefix} ${serialNumber}`;
-        const fontSize = Math.min(width / displayText.length * 1.2, height * 0.7);
-        ctx.font = `bold ${fontSize}px ${config.text.fontFamily}`;
+        ctx.font = `bold ${config.fontSize}px ${config.text.fontFamily}`;
         ctx.fillStyle = config.text.color;
         ctx.textBaseline = 'middle';
         
-        const textX = config.text.align === 'left' ? 0 :
-                      config.text.align === 'right' ? width :
+        const textX = config.text.align === 'left' ? 5 :
+                      config.text.align === 'right' ? width - 5 :
                       width / 2;
         
         ctx.textAlign = config.text.align;
@@ -108,6 +95,7 @@ export const generateTicketImage = async (
     
     img.onload = onImageLoad;
     stampImg.onload = onImageLoad;
+    backgroundImg.onload = onImageLoad;
     
     img.onerror = () => {
       reject(new Error('Failed to load ticket image'));
@@ -117,8 +105,13 @@ export const generateTicketImage = async (
       reject(new Error('Failed to load stamp image'));
     };
     
+    backgroundImg.onerror = () => {
+      reject(new Error('Failed to load background image'));
+    };
+    
     img.src = ticketImageUrl;
     stampImg.src = 'https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/Stamp.png';
+    backgroundImg.src = 'https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/SerialNo%20Back.webp';
   });
 };
 
