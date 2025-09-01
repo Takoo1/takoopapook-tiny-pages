@@ -33,17 +33,56 @@ export function ImageCarousel() {
 
   const fetchImages = async () => {
     try {
-      const { data: imageFiles } = await supabase.storage
-        .from('media-images')
-        .list('', { limit: 100 });
+      // First try to fetch from media_images table
+      const { data: mediaImagesData, error: dbError } = await supabase
+        .from('media_images')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
 
-      if (imageFiles && imageFiles.length > 0) {
-        const imageData: MediaImage[] = imageFiles.map((file) => ({
-          id: file.name,
-          name: file.name,
-          public_url: supabase.storage.from('media-images').getPublicUrl(file.name).data.publicUrl,
+      if (dbError) {
+        console.error('Error fetching from media_images:', dbError);
+      }
+
+      if (mediaImagesData && mediaImagesData.length > 0) {
+        // Use data from media_images table
+        const imageData: MediaImage[] = mediaImagesData.map((img) => ({
+          id: img.id,
+          name: img.name,
+          public_url: img.public_url,
         }));
         setImages(imageData);
+      } else {
+        // Fallback to storage listing for backward compatibility
+        const { data: imageFiles } = await supabase.storage
+          .from('media-images')
+          .list('', { limit: 100 });
+
+        if (imageFiles && imageFiles.length > 0) {
+          const imageData: MediaImage[] = imageFiles.map((file) => ({
+            id: file.name,
+            name: file.name,
+            public_url: supabase.storage.from('media-images').getPublicUrl(file.name).data.publicUrl,
+          }));
+          setImages(imageData);
+
+          // Seed the media_images table for future use
+          const seedData = imageData.map((img, index) => ({
+            name: img.name,
+            public_url: img.public_url,
+            display_order: index + 1,
+            is_active: true
+          }));
+
+          try {
+            await supabase.from('media_images').upsert(seedData, { 
+              onConflict: 'name',
+              ignoreDuplicates: true 
+            });
+          } catch (seedError) {
+            console.error('Error seeding media_images:', seedError);
+          }
+        }
       }
     } catch (error) {
       console.error('Error fetching images:', error);

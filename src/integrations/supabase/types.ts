@@ -498,6 +498,39 @@ export type Database = {
           },
         ]
       }
+      media_images: {
+        Row: {
+          created_at: string
+          created_by_user_id: string | null
+          display_order: number
+          id: string
+          is_active: boolean
+          name: string
+          public_url: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by_user_id?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          name: string
+          public_url: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by_user_id?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          name?: string
+          public_url?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       media_video_links: {
         Row: {
           created_at: string
@@ -673,6 +706,39 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      winners: {
+        Row: {
+          created_at: string
+          details: string | null
+          id: string
+          image_url: string
+          is_active: boolean
+          name: string
+          prize_position: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          image_url: string
+          is_active?: boolean
+          name: string
+          prize_position: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          image_url?: string
+          is_active?: boolean
+          name?: string
+          prize_position?: number
+          updated_at?: string
         }
         Relationships: []
       }

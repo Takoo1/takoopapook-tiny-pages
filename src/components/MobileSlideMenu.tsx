@@ -36,12 +36,6 @@ const menuItems = [
     path: "/terms"
   },
   {
-    id: "profile",
-    label: "Profile",
-    icon: User,
-    path: "/profile"
-  },
-  {
     id: "organiser",
     label: "Organiser",
     icon: Settings,

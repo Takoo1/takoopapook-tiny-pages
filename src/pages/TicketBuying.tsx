@@ -160,49 +160,24 @@ export default function TicketBuying() {
         return;
       }
       
-      // Use the maximum possible discount (could be less than originally suggested)
-      const discountToApply = Math.min(suggestedDiscountRs, maxPossibleDiscount);
-      const fcToUse = discountToApply * 3;
-      
-      const { data, error } = await supabase.rpc('redeem_fc_by_rupees', { discount_rupees: discountToApply });
-      if (error) throw error;
-      
-      const newBal = Array.isArray(data) && data.length ? (data as any)[0].new_balance : currentBalance - fcToUse;
-      setFcBalance(newBal);
+      // Just mark discount as applied - don't actually deduct FC yet
       setDiscountApplied(true);
       
       // Update the suggested values for UI consistency
+      const discountToApply = Math.min(suggestedDiscountRs, maxPossibleDiscount);
       setSuggestedDiscountRs(discountToApply);
-      setSuggestedFcToUse(fcToUse);
+      setSuggestedFcToUse(discountToApply * 3);
       
       toast({ 
-        title: "Discount applied", 
-        description: `Used ${fcToUse} FC for Rs ${discountToApply} discount.` 
+        title: "Discount will be applied", 
+        description: `${discountToApply * 3} FC will be redeemed for Rs ${discountToApply} discount after purchase.` 
       });
     } catch (error: any) {
-      // If there's still an error, refresh balance and show current state
-      try {
-        const { data: balanceData } = await supabase
-          .from('fc_balances')
-          .select('balance')
-          .eq('user_id', userId)
-          .maybeSingle();
-        
-        const refreshedBalance = balanceData?.balance ?? 0;
-        setFcBalance(refreshedBalance);
-        
-        toast({ 
-          title: "Unable to apply discount", 
-          description: `${error.message}. Current FC balance: ${refreshedBalance}`,
-          variant: "destructive" 
-        });
-      } catch {
-        toast({ 
-          title: "Unable to apply discount", 
-          description: error.message, 
-          variant: "destructive" 
-        });
-      }
+      toast({ 
+        title: "Unable to prepare discount", 
+        description: error.message, 
+        variant: "destructive" 
+      });
     } finally {
       setApplyingDiscount(false);
     }
@@ -245,10 +220,56 @@ export default function TicketBuying() {
         throw new Error("Failed to book some tickets");
       }
 
-      toast({
-        title: "Success!",
-        description: `${selectedTickets.length} ticket(s) booked successfully!`,
-      });
+      // Now handle FC redemption if discount was applied
+      if (userId && discountApplied && suggestedDiscountRs > 0) {
+        try {
+          // Refresh FC balance and recalculate discount
+          const { data: balanceData } = await supabase
+            .from('fc_balances')
+            .select('balance')
+            .eq('user_id', userId)
+            .maybeSingle();
+          
+          const currentBalance = balanceData?.balance ?? 0;
+          const totalRs = selectedTickets.length * ticketPrice;
+          const actualDiscount = Math.min(Math.floor(currentBalance / 3), totalRs, suggestedDiscountRs);
+          
+          if (actualDiscount > 0) {
+            const { error: redeemError } = await supabase.rpc('redeem_fc_by_rupees', { 
+              discount_rupees: actualDiscount 
+            });
+            
+            if (!redeemError) {
+              toast({
+                title: "Purchase Complete!",
+                description: `${selectedTickets.length} ticket(s) booked! Used ${actualDiscount * 3} FC for Rs ${actualDiscount} discount.`,
+              });
+            } else {
+              toast({
+                title: "Tickets Booked Successfully",
+                description: "Tickets booked but FC redemption failed. No FC was deducted.",
+                variant: "destructive",
+              });
+            }
+          } else {
+            toast({
+              title: "Tickets Booked Successfully", 
+              description: "Insufficient FC for discount. No FC was deducted.",
+            });
+          }
+        } catch (fcError) {
+          toast({
+            title: "Tickets Booked Successfully",
+            description: "Tickets booked but FC redemption encountered an error. No FC was deducted.",
+            variant: "destructive",
+          });
+        }
+      } else {
+        toast({
+          title: "Success!",
+          description: `${selectedTickets.length} ticket(s) booked successfully!`,
+        });
+      }
 
       try {
         if (userId) {

@@ -14,9 +14,10 @@ import { CreateGameForm } from "@/components/CreateGameForm";
 import { GamePreviewModal } from "@/components/GamePreviewModal";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-import { Plus, Trash2, Eye, Target, Calendar, Users, Gamepad2, ImageIcon } from "lucide-react";
+import { Plus, Trash2, Eye, Target, Calendar, Users, Gamepad2, ImageIcon, Trophy } from "lucide-react";
 import { MediaManager } from "@/components/MediaManager";
 import { BookingsManager } from "@/components/BookingsManager";
+import { WinnersManager } from "@/components/WinnersManager";
 
 interface LotteryGame {
   id: string;
@@ -364,7 +365,7 @@ export default function Admin() {
         </div>
 
         <Tabs defaultValue="games" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="games" className="flex items-center gap-2">
               <Gamepad2 className="w-4 h-4" />
               Game Manager
@@ -372,6 +373,10 @@ export default function Admin() {
             <TabsTrigger value="media" className="flex items-center gap-2">
               <ImageIcon className="w-4 h-4" />
               Media Manager
+            </TabsTrigger>
+            <TabsTrigger value="winners" className="flex items-center gap-2">
+              <Trophy className="w-4 h-4" />
+              Winners
             </TabsTrigger>
             <TabsTrigger value="bookings" className="flex items-center gap-2">
               <Users className="w-4 h-4" />
@@ -582,6 +587,11 @@ export default function Admin() {
 
           <TabsContent value="media" className="space-y-6">
             <MediaManager />
+          </TabsContent>
+
+          {/* Winners Tab */}
+          <TabsContent value="winners" className="space-y-6">
+            <WinnersManager />
           </TabsContent>
 
           {/* Bookings Tab */}

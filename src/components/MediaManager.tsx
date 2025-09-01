@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, Trash2, Image, Video, Eye, EyeOff } from "lucide-react";
+import { ArrowUp, ArrowDown, Upload, Trash2, Image, Video, Eye, EyeOff } from "lucide-react";
 
 interface MediaImage {
   id: string;
@@ -46,21 +46,53 @@ export function MediaManager() {
 
   const fetchMedia = async () => {
     try {
-      // Fetch images from storage
-      const { data: imageFiles } = await supabase.storage
-        .from('media-images')
-        .list('', { limit: 100 });
+      // Fetch images from media_images table
+      const { data: mediaImagesData, error: dbError } = await supabase
+        .from('media_images')
+        .select('*')
+        .order('display_order', { ascending: true });
 
-      if (imageFiles) {
-        const imageData: MediaImage[] = imageFiles.map((file, index) => ({
-          id: file.name,
-          name: file.name,
-          public_url: supabase.storage.from('media-images').getPublicUrl(file.name).data.publicUrl,
-          is_active: true, // Default to active
-          display_order: index + 1,
-          created_at: file.created_at || new Date().toISOString()
-        }));
-        setImages(imageData);
+      if (dbError) {
+        console.error('Error fetching from media_images:', dbError);
+      }
+
+      if (mediaImagesData && mediaImagesData.length > 0) {
+        // Use data from media_images table
+        setImages(mediaImagesData);
+      } else {
+        // Fallback: fetch from storage and seed the table
+        const { data: imageFiles } = await supabase.storage
+          .from('media-images')
+          .list('', { limit: 100 });
+
+        if (imageFiles && imageFiles.length > 0) {
+          const imageData: MediaImage[] = imageFiles.map((file, index) => ({
+            id: file.name,
+            name: file.name,
+            public_url: supabase.storage.from('media-images').getPublicUrl(file.name).data.publicUrl,
+            is_active: true,
+            display_order: index + 1,
+            created_at: file.created_at || new Date().toISOString()
+          }));
+          setImages(imageData);
+
+          // Seed the media_images table
+          const seedData = imageData.map((img) => ({
+            name: img.name,
+            public_url: img.public_url,
+            display_order: img.display_order,
+            is_active: img.is_active
+          }));
+
+          try {
+            await supabase.from('media_images').upsert(seedData, { 
+              onConflict: 'name',
+              ignoreDuplicates: true 
+            });
+          } catch (seedError) {
+            console.error('Error seeding media_images:', seedError);
+          }
+        }
       }
 
       // Fetch videos from database
@@ -101,11 +133,30 @@ export function MediaManager() {
       const fileExt = file.name.split('.').pop();
       const fileName = `${Date.now()}.${fileExt}`;
 
+      // Upload to storage
       const { error: uploadError } = await supabase.storage
         .from('media-images')
         .upload(fileName, file);
 
       if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('media-images')
+        .getPublicUrl(fileName);
+
+      // Insert into media_images table
+      const nextOrder = Math.max(...images.map(img => img.display_order), 0) + 1;
+      const { error: dbError } = await supabase
+        .from('media_images')
+        .insert({
+          name: fileName,
+          public_url: publicUrl,
+          display_order: nextOrder,
+          is_active: true
+        });
+
+      if (dbError) throw dbError;
 
       toast({
         title: "Success",
@@ -192,6 +243,105 @@ export function MediaManager() {
     }
   };
 
+  const toggleImageVisibility = async (imageId: string, currentStatus: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('media_images')
+        .update({ is_active: !currentStatus })
+        .eq('id', imageId);
+
+      if (error) throw error;
+
+      setImages(images.map(img => 
+        img.id === imageId ? { ...img, is_active: !currentStatus } : img
+      ));
+
+      toast({
+        title: "Success",
+        description: `Image ${!currentStatus ? 'shown' : 'hidden'}`,
+      });
+    } catch (error) {
+      console.error('Error updating image:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update image",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const moveImage = async (imageId: string, direction: 'up' | 'down') => {
+    const image = images.find(img => img.id === imageId);
+    if (!image) return;
+
+    const targetOrder = direction === 'up' ? image.display_order - 1 : image.display_order + 1;
+    const swapImage = images.find(img => img.display_order === targetOrder);
+
+    if (!swapImage) return;
+
+    try {
+      // Swap display orders
+      await Promise.all([
+        supabase
+          .from('media_images')
+          .update({ display_order: targetOrder })
+          .eq('id', imageId),
+        supabase
+          .from('media_images')
+          .update({ display_order: image.display_order })
+          .eq('id', swapImage.id)
+      ]);
+
+      fetchMedia();
+      toast({
+        title: "Success",
+        description: "Image order updated",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update image order",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const moveVideo = async (videoId: string, direction: 'up' | 'down') => {
+    const video = videos.find(v => v.id === videoId);
+    if (!video) return;
+
+    const targetOrder = direction === 'up' ? video.display_order - 1 : video.display_order + 1;
+    const swapVideo = videos.find(v => v.display_order === targetOrder);
+
+    if (!swapVideo) return;
+
+    try {
+      // Swap display orders
+      await Promise.all([
+        supabase
+          .from('media_videos')
+          .update({ display_order: targetOrder })
+          .eq('id', videoId),
+        supabase
+          .from('media_videos')
+          .update({ display_order: video.display_order })
+          .eq('id', swapVideo.id)
+      ]);
+
+      fetchMedia();
+      toast({
+        title: "Success",
+        description: "Video order updated",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update video order",
+        variant: "destructive",
+      });
+    }
+  };
+
   const toggleVideoVisibility = async (videoId: string, currentStatus: boolean) => {
     try {
       const { error } = await supabase
@@ -219,15 +369,24 @@ export function MediaManager() {
     }
   };
 
-  const deleteImage = async (imageName: string) => {
+  const deleteImage = async (imageId: string, imageName: string) => {
     try {
-      const { error } = await supabase.storage
+      // Delete from database
+      const { error: dbError } = await supabase
+        .from('media_images')
+        .delete()
+        .eq('id', imageId);
+
+      if (dbError) throw dbError;
+
+      // Delete from storage
+      const { error: storageError } = await supabase.storage
         .from('media-images')
         .remove([imageName]);
 
-      if (error) throw error;
+      if (storageError) throw storageError;
 
-      setImages(images.filter(img => img.name !== imageName));
+      setImages(images.filter(img => img.id !== imageId));
       toast({
         title: "Success",
         description: "Image deleted successfully",
@@ -324,17 +483,59 @@ export function MediaManager() {
                     alt={image.name}
                     className="w-full h-full object-cover"
                   />
+                  {!image.is_active && (
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                      <span className="text-white font-medium">Hidden</span>
+                    </div>
+                  )}
                 </div>
                 <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium truncate">{image.name}</span>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => deleteImage(image.name)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium truncate">{image.name}</span>
+                      <div className="flex items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => moveImage(image.id, 'up')}
+                          disabled={image.display_order === 1}
+                        >
+                          <ArrowUp className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => moveImage(image.id, 'down')}
+                          disabled={image.display_order === Math.max(...images.map(img => img.display_order))}
+                        >
+                          <ArrowDown className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          checked={image.is_active}
+                          onCheckedChange={() => toggleImageVisibility(image.id, image.is_active)}
+                        />
+                        <span className="text-sm">
+                          {image.is_active ? 'Visible' : 'Hidden'}
+                        </span>
+                        {image.is_active ? (
+                          <Eye className="h-4 w-4 text-green-600" />
+                        ) : (
+                          <EyeOff className="h-4 w-4 text-muted-foreground" />
+                        )}
+                      </div>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => deleteImage(image.id, image.name)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -393,7 +594,26 @@ export function MediaManager() {
                         </p>
                       )}
                     </div>
+                    
                     <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => moveVideo(video.id, 'up')}
+                          disabled={video.display_order === 1}
+                        >
+                          <ArrowUp className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => moveVideo(video.id, 'down')}
+                          disabled={video.display_order === Math.max(...videos.map(v => v.display_order))}
+                        >
+                          <ArrowDown className="h-4 w-4" />
+                        </Button>
+                      </div>
                       <div className="flex items-center gap-2">
                         <Switch
                           checked={video.is_active}
