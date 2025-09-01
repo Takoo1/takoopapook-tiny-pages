@@ -50,7 +50,7 @@ interface SerialNumberEditorProps {
 
 const defaultConfig: SerialConfig = {
   position: { xPct: 50, yPct: 80 },
-  size: { wPct: 18, hPct: 8 },
+  size: { wPct: 14, hPct: 12 },
   prefix: "Sl. No.",
   digitCount: 5,
   fontSize: 30,
@@ -68,6 +68,7 @@ export default function SerialNumberEditor({ ticketImageUrl, config, onConfigCha
   const [isResizingTop, setIsResizingTop] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [backgroundImage, setBackgroundImage] = useState<HTMLImageElement | null>(null);
+  const [cursorStyle, setCursorStyle] = useState('default');
 
   const sampleNumber = "12345".padStart(config.digitCount, '0');
   const displayText = `${config.prefix} ${sampleNumber}`;
@@ -133,22 +134,30 @@ export default function SerialNumberEditor({ ticketImageUrl, config, onConfigCha
 
     ctx.restore();
 
-    // Draw resize handles when not dragging
-    if (!isDragging && !isResizingRight && !isResizingTop) {
-      ctx.strokeStyle = '#3b82f6';
-      ctx.lineWidth = 2;
-      ctx.setLineDash([5, 5]);
-      ctx.strokeRect(x, y, width, height);
-      
-      // Right edge handle
-      const handleSize = 16;
-      ctx.fillStyle = '#3b82f6';
-      ctx.setLineDash([]);
-      ctx.fillRect(x + width - handleSize/2, y + height/2 - handleSize/2, handleSize, handleSize);
-      
-      // Top edge handle
-      ctx.fillRect(x + width/2 - handleSize/2, y - handleSize/2, handleSize, handleSize);
-    }
+    // Draw selection box and handles
+    ctx.strokeStyle = '#3b82f6';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 5]);
+    ctx.strokeRect(x, y, width, height);
+    
+    // Draw resize handles - make them larger and more visible
+    const handleSize = 20;
+    ctx.fillStyle = '#3b82f6';
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([]);
+    
+    // Right edge handle
+    const rightHandleX = x + width - handleSize/2;
+    const rightHandleY = y + height/2 - handleSize/2;
+    ctx.fillRect(rightHandleX, rightHandleY, handleSize, handleSize);
+    ctx.strokeRect(rightHandleX, rightHandleY, handleSize, handleSize);
+    
+    // Top edge handle
+    const topHandleX = x + width/2 - handleSize/2;
+    const topHandleY = y - handleSize/2;
+    ctx.fillRect(topHandleX, topHandleY, handleSize, handleSize);
+    ctx.strokeRect(topHandleX, topHandleY, handleSize, handleSize);
   };
 
   const handleCanvasMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -167,7 +176,7 @@ export default function SerialNumberEditor({ ticketImageUrl, config, onConfigCha
     const overlayWidth = (config.size.wPct / 100) * canvas.width;
     const overlayHeight = (config.size.hPct / 100) * canvas.height;
 
-    const handleSize = 16;
+    const handleSize = 20; // Match the drawing size
     
     // Check if clicking on right edge handle
     const rightHandleX = overlayX + overlayWidth - handleSize/2;
@@ -179,11 +188,49 @@ export default function SerialNumberEditor({ ticketImageUrl, config, onConfigCha
     
     if (x >= rightHandleX && x <= rightHandleX + handleSize && y >= rightHandleY && y <= rightHandleY + handleSize) {
       setIsResizingRight(true);
+      e.preventDefault();
     } else if (x >= topHandleX && x <= topHandleX + handleSize && y >= topHandleY && y <= topHandleY + handleSize) {
       setIsResizingTop(true);
+      e.preventDefault();
     } else if (x >= overlayX && x <= overlayX + overlayWidth && y >= overlayY && y <= overlayY + overlayHeight) {
       setIsDragging(true);
       setDragStart({ x: x - overlayX, y: y - overlayY });
+      e.preventDefault();
+    }
+  };
+
+  const updateCursor = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!canvasRef.current || isDragging || isResizingRight || isResizingTop) return;
+
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
+
+    const overlayX = (config.position.xPct / 100) * canvas.width;
+    const overlayY = (config.position.yPct / 100) * canvas.height;
+    const overlayWidth = (config.size.wPct / 100) * canvas.width;
+    const overlayHeight = (config.size.hPct / 100) * canvas.height;
+
+    const handleSize = 20;
+    
+    // Check handle positions
+    const rightHandleX = overlayX + overlayWidth - handleSize/2;
+    const rightHandleY = overlayY + overlayHeight/2 - handleSize/2;
+    const topHandleX = overlayX + overlayWidth/2 - handleSize/2;
+    const topHandleY = overlayY - handleSize/2;
+    
+    if (x >= rightHandleX && x <= rightHandleX + handleSize && y >= rightHandleY && y <= rightHandleY + handleSize) {
+      setCursorStyle('ew-resize');
+    } else if (x >= topHandleX && x <= topHandleX + handleSize && y >= topHandleY && y <= topHandleY + handleSize) {
+      setCursorStyle('ns-resize');
+    } else if (x >= overlayX && x <= overlayX + overlayWidth && y >= overlayY && y <= overlayY + overlayHeight) {
+      setCursorStyle('move');
+    } else {
+      setCursorStyle('default');
     }
   };
 
@@ -275,9 +322,13 @@ export default function SerialNumberEditor({ ticketImageUrl, config, onConfigCha
         <div className="border rounded-lg overflow-hidden bg-muted/20">
           <canvas
             ref={canvasRef}
-            className="w-full h-auto cursor-move"
+            className="w-full h-auto"
+            style={{ cursor: cursorStyle }}
             onMouseDown={handleCanvasMouseDown}
-            onMouseMove={handleCanvasMouseMove}
+            onMouseMove={(e) => {
+              updateCursor(e);
+              handleCanvasMouseMove(e);
+            }}
             onMouseUp={handleCanvasMouseUp}
             onMouseLeave={handleCanvasMouseUp}
           />
