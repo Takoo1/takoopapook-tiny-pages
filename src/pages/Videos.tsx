@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { MessageCircle, Share, ChevronUp, ChevronDown } from "lucide-react";
+import { MessageCircle, Share, ChevronUp, ChevronDown, Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { VideoCommentsSheet } from "@/components/VideoCommentsSheet";
@@ -28,6 +28,7 @@ export default function Videos() {
   const [loading, setLoading] = useState(true);
   const [commentsCount, setCommentsCount] = useState<Record<string, number>>({});
   const [selectedVideoForComments, setSelectedVideoForComments] = useState<MediaVideo | null>(null);
+  const [isMuted, setIsMuted] = useState(true);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -37,11 +38,38 @@ export default function Videos() {
     fetchVideos();
   }, []);
 
+  // Intersection Observer for scroll-based autoplay
+  useEffect(() => {
+    if (!isMobile || videos.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const videoElement = entry.target as HTMLVideoElement;
+            const videoIndex = videoRefs.current.indexOf(videoElement);
+            if (videoIndex !== -1 && videoIndex !== currentVideoIndex) {
+              setCurrentVideoIndex(videoIndex);
+            }
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    videoRefs.current.forEach((video) => {
+      if (video) observer.observe(video);
+    });
+
+    return () => observer.disconnect();
+  }, [videos, isMobile, currentVideoIndex]);
+
   useEffect(() => {
     if (videos.length > 0) {
       // Auto-play current video
       const currentVideo = videoRefs.current[currentVideoIndex];
       if (currentVideo) {
+        currentVideo.muted = isMuted;
         currentVideo.play().catch(() => {
           // Autoplay might be blocked, that's okay
         });
@@ -54,7 +82,7 @@ export default function Videos() {
         }
       });
     }
-  }, [currentVideoIndex, videos]);
+  }, [currentVideoIndex, videos, isMuted]);
 
   const fetchVideos = async () => {
     try {
@@ -183,19 +211,27 @@ export default function Videos() {
             src={video.video_url}
             className="w-full h-full object-cover"
             loop
-            muted
+            muted={isMuted}
             playsInline
             onClick={() => {
-              const videoEl = videoRefs.current[index];
-              if (videoEl) {
-                if (videoEl.paused) {
-                  videoEl.play();
-                } else {
-                  videoEl.pause();
-                }
+              if (index === currentVideoIndex) {
+                setIsMuted(!isMuted);
               }
             }}
           />
+
+          {/* Sound toggle indicator */}
+          {index === currentVideoIndex && (
+            <div className="absolute top-4 right-4 z-10">
+              <div className="bg-black/50 rounded-full p-2">
+                {isMuted ? (
+                  <VolumeX className="h-5 w-5 text-white" />
+                ) : (
+                  <Volume2 className="h-5 w-5 text-white" />
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Content overlay */}
           <div className={`absolute ${isMobile ? 'bottom-20' : 'bottom-safe-bottom'} left-4 right-20 text-white z-10`}>
@@ -212,9 +248,7 @@ export default function Videos() {
               className="flex flex-col items-center cursor-pointer"
               onClick={() => handleOpenComments(video)}
             >
-              <div className="w-12 h-12 bg-black/80 rounded-full flex items-center justify-center hover:bg-black/60 transition-colors">
-                <MessageCircle className="h-6 w-6 text-white" />
-              </div>
+              <MessageCircle className="h-8 w-8 text-white hover:text-blue-400 transition-colors" />
               <span className="text-xs mt-1 text-white font-medium">{getCommentCount(video.id)}</span>
             </div>
 
@@ -223,14 +257,12 @@ export default function Videos() {
               className="flex flex-col items-center cursor-pointer"
               onClick={() => handleShare(video)}
             >
-              <div className="w-12 h-12 bg-black/80 rounded-full flex items-center justify-center hover:bg-black/60 transition-colors">
-                <Share className="h-6 w-6 text-white" />
-              </div>
+              <Share className="h-8 w-8 text-white hover:text-green-400 transition-colors" />
             </div>
           </div>
 
-          {/* Navigation arrows */}
-          {index > 0 && (
+          {/* Navigation arrows - hidden on mobile */}
+          {!isMobile && index > 0 && (
             <button
               onClick={scrollToPrevious}
               className="absolute top-4 right-4 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full transition-colors duration-200 z-10"
@@ -240,7 +272,7 @@ export default function Videos() {
             </button>
           )}
           
-          {index < videos.length - 1 && (
+          {!isMobile && index < videos.length - 1 && (
             <button
               onClick={scrollToNext}
               className="absolute bottom-32 right-4 bg-black/20 hover:bg-black/40 text-white p-2 rounded-full transition-colors duration-200 z-10"
