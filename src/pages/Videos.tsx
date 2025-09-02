@@ -169,13 +169,13 @@ export default function Videos() {
     <>
       <div 
         ref={containerRef}
-        className={`${isMobile ? 'fixed inset-0' : 'h-screen'} overflow-y-auto snap-y snap-mandatory scrollbar-hide`}
+        className={`${isMobile ? 'fixed inset-0 pb-20' : 'h-screen'} overflow-y-auto snap-y snap-mandatory scrollbar-hide`}
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
       {videos.map((video, index) => (
         <div
           key={video.id}
-          className={`${isMobile ? 'h-screen' : 'h-screen'} relative snap-start flex items-center justify-center bg-black`}
+          className={`${isMobile ? 'h-[calc(100vh-5rem)]' : 'h-screen'} relative snap-start flex items-center justify-center bg-black`}
         >
           {/* Video */}
           <video
@@ -206,27 +206,27 @@ export default function Videos() {
           </div>
 
           {/* Interaction sidebar */}
-          <div className={`absolute right-4 ${isMobile ? 'bottom-20' : 'bottom-safe-bottom'} flex flex-col items-center space-y-6 z-10`}>
+          <div className={`absolute right-4 ${isMobile ? 'bottom-28' : 'bottom-safe-bottom'} flex flex-col items-center space-y-4 z-10`}>
             {/* Comment button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex flex-col items-center text-white hover:text-blue-500"
+            <div
+              className="flex flex-col items-center cursor-pointer"
               onClick={() => handleOpenComments(video)}
             >
-              <MessageCircle className="h-8 w-8" />
-              <span className="text-xs mt-1">{getCommentCount(video.id)}</span>
-            </Button>
+              <div className="w-12 h-12 bg-black/80 rounded-full flex items-center justify-center hover:bg-black/60 transition-colors">
+                <MessageCircle className="h-6 w-6 text-white" />
+              </div>
+              <span className="text-xs mt-1 text-white font-medium">{getCommentCount(video.id)}</span>
+            </div>
 
             {/* Share button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex flex-col items-center text-white hover:text-green-500"
+            <div
+              className="flex flex-col items-center cursor-pointer"
               onClick={() => handleShare(video)}
             >
-              <Share className="h-8 w-8" />
-            </Button>
+              <div className="w-12 h-12 bg-black/80 rounded-full flex items-center justify-center hover:bg-black/60 transition-colors">
+                <Share className="h-6 w-6 text-white" />
+              </div>
+            </div>
           </div>
 
           {/* Navigation arrows */}
