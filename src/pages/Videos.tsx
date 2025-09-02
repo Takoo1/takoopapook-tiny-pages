@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Heart, MessageCircle, Share, ChevronUp, ChevronDown } from "lucide-react";
+import { MessageCircle, Share, ChevronUp, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { VideoCommentsSheet } from "@/components/VideoCommentsSheet";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface MediaVideo {
   id: string;
@@ -12,10 +14,10 @@ interface MediaVideo {
   thumbnail_url: string;
 }
 
-interface VideoReaction {
+interface VideoComment {
   id: string;
-  video_id: string;
-  reaction_type: string;
+  content: string;
+  created_at: string;
   user_id?: string;
   user_session?: string;
 }
@@ -24,11 +26,12 @@ export default function Videos() {
   const [videos, setVideos] = useState<MediaVideo[]>([]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [reactions, setReactions] = useState<Record<string, VideoReaction[]>>({});
-  const [userReactions, setUserReactions] = useState<Record<string, string>>({});
+  const [commentsCount, setCommentsCount] = useState<Record<string, number>>({});
+  const [selectedVideoForComments, setSelectedVideoForComments] = useState<MediaVideo | null>(null);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     fetchVideos();
@@ -64,23 +67,20 @@ export default function Videos() {
       if (error) throw error;
       setVideos(data || []);
 
-      // Fetch reactions for all videos
+      // Fetch comment counts for all videos
       if (data && data.length > 0) {
-        const { data: reactionData } = await supabase
-          .from('media_video_reactions')
-          .select('*')
-          .in('video_id', data.map(v => v.id));
-
-        if (reactionData) {
-          const groupedReactions = reactionData.reduce((acc, reaction) => {
-            if (!acc[reaction.video_id]) {
-              acc[reaction.video_id] = [];
-            }
-            acc[reaction.video_id].push(reaction);
-            return acc;
-          }, {} as Record<string, VideoReaction[]>);
-          setReactions(groupedReactions);
+        const commentCounts: Record<string, number> = {};
+        
+        for (const video of data) {
+          const { count } = await supabase
+            .from('media_video_comments')
+            .select('*', { count: 'exact', head: true })
+            .eq('video_id', video.id);
+          
+          commentCounts[video.id] = count || 0;
         }
+        
+        setCommentsCount(commentCounts);
       }
     } catch (error) {
       console.error('Error fetching videos:', error);
@@ -94,60 +94,30 @@ export default function Videos() {
     }
   };
 
-  const handleReaction = async (videoId: string, reactionType: string = 'like') => {
+  const handleShare = async (video: MediaVideo) => {
     try {
-      const userSession = crypto.randomUUID(); // Generate session ID for guest users
-      
-      // Check if user already reacted
-      if (userReactions[videoId]) {
-        // Remove existing reaction
-        await supabase
-          .from('media_video_reactions')
-          .delete()
-          .eq('video_id', videoId)
-          .eq('user_session', userSession);
-        
-        setUserReactions(prev => {
-          const newReactions = { ...prev };
-          delete newReactions[videoId];
-          return newReactions;
-        });
+      const shareData = {
+        title: video.title,
+        text: video.description,
+        url: `${window.location.origin}/videos/${video.id}`,
+      };
+
+      if (navigator.share) {
+        await navigator.share(shareData);
       } else {
-        // Add new reaction
-        await supabase
-          .from('media_video_reactions')
-          .insert({
-            video_id: videoId,
-            reaction_type: reactionType,
-            user_session: userSession
-          });
-
-        setUserReactions(prev => ({
-          ...prev,
-          [videoId]: reactionType
-        }));
-      }
-
-      // Refresh reactions for this video
-      const { data: reactionData } = await supabase
-        .from('media_video_reactions')
-        .select('*')
-        .eq('video_id', videoId);
-
-      if (reactionData) {
-        setReactions(prev => ({
-          ...prev,
-          [videoId]: reactionData
-        }));
+        await navigator.clipboard.writeText(shareData.url);
+        toast({
+          title: "Link copied!",
+          description: "Video link copied to clipboard",
+        });
       }
     } catch (error) {
-      console.error('Error handling reaction:', error);
-      toast({
-        title: "Error",
-        description: "Failed to react to video",
-        variant: "destructive",
-      });
+      console.error('Error sharing video:', error);
     }
+  };
+
+  const handleOpenComments = (video: MediaVideo) => {
+    setSelectedVideoForComments(video);
   };
 
   const scrollToNext = () => {
@@ -172,8 +142,8 @@ export default function Videos() {
     }
   };
 
-  const getReactionCount = (videoId: string, type: string = 'like') => {
-    return reactions[videoId]?.filter(r => r.reaction_type === type).length || 0;
+  const getCommentCount = (videoId: string) => {
+    return commentsCount[videoId] || 0;
   };
 
   if (loading) {
@@ -196,15 +166,16 @@ export default function Videos() {
   }
 
   return (
-    <div 
-      ref={containerRef}
-      className="h-screen overflow-y-auto snap-y snap-mandatory scrollbar-hide"
-      style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-    >
+    <>
+      <div 
+        ref={containerRef}
+        className={`${isMobile ? 'fixed inset-0' : 'h-screen'} overflow-y-auto snap-y snap-mandatory scrollbar-hide`}
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
       {videos.map((video, index) => (
         <div
           key={video.id}
-          className="h-screen relative snap-start flex items-center justify-center bg-black"
+          className={`${isMobile ? 'h-screen' : 'h-screen'} relative snap-start flex items-center justify-center bg-black`}
         >
           {/* Video */}
           <video
@@ -227,7 +198,7 @@ export default function Videos() {
           />
 
           {/* Content overlay */}
-          <div className="absolute bottom-safe-bottom left-4 right-20 text-white z-10">
+          <div className={`absolute ${isMobile ? 'bottom-20' : 'bottom-safe-bottom'} left-4 right-20 text-white z-10`}>
             <h3 className="text-lg font-bold mb-2 line-clamp-2">{video.title}</h3>
             {video.description && (
               <p className="text-sm opacity-80 line-clamp-3 mb-4">{video.description}</p>
@@ -235,30 +206,16 @@ export default function Videos() {
           </div>
 
           {/* Interaction sidebar */}
-          <div className="absolute right-4 bottom-safe-bottom flex flex-col items-center space-y-6 z-10">
-            {/* Like button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`flex flex-col items-center text-white hover:text-red-500 ${
-                userReactions[video.id] ? 'text-red-500' : ''
-              }`}
-              onClick={() => handleReaction(video.id, 'like')}
-            >
-              <Heart 
-                className={`h-8 w-8 ${userReactions[video.id] ? 'fill-current' : ''}`} 
-              />
-              <span className="text-xs mt-1">{getReactionCount(video.id, 'like')}</span>
-            </Button>
-
+          <div className={`absolute right-4 ${isMobile ? 'bottom-20' : 'bottom-safe-bottom'} flex flex-col items-center space-y-6 z-10`}>
             {/* Comment button */}
             <Button
               variant="ghost"
               size="sm"
               className="flex flex-col items-center text-white hover:text-blue-500"
+              onClick={() => handleOpenComments(video)}
             >
               <MessageCircle className="h-8 w-8" />
-              <span className="text-xs mt-1">0</span>
+              <span className="text-xs mt-1">{getCommentCount(video.id)}</span>
             </Button>
 
             {/* Share button */}
@@ -266,20 +223,7 @@ export default function Videos() {
               variant="ghost"
               size="sm"
               className="flex flex-col items-center text-white hover:text-green-500"
-              onClick={() => {
-                if (navigator.share) {
-                  navigator.share({
-                    title: video.title,
-                    url: window.location.href,
-                  });
-                } else {
-                  navigator.clipboard.writeText(window.location.href);
-                  toast({
-                    title: "Link copied!",
-                    description: "Video link copied to clipboard",
-                  });
-                }
-              }}
+              onClick={() => handleShare(video)}
             >
               <Share className="h-8 w-8" />
             </Button>
@@ -312,6 +256,15 @@ export default function Videos() {
           </div>
         </div>
       ))}
-    </div>
+      </div>
+
+      {/* Comments Sheet */}
+      <VideoCommentsSheet
+        isOpen={!!selectedVideoForComments}
+        onClose={() => setSelectedVideoForComments(null)}
+        videoId={selectedVideoForComments?.id || ""}
+        videoTitle={selectedVideoForComments?.title || ""}
+      />
+    </>
   );
 }

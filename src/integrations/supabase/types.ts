@@ -531,6 +531,33 @@ export type Database = {
         }
         Relationships: []
       }
+      media_video_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          user_id: string | null
+          user_session: string | null
+          video_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          user_id?: string | null
+          user_session?: string | null
+          video_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          user_id?: string | null
+          user_session?: string | null
+          video_id?: string
+        }
+        Relationships: []
+      }
       media_video_links: {
         Row: {
           created_at: string
