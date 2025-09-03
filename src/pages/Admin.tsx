@@ -614,17 +614,96 @@ export default function Admin() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Target className="h-5 w-5" />
-                  Fortune Counter Management
+                  Fortune Counter Management ({games.filter(game => (fortuneCounters[game.id] || 0) > 0).length} games with counters)
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-12">
-                  <Target className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Coming Soon</h3>
-                  <p className="text-muted-foreground">
-                    Advanced fortune counter management features will be available soon.
-                  </p>
-                </div>
+                {games.filter(game => (fortuneCounters[game.id] || 0) > 0).length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Game Title</TableHead>
+                          <TableHead>Code</TableHead>
+                          <TableHead>Date</TableHead>
+                          <TableHead>Price</TableHead>
+                          <TableHead>Organiser</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Fortune Counter</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {games
+                          .filter(game => (fortuneCounters[game.id] || 0) > 0)
+                          .map((game) => (
+                          <TableRow key={game.id}>
+                            <TableCell>
+                              <div className="font-medium">{game.title}</div>
+                              {game.description && (
+                                <div className="text-xs text-muted-foreground truncate max-w-[200px]">
+                                  {game.description}
+                                </div>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {game.game_code && (
+                                <Badge variant="outline" className="text-xs font-mono">
+                                  {game.game_code}
+                                </Badge>
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-1">
+                                <Calendar className="h-3 w-3" />
+                                {format(new Date(game.game_date), 'MMM dd, yyyy')}
+                              </div>
+                            </TableCell>
+                            <TableCell>₹{game.ticket_price}</TableCell>
+                            <TableCell>
+                              <div className="truncate max-w-[150px]">
+                                {game.organising_group_name}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              {getStatusBadge(game.status)}
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleFortuneCounterClick(game)}
+                                className="bg-lottery-gold/10 hover:bg-lottery-gold/20 border-lottery-gold/30 text-lottery-gold font-semibold"
+                              >
+                                <Target className="h-3 w-3 mr-1" />
+                                {fortuneCounters[game.id] || 0}
+                              </Button>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex gap-1">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleViewGame(game.id)}
+                                >
+                                  <Eye className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <Target className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">No Fortune Counters</h3>
+                    <p className="text-muted-foreground">
+                      No games currently have active fortune counters. Counters increase when tickets are sold online.
+                    </p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
