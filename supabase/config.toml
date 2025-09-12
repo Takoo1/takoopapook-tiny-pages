@@ -1,0 +1,4 @@
+project_id = "bramvnherjbaiakwfvwb"
+
+[functions.update-lottery-statuses]
+verify_jwt = false
