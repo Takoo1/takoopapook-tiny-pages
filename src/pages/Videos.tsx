@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Play, ArrowLeft, MessageCircle, Share, Volume2, VolumeX, Heart, Video } from "lucide-react";
+import { Play, ArrowLeft, MessageCircle, ExternalLink, Volume2, VolumeX, Heart, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { VideoCommentsSheet } from "@/components/VideoCommentsSheet";
@@ -533,7 +533,7 @@ export default function Videos() {
           </div>
 
           <div className="flex flex-col items-center cursor-pointer" onClick={() => handleShare(selectedVideo)}>
-            <Share className="h-8 w-8 text-white hover:text-green-400 transition-colors" />
+            <ExternalLink className="h-8 w-8 text-white hover:text-green-400 transition-colors" />
           </div>
         </div>
 
