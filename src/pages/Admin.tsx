@@ -14,12 +14,13 @@ import { CreateGameForm } from "@/components/CreateGameForm";
 import { GamePreviewModal } from "@/components/GamePreviewModal";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-import { Plus, Trash2, Eye, Target, Calendar, Users, Gamepad2, ImageIcon, Trophy, Bell, MessageCircle } from "lucide-react";
+import { Plus, Trash2, Eye, Target, Calendar, Users, Gamepad2, ImageIcon, Trophy, Bell, MessageCircle, FileText } from "lucide-react";
 import { MediaManager } from "@/components/MediaManager";
 import { BookingsManager } from "@/components/BookingsManager";
 import { WinnersManager } from "@/components/WinnersManager";
 import { NotificationsManager } from "@/components/NotificationsManager";
 import { FeedbackManager } from "@/components/FeedbackManager";
+import { TermsManager } from "@/components/TermsManager";
 
 interface LotteryGame {
   id: string;
@@ -367,7 +368,7 @@ export default function Admin() {
         </div>
 
         <Tabs defaultValue="games" className="w-full">
-          <TabsList className="grid w-full grid-cols-7">
+          <TabsList className="grid w-full grid-cols-8">
             <TabsTrigger value="games" className="flex items-center gap-2">
               <Gamepad2 className="w-4 h-4" />
               Games
@@ -395,6 +396,10 @@ export default function Admin() {
             <TabsTrigger value="fortune" className="flex items-center gap-2">
               <Target className="w-4 h-4" />
               Fortune Counter
+            </TabsTrigger>
+            <TabsTrigger value="terms" className="flex items-center gap-2">
+              <FileText className="w-4 h-4" />
+              Terms
             </TabsTrigger>
           </TabsList>
 
@@ -617,6 +622,11 @@ export default function Admin() {
           {/* Bookings Tab */}
           <TabsContent value="bookings" className="space-y-6">
             <BookingsManager />
+          </TabsContent>
+
+          {/* Terms Tab */}
+          <TabsContent value="terms" className="space-y-6">
+            <TermsManager />
           </TabsContent>
 
           <TabsContent value="fortune">

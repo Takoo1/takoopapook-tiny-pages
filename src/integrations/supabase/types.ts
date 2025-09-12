@@ -887,6 +887,36 @@ export type Database = {
         }
         Relationships: []
       }
+      site_terms: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_active: boolean
+          section_name: string
+          section_order: number
+          updated_at: string
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          section_name: string
+          section_order: number
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          section_name?: string
+          section_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_feedback: {
         Row: {
           created_at: string
