@@ -12,6 +12,8 @@ import { CreateGameForm } from "@/components/CreateGameForm";
 import { FortuneCounterModal } from "@/components/FortuneCounterModal";
 import { BookingsManager } from "@/components/BookingsManager";
 import { useToast } from "@/hooks/use-toast";
+import { useTermsAcceptance } from "@/hooks/useTermsAcceptance";
+import { useTermsContext } from "@/contexts/TermsContext";
 import { Plus, Calendar, Users, Target, LogOut, Coins, Edit, UserPlus } from "lucide-react";
 import { format } from "date-fns";
 import { formatDateWithTimezone } from "@/lib/dateUtils";
@@ -49,6 +51,8 @@ const GameOrganiserDashboard = () => {
   const [joiningGame, setJoiningGame] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { checkAcceptance } = useTermsAcceptance();
+  const { showTermsPopup } = useTermsContext();
 
   useEffect(() => {
     checkUserAccess();
@@ -76,7 +80,19 @@ const GameOrganiserDashboard = () => {
       }
 
       setHasAccess(true);
-      fetchMyGames();
+      
+      // Check organizer terms acceptance on first dashboard access
+      const hasAcceptedOrganizerTerms = await checkAcceptance('organizer_access');
+      if (!hasAcceptedOrganizerTerms) {
+        showTermsPopup(
+          'organizer_access',
+          [1, 4, 5], // Show sections 1, 4, and 5 for organizers
+          () => fetchMyGames(), // Fetch games after terms acceptance
+          "Organizer Terms & Conditions"
+        );
+      } else {
+        fetchMyGames();
+      }
     } catch (error) {
       console.error('Access check failed:', error);
       setHasAccess(false);

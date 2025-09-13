@@ -977,6 +977,41 @@ export type Database = {
         }
         Relationships: []
       }
+      user_terms_acceptance: {
+        Row: {
+          acceptance_type: string
+          accepted_at: string | null
+          created_at: string | null
+          id: string
+          terms_version: string | null
+          user_id: string | null
+        }
+        Insert: {
+          acceptance_type: string
+          accepted_at?: string | null
+          created_at?: string | null
+          id?: string
+          terms_version?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          acceptance_type?: string
+          accepted_at?: string | null
+          created_at?: string | null
+          id?: string
+          terms_version?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_terms_acceptance_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       winners: {
         Row: {
           created_at: string

@@ -5,6 +5,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { useTermsAcceptance } from "@/hooks/useTermsAcceptance";
+import { useTermsContext } from "@/contexts/TermsContext";
 import { LogIn, LogOut, User, Copy, Plus } from "lucide-react";
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 const fcCoin = "https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/FC%20coin.png";
@@ -18,7 +20,10 @@ export function AuthButton() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
+  const { checkAcceptance } = useTermsAcceptance();
+  const { showTermsPopup } = useTermsContext();
   const [fcBalance, setFcBalance] = useState<number | null>(null);
   const [referralCode, setReferralCode] = useState<string | null>(null);
   const [copying, setCopying] = useState(false);
@@ -50,12 +55,25 @@ export function AuthButton() {
           createUserProfile(session.user).then(() => {
             loadFcData(session.user.id);
           });
+
+          // Check terms acceptance for newly signed-in users
+          setTimeout(async () => {
+            const hasAcceptedTerms = await checkAcceptance('user_login');
+            if (!hasAcceptedTerms) {
+              showTermsPopup(
+                'user_login',
+                [1, 3, 10], // Show sections 1, 3, and 10
+                () => {}, // No additional action needed after acceptance
+                "Welcome! Please Review Our Terms"
+              );
+            }
+          }, 1000); // Small delay to let UI settle
         }
       }
     );
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [checkAcceptance, showTermsPopup]);
 
   const createUserProfile = async (user: SupabaseUser) => {
     try {

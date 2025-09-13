@@ -9,6 +9,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, ShoppingCart, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useTermsAcceptance } from "@/hooks/useTermsAcceptance";
+import { useTermsContext } from "@/contexts/TermsContext";
 const fcCoin = "https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/FC%20coin.png";
 import { generateAndDownloadTicket, type SerialConfig } from "@/lib/generateTicketImage";
 
@@ -23,6 +25,8 @@ export default function TicketBuying() {
   const location = useLocation();
   const { toast } = useToast();
   const isMobile = useIsMobile();
+  const { checkAcceptance } = useTermsAcceptance();
+  const { showTermsPopup } = useTermsContext();
   
   const [selectedTickets, setSelectedTickets] = useState<SelectedTicket[]>([]);
   const [formData, setFormData] = useState({
@@ -196,6 +200,25 @@ export default function TicketBuying() {
       });
       return;
     }
+
+    // Check terms acceptance for non-logged users before purchase
+    if (!userId) {
+      const hasAccepted = await checkAcceptance('ticket_purchase');
+      if (!hasAccepted) {
+        showTermsPopup(
+          'ticket_purchase',
+          [1, 3, 10], // Show sections 1, 3, and 10
+          () => proceedWithPurchase(), // Proceed with purchase after acceptance
+          "Terms & Conditions - Ticket Purchase"
+        );
+        return;
+      }
+    }
+
+    proceedWithPurchase();
+  };
+
+  const proceedWithPurchase = async () => {
 
     setLoading(true);
     try {
