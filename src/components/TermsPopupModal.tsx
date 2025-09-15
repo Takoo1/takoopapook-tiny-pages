@@ -145,10 +145,9 @@ export default function TermsPopupModal({
                   <h4 className="font-semibold text-sm text-foreground">
                     {term.section_order}. {term.section_name}
                   </h4>
-                  <div 
-                    className="text-sm text-muted-foreground leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: term.content }}
-                  />
+                  <div className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                    {term.content}
+                  </div>
                 </div>
               ))}
               

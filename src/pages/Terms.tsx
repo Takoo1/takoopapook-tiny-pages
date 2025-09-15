@@ -110,24 +110,9 @@ export default function Terms() {
       <div className="container mx-auto px-4 py-6 max-w-4xl">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-4 mb-6">
-            <Button
-              variant="ghost"
-              asChild
-              className="hover:bg-muted/50"
-            >
-              <Link to="/">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Home
-              </Link>
-            </Button>
-          </div>
           
           <div className="text-center border-b pb-6">
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="p-3 bg-primary/10 rounded-full">
-                <FileText className="h-8 w-8 text-primary" />
-              </div>
+            <div className="mb-4">
               <h1 className="text-4xl font-bold text-foreground">Terms & Conditions</h1>
             </div>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -163,9 +148,6 @@ export default function Terms() {
                       className="justify-start h-auto p-3 text-left"
                       onClick={() => scrollToSection(term.id)}
                     >
-                      <span className="text-sm font-medium text-primary mr-2">
-                        {term.section_order}.
-                      </span>
                       <span className="text-sm truncate">
                         {term.section_name}
                       </span>
@@ -201,12 +183,6 @@ export default function Terms() {
                               <CardTitle className="text-xl text-foreground leading-tight">
                                 {term.section_name}
                               </CardTitle>
-                              {term.content && (
-                                <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
-                                  {term.content.substring(0, 120)}
-                                  {term.content.length > 120 && '...'}
-                                </p>
-                              )}
                             </div>
                           </div>
                           <div className="shrink-0 ml-4">
