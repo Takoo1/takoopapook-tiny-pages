@@ -65,6 +65,7 @@ const App = () => (
                   <Route path="/game-organiser-dashboard" element={<GameOrganiserDashboard />} />
                   <Route path="/organizer-dashboard" element={<OrganizerDashboard />} />
                   <Route path="/videos" element={<Videos />} />
+                  <Route path="/videos/:videoId" element={<Videos />} />
                   <Route path="/winners" element={<Winners />} />
                   <Route path="/my-tickets" element={<MyTickets />} />
                   <Route path="/menu" element={<MenuPage />} />

@@ -4,6 +4,7 @@ import { Play, ArrowLeft, MessageCircle, ExternalLink, Volume2, VolumeX, Heart, 
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { VideoCommentsSheet } from "@/components/VideoCommentsSheet";
+import { useParams } from "react-router-dom";
 
 interface MediaVideo {
   id: string;
@@ -47,6 +48,7 @@ interface VideoReaction {
 }
 
 export default function Videos() {
+  const { videoId } = useParams();
   const [videos, setVideos] = useState<MediaVideo[]>([]);
   const [filteredVideos, setFilteredVideos] = useState<MediaVideo[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'from_fortune_bridge' | 'about_games'>('all');
@@ -64,10 +66,31 @@ export default function Videos() {
   const [authLoading, setAuthLoading] = useState(true);
   const { toast } = useToast();
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   useEffect(() => {
     fetchVideos();
     initializeAuth();
   }, []);
+
+  // Handle direct video link access
+  useEffect(() => {
+    if (videoId && videos.length > 0) {
+      const video = videos.find(v => v.id === videoId);
+      if (video) {
+        setSelectedVideo(video);
+      } else {
+        toast({
+          title: "Video not found",
+          description: "The requested video could not be found.",
+          variant: "destructive",
+        });
+      }
+    }
+  }, [videoId, videos, toast]);
 
   const initializeAuth = async () => {
     try {
@@ -608,7 +631,7 @@ export default function Videos() {
       )}
 
       {/* Category Filter Buttons - Fixed at bottom above nav */}
-      <div className="fixed bottom-20 left-0 right-0 z-30 bg-background/80 backdrop-blur-sm border-t border-border">
+      <div className="fixed bottom-[4.5rem] left-0 right-0 z-30 bg-background/80 backdrop-blur-sm border-t border-border">
         <div className="flex justify-center gap-2 py-2 px-4">
           <Button
             variant="ghost"

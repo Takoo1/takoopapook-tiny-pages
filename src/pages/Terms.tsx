@@ -113,9 +113,9 @@ export default function Terms() {
           
           <div className="text-center border-b pb-6">
             <div className="mb-4">
-              <h1 className="text-4xl font-bold text-foreground">Terms & Conditions</h1>
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground">Terms & Conditions</h1>
             </div>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
               Please read these terms and conditions carefully before using Fortune Bridge services.
             </p>
             <Badge variant="outline" className="mt-4">
@@ -137,7 +137,7 @@ export default function Terms() {
             {/* Quick Navigation */}
             <Card className="mb-8 bg-muted/30 border-border/50">
               <CardHeader>
-                <CardTitle className="text-lg">Quick Navigation</CardTitle>
+                <CardTitle className="text-base md:text-lg">Quick Navigation</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -180,7 +180,7 @@ export default function Terms() {
                               {term.section_order}
                             </Badge>
                             <div>
-                              <CardTitle className="text-xl text-foreground leading-tight">
+                              <CardTitle className="text-lg md:text-xl text-foreground leading-tight">
                                 {term.section_name}
                               </CardTitle>
                             </div>
@@ -201,7 +201,7 @@ export default function Terms() {
                         <Separator className="mb-6" />
                         {term.content ? (
                           <div className="prose prose-sm max-w-none">
-                            <div className="whitespace-pre-wrap text-foreground leading-relaxed text-sm md:text-base">
+                            <div className="whitespace-pre-wrap text-foreground leading-relaxed text-xs md:text-sm">
                               {term.content}
                             </div>
                           </div>
@@ -223,10 +223,10 @@ export default function Terms() {
             <Card className="mt-12 bg-muted/30 border-border/50">
               <CardContent className="py-8 text-center">
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-foreground">
+                  <h3 className="text-base md:text-lg font-semibold text-foreground">
                     Questions about these terms?
                   </h3>
-                  <p className="text-muted-foreground text-sm max-w-2xl mx-auto">
+                  <p className="text-muted-foreground text-xs md:text-sm max-w-2xl mx-auto">
                     If you have any questions about these Terms and Conditions, 
                     please contact us through our contact page or customer support.
                   </p>

@@ -190,7 +190,7 @@ export default function MyTickets() {
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-6">
-        <h1 className="text-lg md:text-2xl font-bold mb-6">My Tickets</h1>
+        <h1 className="text-base md:text-xl font-bold mb-6">My Tickets</h1>
         <div className="space-y-4">
           {[...Array(3)].map((_, i) => (
             <Card key={i} className="animate-pulse">
@@ -208,12 +208,12 @@ export default function MyTickets() {
   if (tickets.length === 0) {
     return (
       <div className="container mx-auto px-4 py-6">
-        <h1 className="text-lg md:text-2xl font-bold mb-6">My Tickets</h1>
+        <h1 className="text-base md:text-xl font-bold mb-6">My Tickets</h1>
         <Card>
           <CardContent className="p-12 text-center">
             <Ticket className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-sm md:text-lg font-semibold mb-2">No Tickets Yet</h3>
-            <p className="text-xs md:text-sm text-muted-foreground mb-4">
+            <h3 className="text-xs md:text-base font-semibold mb-2">No Tickets Yet</h3>
+            <p className="text-xs text-muted-foreground mb-4">
               You haven't purchased any tickets yet. Browse our lottery games to get started!
             </p>
             <Button onClick={() => window.location.href = '/'}>
@@ -242,7 +242,7 @@ export default function MyTickets() {
     <div className="container mx-auto px-4 py-6">
       <div className="flex items-center gap-2 mb-6">
         <Ticket className="w-6 h-6" />
-        <h1 className="text-lg md:text-2xl font-bold">My Tickets</h1>
+        <h1 className="text-base md:text-xl font-bold">My Tickets</h1>
       </div>
 
       <div className="space-y-6">
@@ -251,8 +251,8 @@ export default function MyTickets() {
             <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10">
               <div className="flex items-start justify-between">
                 <div>
-                  <CardTitle className="text-sm md:text-lg mb-2">{game.title}</CardTitle>
-                  <div className="flex items-center gap-4 text-xs md:text-sm text-muted-foreground">
+                  <CardTitle className="text-xs md:text-base mb-2">{game.title}</CardTitle>
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
                     <div className="flex items-center gap-1">
                       <Calendar className="w-4 h-4" />
                       {format(new Date(game.game_date), 'PPP')}
@@ -285,9 +285,9 @@ export default function MyTickets() {
                         </Badge>
                       </div>
                       
-                      <div className="text-sm text-muted-foreground mb-4">
-                      <div className="text-xs md:text-sm">Holder: {ticket.booked_by_name}</div>
-                        <div className="text-xs md:text-sm">Purchased: {format(new Date(ticket.booked_at), 'PPp')}</div>
+                      <div className="text-xs text-muted-foreground mb-4">
+                      <div className="text-xs">Holder: {ticket.booked_by_name}</div>
+                        <div className="text-xs">Purchased: {format(new Date(ticket.booked_at), 'PPp')}</div>
                       </div>
 
                       {game.ticket_image_url && game.ticket_serial_config && (
