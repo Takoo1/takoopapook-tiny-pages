@@ -631,7 +631,7 @@ export default function Videos() {
       )}
 
       {/* Category Filter Buttons - Fixed at bottom above nav */}
-      <div className="fixed bottom-[4.5rem] left-0 right-0 z-30 bg-background/80 backdrop-blur-sm border-t border-border">
+      <div className="fixed bottom-[5.5rem] left-0 right-0 z-30 bg-background/80 backdrop-blur-sm border-t border-border">
         <div className="flex justify-center gap-2 py-2 px-4">
           <Button
             variant="ghost"

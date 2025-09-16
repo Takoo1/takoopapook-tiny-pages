@@ -4,7 +4,14 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { AuthButton } from "@/components/AuthButton";
-import { LogOut, Gift, MessageCircle } from "lucide-react";
+import { LogOut, Gift, MessageCircle, Menu, Home, Video, Trophy, Ticket, FileText } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 const fcCoin = "https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/FC%20coin.png";
 
@@ -85,7 +92,7 @@ export function DesktopHeader() {
           <h1 className="text-xl font-bold text-foreground">Fortune Bridge</h1>
         </div>
 
-        {/* Right side - FC Balance, Theme Toggle, Auth */}
+        {/* Right side - FC Balance, Auth, Menu */}
         <div className="flex items-center gap-4">
           {user && (
             <>
@@ -117,18 +124,9 @@ export function DesktopHeader() {
             </>
           )}
 
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/contact')}
-            className="flex items-center gap-2"
-          >
-            <MessageCircle className="h-4 w-4" />
-            <span>Contact</span>
-          </Button>
+          {!user && <AuthButton />}
 
-          <ThemeToggle />
-
-          {user ? (
+          {user && (
             <Button
               variant="ghost"
               onClick={handleSignOut}
@@ -137,9 +135,56 @@ export function DesktopHeader() {
               <LogOut className="h-4 w-4" />
               <span>Logout</span>
             </Button>
-          ) : (
-            <AuthButton />
           )}
+
+          {/* Desktop Menu Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="w-9 h-9">
+                <Menu className="h-4 w-4" />
+                <span className="sr-only">Open menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent 
+              align="end" 
+              className="w-56 bg-background/95 backdrop-blur-sm border border-border shadow-lg"
+            >
+              <DropdownMenuItem onClick={() => navigate('/')} className="cursor-pointer">
+                <Home className="mr-2 h-4 w-4" />
+                <span>Home</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/videos')} className="cursor-pointer">
+                <Video className="mr-2 h-4 w-4" />
+                <span>Videos</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/winners')} className="cursor-pointer">
+                <Trophy className="mr-2 h-4 w-4" />
+                <span>Winners</span>
+              </DropdownMenuItem>
+              {user && (
+                <DropdownMenuItem onClick={() => navigate('/my-tickets')} className="cursor-pointer">
+                  <Ticket className="mr-2 h-4 w-4" />
+                  <span>My Tickets</span>
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="cursor-pointer p-0">
+                <div className="flex items-center w-full px-2 py-1.5">
+                  <ThemeToggle />
+                  <span className="ml-2">Theme</span>
+                </div>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate('/contact')} className="cursor-pointer">
+                <MessageCircle className="mr-2 h-4 w-4" />
+                <span>Contact Us</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate('/terms')} className="cursor-pointer">
+                <FileText className="mr-2 h-4 w-4" />
+                <span>Terms and Conditions</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>
