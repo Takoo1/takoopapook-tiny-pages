@@ -81,18 +81,18 @@ export function DesktopHeader() {
 
   return (
     <header className="hidden md:block bg-background/95 backdrop-blur-sm border-b border-border">
-      <div className="container mx-auto flex items-center justify-between px-6 py-3">
+      <div className="container mx-auto flex items-center justify-between px-6 py-2">
         {/* Left side - Site Logo and Name */}
         <div className="flex items-center gap-3">
           <img 
             src="https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/FB_Site_icon.png" 
             alt="Fortune Bridge" 
-            className="w-10 h-10 rounded-xl shadow-lg"
+            className="w-14 h-14 rounded-xl shadow-lg"
           />
           <img 
             src="https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/Site_name.png" 
             alt="Fortune Bridge" 
-            className="h-12 object-contain"
+            className="h-16 object-contain"
           />
         </div>
 

@@ -115,8 +115,8 @@ export function ImageCarousel() {
         {isMobile ? (
           // Mobile Layout: Heading above carousel
           <div className="space-y-3">
-            <h2 className="text-2xl md:text-4xl font-bold text-center text-foreground px-4 whitespace-nowrap">
-              Why Choose <img src="https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/Site_name.png" alt="Fortune Bridge" className="inline-block h-10 object-contain" />?
+            <h2 className="text-3xl md:text-5xl font-bold text-center text-foreground px-4 whitespace-nowrap">
+              Why Choose <img src="https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/Site_name.png" alt="Fortune Bridge" className="inline-block h-16 object-contain" />?
             </h2>
             <div className="relative overflow-hidden rounded-2xl shadow-card">
               <div 
@@ -142,8 +142,8 @@ export function ImageCarousel() {
           // Desktop Layout: Two columns
           <div className="grid grid-cols-2 gap-8 items-center">
             <div className="space-y-6">
-              <h2 className="text-2xl md:text-4xl font-bold text-foreground whitespace-nowrap text-center">
-                Why Choose <img src="https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/Site_name.png" alt="Fortune Bridge" className="inline-block h-12 md:h-14 object-contain" />?
+              <h2 className="text-3xl md:text-5xl font-bold text-foreground whitespace-nowrap text-center">
+                Why Choose <img src="https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/Site_name.png" alt="Fortune Bridge" className="inline-block h-20 md:h-24 object-contain" />?
               </h2>
             </div>
             <div className="relative overflow-hidden rounded-2xl shadow-card">

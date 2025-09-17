@@ -74,14 +74,14 @@ export function MobileHeader() {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border pt-safe-top h-[52px]">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border pt-safe-top h-[56px]">
       <div className="flex items-center justify-between px-4 py-1.5 h-full">
         {/* Left side - Site Logo */}
         <div className="flex items-center">
           <img 
-            src="https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/Mini_SIte_icon%20(1).png" 
+            src="https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/FB_Site_icon.png" 
             alt="Fortune Bridge" 
-            className="w-9 h-9 rounded-xl shadow-md"
+            className="w-11 h-11 rounded-xl shadow-md"
           />
         </div>
 
