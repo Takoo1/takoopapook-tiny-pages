@@ -92,7 +92,7 @@ export function DesktopHeader() {
           <img 
             src="https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/Site_name.png" 
             alt="Fortune Bridge" 
-            className="h-25 object-contain"
+            className="h-12 object-contain"
           />
         </div>
 
