@@ -85,11 +85,15 @@ export function DesktopHeader() {
         {/* Left side - Site Logo and Name */}
         <div className="flex items-center gap-3">
           <img 
-            src="https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/Mini_SIte_icon%20(1).png" 
+            src="https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/FB_Site_icon.png" 
             alt="Fortune Bridge" 
             className="w-10 h-10 rounded-xl shadow-lg"
           />
-          <h1 className="text-xl font-bold text-foreground">Fortune Bridge</h1>
+          <img 
+            src="https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/Site_name.png" 
+            alt="Fortune Bridge" 
+            className="h-8 object-contain"
+          />
         </div>
 
         {/* Right side - FC Balance, Auth, Menu */}
