@@ -76,7 +76,7 @@ export function MobileHeader() {
       <div className="flex items-center justify-between px-4 py-1.5 h-full">
         {/* Left side - Site Logo */}
         <div className="flex items-center">
-          <img src="https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/FB_Site_icon.png" alt="Fortune Bridge" className="w-11 h-11 rounded-xl" />
+          <img src="https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/FB_Icon_Round%20(1)-modified.png" alt="Fortune Bridge" className="w-11 h-11 rounded-xl" />
         </div>
 
         {/* Right side - Notification and FC Balance/Sign Up */}

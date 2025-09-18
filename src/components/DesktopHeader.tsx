@@ -75,7 +75,7 @@ export function DesktopHeader() {
       <div className="container mx-auto flex items-center justify-between px-6 py-2">
         {/* Left side - Site Logo and Name */}
         <div className="flex items-center gap-3">
-          <img src="https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/FB_Site_icon.png" alt="Fortune Bridge" className="w-14 h-14 rounded-xl shadow-lg" />
+          <img src="https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/FB_Icon_Round%20(1)-modified.png" alt="Fortune Bridge" className="w-14 h-14 rounded-xl shadow-lg" />
           <img src="https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/Site_name-removebg-preview.png" alt="Fortune Bridge" className="h-10 object-contain" />
         </div>
 
