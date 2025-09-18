@@ -76,7 +76,7 @@ export function DesktopHeader() {
         {/* Left side - Site Logo and Name */}
         <div className="flex items-center gap-3">
           <img src="https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/FB_Site_icon.png" alt="Fortune Bridge" className="w-14 h-14 rounded-xl shadow-lg" />
-          <img src="https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/Site_name-removebg-preview.png" alt="Fortune Bridge" className="h-16 object-contain" />
+          <img src="https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/Site_name-removebg-preview.png" alt="Fortune Bridge" className="h-10 object-contain" />
         </div>
 
         {/* Right side - FC Balance, Auth, Menu */}
