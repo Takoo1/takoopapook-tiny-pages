@@ -96,7 +96,7 @@ export function ImageCarousel() {
       // Mobile Layout: Heading above carousel
       <div className="space-y-3">
               <h2 className="text-3xl md:text-5xl font-bold text-center text-foreground px-4 whitespace-nowrap">
-                Why Choose <img src="https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/Site_name-removebg-preview.png" alt="Fortune Bridge" className="inline-block h-9 max-w-fit object-contain" />?
+                Why Choose <br/> <img src="https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/Site_name-removebg-preview.png" alt="Fortune Bridge" className="inline-block h-9 max-w-fit object-contain" />
               </h2>
             <div className="relative overflow-hidden rounded-2xl shadow-card">
               <div className="flex transition-transform duration-500 ease-in-out" style={{
@@ -115,7 +115,7 @@ export function ImageCarousel() {
       <div className="grid grid-cols-2 gap-8 items-center">
             <div className="space-y-6">
               <h2 className="text-3xl md:text-5xl font-bold text-foreground whitespace-nowrap text-center">
-                Why Choose <img src="https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/Site_name-removebg-preview.png" alt="Fortune Bridge" className="inline-block h-16 object-contain" />?
+                Why Choose <img src="https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/Site_name-removebg-preview.png" alt="Fortune Bridge" className="inline-block h-14 object-contain" />
               </h2>
             </div>
             <div className="relative overflow-hidden rounded-2xl shadow-card">
