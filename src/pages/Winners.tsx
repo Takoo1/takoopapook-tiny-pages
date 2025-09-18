@@ -180,7 +180,7 @@ export default function Winners() {
             <p className="text-xs md:text-sm text-muted-foreground">Winners will be announced here after the draw!</p>
           </div>
         ) : (
-          <div className="space-y-4 md:space-y-6">
+          <div className="space-y-8 md:space-y-10">
             {gameWinners.map((game, gameIndex) => {
               const bgClass = gameBackgrounds[gameIndex % gameBackgrounds.length];
               const firstPrize = game.mainPrizes.find(w => w.prize_position === 1);
@@ -190,10 +190,11 @@ export default function Winners() {
               return (
                 <Card key={game.gameId} className={`bg-gradient-to-br ${bgClass} overflow-hidden`}>
                   <CardContent className="p-3 md:p-6 space-y-3 md:space-y-4">
-                    {/* Row 1: Game Name */}
+                    {/* Row 1: Game Name with "Winners of" prefix */}
                     <div className="text-center">
-                      <h2 className="text-xl md:text-2xl font-bold text-black dark:text-white">
-                        {game.gameTitle}
+                      <h2 className="text-2xl md:text-3xl font-bold">
+                        <span className="text-primary">Winners of </span>
+                        <span className="text-foreground">{game.gameTitle}</span>
                       </h2>
                     </div>
 

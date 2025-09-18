@@ -86,7 +86,7 @@ export function MobileBottomNav() {
                   onClick={() => handleNavigation(item.path)}
                   data-menu-trigger={item.path === "/menu" ? "true" : undefined}
                   className={cn(
-                    "flex flex-col items-center justify-center gap-0.5 h-12 w-12 p-0.5 rounded-lg transition-colors",
+                    "flex flex-col items-center justify-center gap-0.5 h-12 w-18 px-1 py-0.5 rounded-lg transition-colors",
                     isActive 
                       ? "text-primary bg-primary/10" 
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/50"

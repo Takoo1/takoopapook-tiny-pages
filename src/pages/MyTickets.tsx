@@ -251,7 +251,7 @@ export default function MyTickets() {
             <CardHeader className="bg-gradient-to-r from-primary/5 to-primary/10">
               <div className="flex items-start justify-between">
                 <div>
-                  <CardTitle className="text-xs md:text-base mb-2">{game.title}</CardTitle>
+                  <CardTitle className="text-sm md:text-lg mb-2">{game.title}</CardTitle>
                   <div className="flex items-center gap-4 text-xs text-muted-foreground">
                     <div className="flex items-center gap-1">
                       <Calendar className="w-4 h-4" />
@@ -264,8 +264,8 @@ export default function MyTickets() {
                   </div>
                 </div>
                 <div className="flex flex-col items-end gap-2">
-                  {getStatusBadge(game.status)}
-                  <Badge variant="outline">
+                  <div className="text-xs">{getStatusBadge(game.status)}</div>
+                  <Badge variant="outline" className="text-xs">
                     {gameTickets.length} ticket{gameTickets.length > 1 ? 's' : ''}
                   </Badge>
                 </div>
@@ -274,7 +274,7 @@ export default function MyTickets() {
             <CardContent className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {gameTickets.map((ticket) => (
-                  <Card key={ticket.id} className="bg-gradient-to-br from-card to-card/80">
+                  <Card key={ticket.id} className="bg-gradient-to-br from-card to-card/80 border-0">
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between mb-3">
                         <div className="text-lg font-bold text-primary">

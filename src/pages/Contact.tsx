@@ -97,8 +97,8 @@ export default function Contact() {
               <div className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
                 <div>
-                  <p className="text-xs md:text-sm font-medium text-foreground">Address</p>
-                  <p className="text-[10px] md:text-xs text-muted-foreground">
+                  <p className="text-sm md:text-base font-medium text-foreground">Address</p>
+                  <p className="text-xs md:text-sm text-muted-foreground">
                     Fortune Bridge Headquarters<br />
                     123 Business District<br />
                     Mumbai, Maharashtra 400001<br />
@@ -111,8 +111,8 @@ export default function Contact() {
               <div className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-primary" />
                 <div>
-                  <p className="text-xs md:text-sm font-medium text-foreground">Email</p>
-                  <p className="text-[10px] md:text-xs text-muted-foreground">
+                  <p className="text-sm md:text-base font-medium text-foreground">Email</p>
+                  <p className="text-xs md:text-sm text-muted-foreground">
                     support@fortunebridge.com
                   </p>
                 </div>
@@ -122,8 +122,8 @@ export default function Contact() {
               <div className="flex items-center gap-3">
                 <Phone className="w-4 h-4 text-primary" />
                 <div>
-                  <p className="text-xs md:text-sm font-medium text-foreground">Phone</p>
-                  <p className="text-[10px] md:text-xs text-muted-foreground">
+                  <p className="text-sm md:text-base font-medium text-foreground">Phone</p>
+                  <p className="text-xs md:text-sm text-muted-foreground">
                     +91 98765 43210<br />
                     +91 87654 32109
                   </p>
@@ -134,8 +134,8 @@ export default function Contact() {
               <div className="flex items-start gap-3">
                 <Clock className="w-4 h-4 text-primary mt-1" />
                 <div>
-                  <p className="text-xs md:text-sm font-medium text-foreground">Business Hours</p>
-                  <p className="text-[10px] md:text-xs text-muted-foreground">
+                  <p className="text-sm md:text-base font-medium text-foreground">Business Hours</p>
+                  <p className="text-xs md:text-sm text-muted-foreground">
                     Monday - Friday: 9:00 AM - 6:00 PM<br />
                     Saturday: 10:00 AM - 4:00 PM<br />
                     Sunday: Closed
