@@ -235,7 +235,7 @@ export default function Home() {
     switch (price) {
       case '100':
         return {
-          gradient: 'from-red-500/10 via-red-400/5 to-transparent',
+          gradient: 'from-red-500/20 via-red-400/15 to-red-300/5',
           border: 'border-red-200 dark:border-red-800/30',
           title: 'text-red-600 dark:text-red-400',
           subtitle: 'text-red-500/80 dark:text-red-400/80',
@@ -244,7 +244,7 @@ export default function Home() {
         };
       case '500':
         return {
-          gradient: 'from-blue-500/10 via-blue-400/5 to-transparent',
+          gradient: 'from-blue-500/20 via-blue-400/15 to-blue-300/5',
           border: 'border-blue-200 dark:border-blue-800/30',
           title: 'text-blue-600 dark:text-blue-400',
           subtitle: 'text-blue-500/80 dark:text-blue-400/80',
@@ -253,7 +253,7 @@ export default function Home() {
         };
       case '1000':
         return {
-          gradient: 'from-purple-500/10 via-purple-400/5 to-transparent',
+          gradient: 'from-purple-500/20 via-purple-400/15 to-purple-300/5',
           border: 'border-purple-200 dark:border-purple-800/30',
           title: 'text-purple-600 dark:text-purple-400',
           subtitle: 'text-purple-500/80 dark:text-purple-400/80',
@@ -262,7 +262,7 @@ export default function Home() {
         };
       default:
         return {
-          gradient: 'from-green-500/10 via-green-400/5 to-transparent',
+          gradient: 'from-green-500/20 via-green-400/15 to-green-300/5',
           border: 'border-green-200 dark:border-green-800/30',
           title: 'text-green-600 dark:text-green-400',
           subtitle: 'text-green-500/80 dark:text-green-400/80',

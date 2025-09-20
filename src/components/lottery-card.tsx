@@ -96,7 +96,7 @@ export function LotteryCard({
         <Button
           size="sm"
           variant="outline"
-          className={`px-2 md:px-3 py-0.5 text-xs font-medium min-w-[44px] shrink-0 transition-all duration-200 rounded-xl ${
+          className={`px-2 md:px-3 py-0 md:py-0.5 text-xs font-medium min-w-[44px] shrink-0 transition-all duration-200 rounded-xl ${
             theme === 'tier-100' ? 'border-red-300 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-950/20' :
             theme === 'tier-500' ? 'border-blue-300 text-blue-600 hover:bg-blue-50 dark:border-blue-700 dark:text-blue-400 dark:hover:bg-blue-950/20' :
             theme === 'tier-1000' ? 'border-purple-300 text-purple-600 hover:bg-purple-50 dark:border-purple-700 dark:text-purple-400 dark:hover:bg-purple-950/20' :
