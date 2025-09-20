@@ -88,13 +88,37 @@ export function LotteryCard({
       className={`overflow-hidden transition-all duration-300 group cursor-pointer md:hover:scale-105 ${themeClasses.card}`}
       onClick={() => onViewDetails(id)}
     >
+      {/* Game Name Header with Details Button */}
+      <div className="p-2 md:p-3 pb-0 flex items-center justify-between gap-2">
+        <h3 className={`text-sm md:text-base font-semibold truncate flex-1 transition-colors duration-200 ${themeClasses.title}`}>
+          {title}
+        </h3>
+        <Button
+          size="sm"
+          variant="outline"
+          className={`px-2 md:px-3 py-1 text-xs font-medium min-w-[44px] shrink-0 transition-all duration-200 ${
+            theme === 'tier-100' ? 'border-red-300 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-950/20' :
+            theme === 'tier-500' ? 'border-blue-300 text-blue-600 hover:bg-blue-50 dark:border-blue-700 dark:text-blue-400 dark:hover:bg-blue-950/20' :
+            theme === 'tier-1000' ? 'border-purple-300 text-purple-600 hover:bg-purple-50 dark:border-purple-700 dark:text-purple-400 dark:hover:bg-purple-950/20' :
+            theme === 'tier-other' ? 'border-green-300 text-green-600 hover:bg-green-50 dark:border-green-700 dark:text-green-400 dark:hover:bg-green-950/20' :
+            'border-lottery-gold/50 text-lottery-gold hover:bg-lottery-gold/10'
+          }`}
+          onClick={(e) => {
+            e.stopPropagation();
+            onViewDetails(id);
+          }}
+        >
+          Details
+        </Button>
+      </div>
+
       {/* Ticket Image - 16:9 Aspect Ratio */}
       {ticketImageUrl && (
-        <div className="aspect-video overflow-hidden bg-muted relative">
+        <div className="aspect-video overflow-hidden bg-muted relative mx-2 md:mx-3 rounded-md">
           <img 
             src={ticketImageUrl} 
             alt={`${title} ticket`}
-            className="w-full h-full object-cover md:group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-full object-cover md:group-hover:scale-105 transition-transform duration-300 rounded-md"
           />
           {/* Status Badge */}
           {status === 'booking_stopped' && (
