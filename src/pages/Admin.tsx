@@ -14,13 +14,14 @@ import { CreateGameForm } from "@/components/CreateGameForm";
 import { GamePreviewModal } from "@/components/GamePreviewModal";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-import { Plus, Trash2, Eye, Target, Calendar, Users, Gamepad2, ImageIcon, Trophy, Bell, MessageCircle, FileText } from "lucide-react";
+import { Plus, Trash2, Eye, Target, Calendar, Users, Gamepad2, ImageIcon, Trophy, Bell, MessageCircle, FileText, HelpCircle } from "lucide-react";
 import { MediaManager } from "@/components/MediaManager";
 import { BookingsManager } from "@/components/BookingsManager";
 import { WinnersManager } from "@/components/WinnersManager";
 import { NotificationsManager } from "@/components/NotificationsManager";
 import { FeedbackManager } from "@/components/FeedbackManager";
 import { TermsManager } from "@/components/TermsManager";
+import { FAQManager } from "@/components/FAQManager";
 
 interface LotteryGame {
   id: string;
@@ -368,7 +369,7 @@ export default function Admin() {
         </div>
 
         <Tabs defaultValue="games" className="w-full">
-          <TabsList className="grid w-full grid-cols-8">
+          <TabsList className="grid w-full grid-cols-9">
             <TabsTrigger value="games" className="flex items-center gap-2">
               <Gamepad2 className="w-4 h-4" />
               Games
@@ -400,6 +401,10 @@ export default function Admin() {
             <TabsTrigger value="terms" className="flex items-center gap-2">
               <FileText className="w-4 h-4" />
               Terms
+            </TabsTrigger>
+            <TabsTrigger value="faq" className="flex items-center gap-2">
+              <HelpCircle className="w-4 h-4" />
+              FAQ
             </TabsTrigger>
           </TabsList>
 
@@ -627,6 +632,11 @@ export default function Admin() {
           {/* Terms Tab */}
           <TabsContent value="terms" className="space-y-6">
             <TermsManager />
+          </TabsContent>
+
+          {/* FAQ Tab */}
+          <TabsContent value="faq" className="space-y-6">
+            <FAQManager />
           </TabsContent>
 
           <TabsContent value="fortune">

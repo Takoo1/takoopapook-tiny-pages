@@ -14,6 +14,7 @@ import { ImageCarousel } from "@/components/ImageCarousel";
 import { VideoThumbnailCarousel } from "@/components/VideoThumbnailCarousel";
 import { HeroCarousel } from "@/components/HeroCarousel";
 import { MobileStickySearchFAB } from "@/components/MobileStickySearchFAB";
+import { FAQSection } from "@/components/FAQSection";
 
 interface LotteryGame {
   id: string;
@@ -486,6 +487,9 @@ export default function Home() {
           )}
         </div>
       </section>
+
+      {/* FAQ Section */}
+      <FAQSection />
 
       {/* Video Thumbnail Carousel - Desktop Only */}
       <div className="hidden md:block">
