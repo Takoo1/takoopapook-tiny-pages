@@ -71,11 +71,11 @@ export const FAQSection: React.FC = () => {
     <section className="py-12 md:py-16 px-4 bg-gradient-to-br from-muted/30 to-background">
       <div className="max-w-4xl mx-auto">
         {/* Section Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary via-primary/80 to-accent bg-clip-text text-transparent mb-4">
+        <div className="text-center mb-8 md:mb-12">
+          <h2 className="text-2xl md:text-4xl font-bold text-black dark:text-white mb-3 md:mb-4">
             Questions You May Ask
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-sm md:text-lg max-w-2xl mx-auto">
             Find answers to common questions about our lottery games and services
           </p>
         </div>
@@ -91,21 +91,16 @@ export const FAQSection: React.FC = () => {
                   index % 2 === 0 ? 'bg-background/30' : 'bg-muted/20'
                 }`}
               >
-                <AccordionTrigger className="px-6 py-5 text-left hover:no-underline group">
-                  <div className="flex items-start gap-4 w-full">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm mt-1">
-                      {index + 1}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-base md:text-lg font-semibold text-foreground group-hover:text-primary transition-colors duration-200 text-left pr-4">
-                        {faq.question}
-                      </h3>
-                    </div>
+                <AccordionTrigger className="px-4 md:px-6 py-3 md:py-5 text-left hover:no-underline group">
+                  <div className="w-full">
+                    <h3 className="text-sm md:text-lg font-semibold text-foreground group-hover:text-primary transition-colors duration-200 text-left pr-4">
+                      {faq.question}
+                    </h3>
                   </div>
                 </AccordionTrigger>
-                <AccordionContent className="px-6 pb-6">
-                  <div className="ml-12 pr-4">
-                    <div className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                <AccordionContent className="px-4 md:px-6 pb-4 md:pb-6">
+                  <div className="pr-4">
+                    <div className="text-muted-foreground leading-relaxed whitespace-pre-line text-xs md:text-base">
                       {faq.answer}
                     </div>
                   </div>
@@ -116,11 +111,11 @@ export const FAQSection: React.FC = () => {
         </div>
 
         {/* Bottom CTA */}
-        <div className="text-center mt-8 p-6 bg-primary/5 rounded-xl border border-primary/10">
-          <p className="text-muted-foreground mb-2">
+        <div className="text-center mt-6 md:mt-8 p-4 md:p-6 bg-primary/5 rounded-xl border border-primary/10">
+          <p className="text-muted-foreground mb-2 text-xs md:text-base">
             Still have questions?
           </p>
-          <p className="text-sm text-primary font-medium">
+          <p className="text-xs md:text-sm text-primary font-medium">
             Contact our support team for personalized assistance
           </p>
         </div>
