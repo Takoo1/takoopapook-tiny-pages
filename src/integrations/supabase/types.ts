@@ -923,6 +923,7 @@ export type Database = {
           created_at: string
           id: string
           is_active: boolean
+          policy_type: string
           section_name: string
           section_order: number
           updated_at: string
@@ -932,6 +933,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_active?: boolean
+          policy_type?: string
           section_name: string
           section_order: number
           updated_at?: string
@@ -941,6 +943,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_active?: boolean
+          policy_type?: string
           section_name?: string
           section_order?: number
           updated_at?: string

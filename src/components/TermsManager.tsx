@@ -16,25 +16,35 @@ interface SiteTerm {
   is_active: boolean;
   created_at: string;
   updated_at: string;
+  policy_type: string;
 }
 
 export function TermsManager() {
   const [terms, setTerms] = useState<SiteTerm[]>([]);
+  const [selectedPolicyType, setSelectedPolicyType] = useState<string>('terms');
   const [loading, setLoading] = useState(true);
   const [savingStates, setSavingStates] = useState<Record<string, boolean>>({});
   const [previewStates, setPreviewStates] = useState<Record<string, boolean>>({});
   const [editedContent, setEditedContent] = useState<Record<string, string>>({});
   const { toast } = useToast();
 
+  const policyTypes = [
+    { value: 'terms', label: 'Terms & Conditions', description: 'Main terms and conditions' },
+    { value: 'privacy', label: 'Privacy Policy', description: 'Privacy and data protection' },
+    { value: 'refund', label: 'Refund Policy', description: 'Cancellation and refunds' },
+    { value: 'shipping', label: 'Shipping Policy', description: 'Digital delivery process' }
+  ];
+
   useEffect(() => {
     fetchTerms();
-  }, []);
+  }, [selectedPolicyType]);
 
   const fetchTerms = async () => {
     try {
       const { data, error } = await supabase
         .from('site_terms')
         .select('*')
+        .eq('policy_type', selectedPolicyType)
         .order('section_order');
 
       if (error) throw error;
@@ -134,110 +144,132 @@ export function TermsManager() {
   return (
     <div className="space-y-6">
       <div className="border-b pb-4">
-        <h2 className="text-2xl font-bold text-foreground">Terms & Conditions Manager</h2>
+        <h2 className="text-2xl font-bold text-foreground">Policy Manager</h2>
         <p className="text-muted-foreground mt-2">
-          Manage the content for each section of your terms and conditions. 
+          Manage content for all policy pages including Terms & Conditions, Privacy Policy, Refund Policy, and Shipping Policy.
           Formatting (line breaks, spacing, bullet points) will be preserved exactly as you type them.
         </p>
       </div>
 
-      <Tabs defaultValue="0" className="w-full">
-        <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10 gap-1 h-auto p-1">
-          {terms.map((term, index) => (
-            <TabsTrigger 
-              key={term.id} 
-              value={index.toString()} 
-              className="text-xs p-2 h-auto whitespace-normal text-center relative"
-            >
-              <div className="space-y-1">
-                <div className="font-medium">Section {term.section_order}</div>
-                <div className="text-[10px] opacity-80 line-clamp-2">
-                  {term.section_name}
-                </div>
-                {hasUnsavedChanges(term.id) && (
-                  <Badge variant="secondary" className="absolute -top-1 -right-1 h-2 w-2 p-0 bg-orange-500" />
-                )}
-              </div>
+      {/* Policy Type Selector */}
+      <Tabs value={selectedPolicyType} onValueChange={setSelectedPolicyType} className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          {policyTypes.map((policyType) => (
+            <TabsTrigger key={policyType.value} value={policyType.value} className="text-sm">
+              {policyType.label}
             </TabsTrigger>
           ))}
         </TabsList>
 
-        {terms.map((term, index) => (
-          <TabsContent key={term.id} value={index.toString()} className="mt-6">
-            <Card>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="text-xl">
-                      Section {term.section_order}: {term.section_name}
-                    </CardTitle>
-                    <CardDescription className="mt-2">
-                      {term.section_order === 1 && "This is the introduction section - no bullet points needed."}
-                      {term.section_order === 4 && "This section supports sub-points. Use proper indentation for sub-points."}
-                      {term.section_order > 1 && term.section_order !== 4 && "Use bullet points (•) or numbered lists as needed."}
-                    </CardDescription>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => togglePreview(term.id)}
-                      className="shrink-0"
-                    >
-                      {previewStates[term.id] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      {previewStates[term.id] ? "Edit" : "Preview"}
-                    </Button>
-                    <Button
-                      onClick={() => saveTermContent(term.id)}
-                      disabled={savingStates[term.id] || !hasUnsavedChanges(term.id)}
-                      size="sm"
-                      className="shrink-0"
-                    >
-                      {savingStates[term.id] ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Save className="h-4 w-4" />
+        {policyTypes.map((policyType) => (
+          <TabsContent key={policyType.value} value={policyType.value} className="mt-6">
+            <div className="mb-6 p-4 bg-muted/30 rounded-lg">
+              <h3 className="font-semibold text-lg">{policyType.label}</h3>
+              <p className="text-muted-foreground text-sm mt-1">{policyType.description}</p>
+              <p className="text-xs text-muted-foreground mt-2">
+                Live URL: <code className="bg-muted px-1 rounded">
+                  https://fortunebridge.online/{policyType.value === 'terms' ? 'terms' : policyType.value === 'refund' ? 'refund' : policyType.value}
+                </code>
+              </p>
+            </div>
+
+            <Tabs defaultValue="0" className="w-full">
+              <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10 gap-1 h-auto p-1">
+                {terms.map((term, index) => (
+                  <TabsTrigger 
+                    key={term.id} 
+                    value={index.toString()} 
+                    className="text-xs p-2 h-auto whitespace-normal text-center relative"
+                  >
+                    <div className="space-y-1">
+                      <div className="font-medium">Section {term.section_order}</div>
+                      <div className="text-[10px] opacity-80 line-clamp-2">
+                        {term.section_name}
+                      </div>
+                      {hasUnsavedChanges(term.id) && (
+                        <Badge variant="secondary" className="absolute -top-1 -right-1 h-2 w-2 p-0 bg-orange-500" />
                       )}
-                      Save
-                    </Button>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                  <span>{getCharacterCount(term.id)} characters</span>
-                  <span>{getLineCount(term.id)} lines</span>
-                  {hasUnsavedChanges(term.id) && (
-                    <Badge variant="outline" className="text-orange-600 border-orange-600">
-                      Unsaved changes
-                    </Badge>
-                  )}
-                </div>
-              </CardHeader>
-              
-              <CardContent>
-                {previewStates[term.id] ? (
-                  <div className="border rounded-lg p-4 bg-muted/30 min-h-[400px]">
-                    <h4 className="font-semibold mb-3 text-foreground">Preview:</h4>
-                    <div className="whitespace-pre-wrap text-sm text-foreground leading-relaxed">
-                      {editedContent[term.id] || 'No content yet. Click "Edit" to add content.'}
                     </div>
-                  </div>
-                ) : (
-                  <Textarea
-                    value={editedContent[term.id] || ''}
-                    onChange={(e) => handleContentChange(term.id, e.target.value)}
-                    placeholder={`Enter content for ${term.section_name}...
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+
+              {terms.map((term, index) => (
+                <TabsContent key={term.id} value={index.toString()} className="mt-6">
+                  <Card>
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <CardTitle className="text-xl">
+                            Section {term.section_order}: {term.section_name}
+                          </CardTitle>
+                          <CardDescription className="mt-2">
+                            Edit the content for this section. Use proper formatting and line breaks as needed.
+                          </CardDescription>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => togglePreview(term.id)}
+                            className="shrink-0"
+                          >
+                            {previewStates[term.id] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            {previewStates[term.id] ? "Edit" : "Preview"}
+                          </Button>
+                          <Button
+                            onClick={() => saveTermContent(term.id)}
+                            disabled={savingStates[term.id] || !hasUnsavedChanges(term.id)}
+                            size="sm"
+                            className="shrink-0"
+                          >
+                            {savingStates[term.id] ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Save className="h-4 w-4" />
+                            )}
+                            Save
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <span>{getCharacterCount(term.id)} characters</span>
+                        <span>{getLineCount(term.id)} lines</span>
+                        {hasUnsavedChanges(term.id) && (
+                          <Badge variant="outline" className="text-orange-600 border-orange-600">
+                            Unsaved changes
+                          </Badge>
+                        )}
+                      </div>
+                    </CardHeader>
+                    
+                    <CardContent>
+                      {previewStates[term.id] ? (
+                        <div className="border rounded-lg p-4 bg-muted/30 min-h-[400px]">
+                          <h4 className="font-semibold mb-3 text-foreground">Preview:</h4>
+                          <div className="whitespace-pre-wrap text-sm text-foreground leading-relaxed">
+                            {editedContent[term.id] || 'No content yet. Click "Edit" to add content.'}
+                          </div>
+                        </div>
+                      ) : (
+                        <Textarea
+                          value={editedContent[term.id] || ''}
+                          onChange={(e) => handleContentChange(term.id, e.target.value)}
+                          placeholder={`Enter content for ${term.section_name}...
 
 Tips:
-• Use bullet points with • symbol
+• Use bullet points with • symbol  
 • Press Enter twice for paragraph breaks
-• Use proper indentation for sub-points (section 4)
 • All formatting will be preserved exactly as typed`}
-                    className="min-h-[400px] font-mono text-sm"
-                  />
-                )}
-              </CardContent>
-            </Card>
+                          className="min-h-[400px] font-mono text-sm"
+                        />
+                      )}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              ))}
+            </Tabs>
           </TabsContent>
         ))}
       </Tabs>

@@ -19,6 +19,9 @@ import MyTickets from "./pages/MyTickets";
 import MenuPage from "./pages/MenuPage";
 import About from "./pages/About";
 import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
+import Refund from "./pages/Refund";
+import Shipping from "./pages/Shipping";
 import Contact from "./pages/Contact";
 import Profile from "./pages/Profile";
 import Wallet from "./pages/Wallet";
@@ -71,6 +74,10 @@ const App = () => (
                   <Route path="/menu" element={<MenuPage />} />
                   <Route path="/about" element={<About />} />
                   <Route path="/terms" element={<Terms />} />
+                  <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/refund" element={<Refund />} />
+                  <Route path="/cancellation-refund" element={<Refund />} />
+                  <Route path="/shipping" element={<Shipping />} />
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/wallet" element={<Wallet />} />
