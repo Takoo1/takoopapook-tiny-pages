@@ -5,7 +5,6 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Helmet } from "react-helmet-async";
 
 interface PolicyTerm {
   id: string;
@@ -29,7 +28,27 @@ export default function PolicyPageTemplate({ policyType, title, description }: P
 
   useEffect(() => {
     fetchPolicyContent();
-  }, [policyType]);
+    
+    // Update document meta tags
+    document.title = `${title} | Fortune Bridge`;
+    
+    let metaDescription = document.querySelector('meta[name="description"]');
+    if (!metaDescription) {
+      metaDescription = document.createElement('meta');
+      metaDescription.setAttribute('name', 'description');
+      document.head.appendChild(metaDescription);
+    }
+    metaDescription.setAttribute('content', description || `Fortune Bridge ${title} - Professional lottery platform with secure payments and transparent policies.`);
+    
+    // Add canonical link
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute('href', `https://fortunebridge.online/${policyType}`);
+  }, [policyType, title, description]);
 
   const fetchPolicyContent = async () => {
     try {
@@ -118,44 +137,17 @@ export default function PolicyPageTemplate({ policyType, title, description }: P
   }
 
   return (
-    <>
-      <Helmet>
-        <title>{title} | Fortune Bridge</title>
-        <meta name="description" content={description || `Fortune Bridge ${title} - Professional lottery platform with secure payments and transparent policies.`} />
-        <meta name="keywords" content={`fortune bridge, lottery, ${policyType} policy, legal terms, secure payments, online lottery`} />
-        <meta property="og:title" content={`${title} | Fortune Bridge`} />
-        <meta property="og:description" content={description || `Fortune Bridge ${title}`} />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content={`https://fortunebridge.online/${policyType}`} />
-        <link rel="canonical" href={`https://fortunebridge.online/${policyType}`} />
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "WebPage",
-            "name": title,
-            "description": description,
-            "url": `https://fortunebridge.online/${policyType}`,
-            "publisher": {
-              "@type": "Organization",
-              "name": "Fortune Bridge",
-              "url": "https://fortunebridge.online"
-            },
-            "dateModified": getLastUpdated()
-          })}
-        </script>
-      </Helmet>
-      
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        {/* Header */}
-        <header className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">{title}</h1>
-          {description && (
-            <p className="text-muted-foreground text-lg mb-4">{description}</p>
-          )}
-          <p className="text-sm text-muted-foreground">
-            Last updated: {getLastUpdated()}
-          </p>
-        </header>
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
+      {/* Header */}
+      <header className="text-center mb-8">
+        <h1 className="text-3xl md:text-4xl font-bold mb-4">{title}</h1>
+        {description && (
+          <p className="text-muted-foreground text-lg mb-4">{description}</p>
+        )}
+        <p className="text-sm text-muted-foreground">
+          Last updated: {getLastUpdated()}
+        </p>
+      </header>
 
       {/* Quick Navigation */}
       {terms.length > 3 && (
