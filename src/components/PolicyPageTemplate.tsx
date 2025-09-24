@@ -241,6 +241,5 @@ export default function PolicyPageTemplate({ policyType, title, description }: P
           </div>
         </footer>
       </div>
-    </>
   );
 }
