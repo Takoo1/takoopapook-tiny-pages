@@ -5,6 +5,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Helmet } from "react-helmet-async";
 
 interface PolicyTerm {
   id: string;
@@ -117,17 +118,44 @@ export default function PolicyPageTemplate({ policyType, title, description }: P
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      {/* Header */}
-      <div className="text-center mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold mb-4">{title}</h1>
-        {description && (
-          <p className="text-muted-foreground text-lg mb-4">{description}</p>
-        )}
-        <p className="text-sm text-muted-foreground">
-          Last updated: {getLastUpdated()}
-        </p>
-      </div>
+    <>
+      <Helmet>
+        <title>{title} | Fortune Bridge</title>
+        <meta name="description" content={description || `Fortune Bridge ${title} - Professional lottery platform with secure payments and transparent policies.`} />
+        <meta name="keywords" content={`fortune bridge, lottery, ${policyType} policy, legal terms, secure payments, online lottery`} />
+        <meta property="og:title" content={`${title} | Fortune Bridge`} />
+        <meta property="og:description" content={description || `Fortune Bridge ${title}`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`https://fortunebridge.online/${policyType}`} />
+        <link rel="canonical" href={`https://fortunebridge.online/${policyType}`} />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "name": title,
+            "description": description,
+            "url": `https://fortunebridge.online/${policyType}`,
+            "publisher": {
+              "@type": "Organization",
+              "name": "Fortune Bridge",
+              "url": "https://fortunebridge.online"
+            },
+            "dateModified": getLastUpdated()
+          })}
+        </script>
+      </Helmet>
+      
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        {/* Header */}
+        <header className="text-center mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold mb-4">{title}</h1>
+          {description && (
+            <p className="text-muted-foreground text-lg mb-4">{description}</p>
+          )}
+          <p className="text-sm text-muted-foreground">
+            Last updated: {getLastUpdated()}
+          </p>
+        </header>
 
       {/* Quick Navigation */}
       {terms.length > 3 && (
@@ -192,20 +220,35 @@ export default function PolicyPageTemplate({ policyType, title, description }: P
         ))}
       </div>
 
-      {/* Footer */}
-      <div className="mt-12 p-6 bg-muted/20 rounded-lg text-center">
-        <p className="text-muted-foreground mb-2">
-          Questions about this policy?
-        </p>
-        <div className="space-y-1">
-          <p className="text-sm">
-            Contact us at: <a href="mailto:support@fortunebridge.online" className="text-primary hover:underline">support@fortunebridge.online</a>
-          </p>
-          <p className="text-sm">
-            Visit our <a href="/contact" className="text-primary hover:underline">Contact Page</a> or return to <a href="/" className="text-primary hover:underline">Home</a>
-          </p>
-        </div>
+        {/* Footer */}
+        <footer className="mt-12 p-6 bg-muted/20 rounded-lg text-center">
+          <div className="mb-4">
+            <h3 className="font-semibold mb-2">Fortune Bridge Platform</h3>
+            <p className="text-sm text-muted-foreground mb-2">
+              Professional lottery platform providing secure and transparent gaming services.
+            </p>
+            <div className="text-xs text-muted-foreground space-y-1">
+              <p>Business Registration: Fortune Bridge Digital Services</p>
+              <p>Email: support@fortunebridge.online | Legal: legal@fortunebridge.online</p>
+              <p>Platform operated under applicable gaming regulations</p>
+            </div>
+          </div>
+          
+          <div className="border-t pt-4">
+            <p className="text-muted-foreground mb-2">
+              Questions about this policy?
+            </p>
+            <div className="space-y-1">
+              <p className="text-sm">
+                Contact us at: <a href="mailto:support@fortunebridge.online" className="text-primary hover:underline">support@fortunebridge.online</a>
+              </p>
+              <p className="text-sm">
+                Visit our <a href="/contact" className="text-primary hover:underline">Contact Page</a> or return to <a href="/" className="text-primary hover:underline">Home</a>
+              </p>
+            </div>
+          </div>
+        </footer>
       </div>
-    </div>
+    </>
   );
 }
