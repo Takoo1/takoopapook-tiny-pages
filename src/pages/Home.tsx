@@ -344,14 +344,16 @@ export default function Home() {
       )}
 
       {/* Hero Section */}
-      <section className="relative w-full" style={{ aspectRatio: '16/9' }}>
+      <section className="relative w-full bg-gradient-to-b from-primary/5 to-transparent" style={{ aspectRatio: '16/9' }}>
         <HeroCarousel />
       </section>
 
       {/* Image Carousel Section */}
-      <ImageCarousel />
+      <div className="bg-gradient-to-b from-accent/5 via-accent/8 to-transparent">
+        <ImageCarousel />
+      </div>
 
-      <section id="games" className="py-8 md:py-20 px-3 md:px-6 bg-card/20 scroll-mt-16 md:scroll-mt-0">
+      <section id="games" className="py-8 md:py-20 px-3 md:px-6 bg-gradient-to-b from-secondary/10 via-secondary/5 to-transparent scroll-mt-16 md:scroll-mt-0">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-2xl md:text-4xl font-bold text-center mb-4 md:mb-8 text-foreground animate-fade-in-up">
             Choose Your Fortune
@@ -493,17 +495,18 @@ export default function Home() {
       </section>
 
       {/* FAQ Section */}
-      <FAQSection />
+      <div className="bg-gradient-to-b from-muted/15 via-muted/10 to-transparent">
+        <FAQSection />
+      </div>
 
       {/* Video Thumbnail Carousel - Desktop Only */}
-      <div className="hidden md:block">
+      <div className="hidden md:block bg-gradient-to-b from-primary/5 via-accent/5 to-transparent">
         <VideoThumbnailCarousel />
       </div>
 
-
       {/* Footer - Hidden on mobile */}
       {!isMobile && (
-        <footer className="bg-card/30 border-t border-border/30 py-6 md:py-8">
+        <footer className="bg-gradient-to-b from-card/30 to-muted/10 border-t border-border/30 py-6 md:py-8">
           <div className="max-w-6xl mx-auto px-3 md:px-6 text-center">
             <div className="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-6 mb-4">
               <button 
