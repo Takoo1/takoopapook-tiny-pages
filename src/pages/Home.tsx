@@ -289,14 +289,15 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background to-background/50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30 flex items-center justify-center">
         <div className="text-center animate-fade-in">
-          <div className="relative w-16 h-16 mx-auto mb-4">
-            <div className="absolute inset-0 rounded-full border-2 border-primary/20"></div>
+          <div className="relative w-20 h-20 mx-auto mb-6">
+            <div className="absolute inset-0 rounded-full border-2 border-primary/15"></div>
             <div className="absolute inset-0 rounded-full border-t-2 border-primary animate-spin"></div>
-            <div className="absolute inset-2 rounded-full border-t-2 border-primary/60 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
+            <div className="absolute inset-2 rounded-full border-t-2 border-primary/50 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
+            <div className="absolute inset-4 rounded-full border-t-2 border-primary/30 animate-spin" style={{ animationDuration: '2s' }}></div>
           </div>
-          <p className="text-muted-foreground animate-pulse">Loading lottery games...</p>
+          <p className="text-muted-foreground font-medium text-sm tracking-wide animate-pulse">Loading games...</p>
         </div>
       </div>
     );
@@ -353,12 +354,12 @@ export default function Home() {
         <ImageCarousel />
       </div>
 
-      <section id="games" className="py-8 md:py-20 px-3 md:px-6 bg-gradient-to-b from-secondary/10 via-secondary/5 to-transparent scroll-mt-16 md:scroll-mt-0">
+      <section id="games" className="py-6 md:py-20 px-3 md:px-6 bg-gradient-to-b from-secondary/10 via-secondary/5 to-transparent scroll-mt-16 md:scroll-mt-0">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl md:text-4xl font-bold text-center mb-4 md:mb-8 text-foreground animate-fade-in-up">
+          <h2 className="font-display text-2xl md:text-4xl font-extrabold text-center mb-3 md:mb-8 text-foreground animate-fade-in-up tracking-tight">
             Choose Your Fortune
           </h2>
-          <div className="w-16 h-1 bg-gradient-to-r from-primary to-primary/30 rounded-full mx-auto mb-6 md:mb-10 animate-scale-in" style={{ animationDelay: '0.2s' }}></div>
+          <div className="w-12 h-1 bg-gradient-to-r from-primary to-primary/30 rounded-full mx-auto mb-5 md:mb-10 animate-scale-in" style={{ animationDelay: '0.2s' }}></div>
           {/* Desktop Search and Filters */}
           <div className="mb-6 md:mb-12 space-y-4 md:space-y-6 hidden md:block">
             <div className="relative max-w-md mx-auto px-2">

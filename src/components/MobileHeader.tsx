@@ -72,11 +72,12 @@ export function MobileHeader() {
       });
     }, 100);
   };
-  return <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50 pt-safe-top h-[56px] shadow-sm">
+  return <header className="fixed top-0 left-0 right-0 z-50 bg-background/70 backdrop-blur-2xl border-b border-border/30 pt-safe-top h-[56px] shadow-[0_1px_12px_-4px_rgba(0,0,0,0.08)]">
       <div className="flex items-center justify-between px-4 py-1.5 h-full">
         {/* Left side - Site Logo */}
-        <div className="flex items-center animate-fade-in">
-          <img src="https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/FB_Icon_Round%20(1)-modified.png" alt="Fortune Bridge" className="w-11 h-11 rounded-xl shadow-md transition-transform duration-200 active:scale-95" />
+        <div className="flex items-center gap-2.5 animate-fade-in">
+          <img src="https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/FB_Icon_Round%20(1)-modified.png" alt="Fortune Bridge" className="w-10 h-10 rounded-xl shadow-md ring-1 ring-primary/20 transition-transform duration-200 active:scale-95" />
+          <span className="font-display text-sm font-bold tracking-tight text-foreground/90 hidden min-[360px]:inline">Fortune Bridge</span>
         </div>
 
         {/* Right side - Notification and FC Balance/Sign Up */}
