@@ -290,9 +290,13 @@ export default function Home() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background to-background/50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-lottery-gold mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading lottery games...</p>
+        <div className="text-center animate-fade-in">
+          <div className="relative w-16 h-16 mx-auto mb-4">
+            <div className="absolute inset-0 rounded-full border-2 border-primary/20"></div>
+            <div className="absolute inset-0 rounded-full border-t-2 border-primary animate-spin"></div>
+            <div className="absolute inset-2 rounded-full border-t-2 border-primary/60 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
+          </div>
+          <p className="text-muted-foreground animate-pulse">Loading lottery games...</p>
         </div>
       </div>
     );
@@ -349,10 +353,10 @@ export default function Home() {
 
       <section id="games" className="py-8 md:py-20 px-3 md:px-6 bg-card/20 scroll-mt-16 md:scroll-mt-0">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl md:text-4xl font-bold text-center mb-4 md:mb-8 text-foreground">
+          <h2 className="text-2xl md:text-4xl font-bold text-center mb-4 md:mb-8 text-foreground animate-fade-in-up">
             Choose Your Fortune
           </h2>
-          
+          <div className="w-16 h-1 bg-gradient-to-r from-primary to-primary/30 rounded-full mx-auto mb-6 md:mb-10 animate-scale-in" style={{ animationDelay: '0.2s' }}></div>
           {/* Desktop Search and Filters */}
           <div className="mb-6 md:mb-12 space-y-4 md:space-y-6 hidden md:block">
             <div className="relative max-w-md mx-auto px-2">
@@ -461,7 +465,7 @@ export default function Home() {
                       <div className="absolute top-4 left-4 text-6xl opacity-30">{sectionTheme.icon}</div>
                     </div>
                     
-                    <div className="relative z-10 grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-16">
+                    <div className="relative z-10 grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-16 stagger-children">
                       {games.map((game) => (
                         <LotteryCard
                           key={game.id}
