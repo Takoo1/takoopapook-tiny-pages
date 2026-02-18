@@ -70,11 +70,11 @@ export function MobileBottomNav() {
 
   return (
     <>
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border">
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-t border-border/50 shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.1)] dark:shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.3)]">
         {/* Safe area padding for mobile devices */}
         <div className="pb-safe">
           <div className="flex items-center justify-around px-2 py-1">
-            {navItems.map((item) => {
+            {navItems.map((item, index) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path && item.path !== "/menu";
               
@@ -86,16 +86,21 @@ export function MobileBottomNav() {
                   onClick={() => handleNavigation(item.path)}
                   data-menu-trigger={item.path === "/menu" ? "true" : undefined}
                   className={cn(
-                    "flex flex-col items-center justify-center gap-0.5 h-12 w-18 px-1 py-0.5 rounded-lg transition-colors",
+                    "flex flex-col items-center justify-center gap-0.5 h-12 w-18 px-1 py-0.5 rounded-xl transition-all duration-300 active:scale-90",
+                    "animate-fade-in-up",
                     isActive 
-                      ? "text-primary bg-primary/10" 
+                      ? "text-primary bg-primary/10 shadow-sm shadow-primary/20" 
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                   )}
+                  style={{ animationDelay: `${index * 0.05}s` }}
                 >
-                  <Icon className="h-5 w-5" />
-                  <span className="text-xs font-medium leading-none">
+                  <Icon className={cn("h-5 w-5 transition-transform duration-200", isActive && "scale-110")} />
+                  <span className={cn("text-xs font-medium leading-none transition-all duration-200", isActive && "font-bold")}>
                     {item.label}
                   </span>
+                  {isActive && (
+                    <div className="absolute -bottom-0.5 w-5 h-0.5 rounded-full bg-primary animate-scale-in" />
+                  )}
                 </Button>
               );
             })}

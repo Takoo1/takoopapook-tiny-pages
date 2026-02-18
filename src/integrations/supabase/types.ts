@@ -1115,24 +1115,18 @@ export type Database = {
         Args: { ticket_prices: number[] }
         Returns: undefined
       }
-      award_referrer_bonus_if_applicable: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      ensure_fc_setup: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      award_referrer_bonus_if_applicable: { Args: never; Returns: undefined }
+      ensure_fc_setup: { Args: never; Returns: undefined }
       game_is_live_or_owned: {
         Args: { p_game_id: string; p_user_id?: string }
         Returns: boolean
       }
-      generate_lottery_tickets: {
-        Args:
-          | { end_num: number; game_id: string; start_num: number }
-          | { game_id: string; num_tickets: number }
-        Returns: undefined
-      }
+      generate_lottery_tickets:
+        | { Args: { game_id: string; num_tickets: number }; Returns: undefined }
+        | {
+            Args: { end_num: number; game_id: string; start_num: number }
+            Returns: undefined
+          }
       generate_lottery_tickets_for_book: {
         Args: {
           book_id: string
@@ -1142,18 +1136,9 @@ export type Database = {
         }
         Returns: undefined
       }
-      generate_random_code: {
-        Args: { length: number }
-        Returns: string
-      }
-      get_fortune_counter: {
-        Args: { game_id: string }
-        Returns: number
-      }
-      get_referrer_display_name: {
-        Args: { ref_code: string }
-        Returns: string
-      }
+      generate_random_code: { Args: { length: number }; Returns: string }
+      get_fortune_counter: { Args: { game_id: string }; Returns: number }
+      get_referrer_display_name: { Args: { ref_code: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1161,10 +1146,7 @@ export type Database = {
         }
         Returns: boolean
       }
-      link_referral: {
-        Args: { ref_code: string }
-        Returns: undefined
-      }
+      link_referral: { Args: { ref_code: string }; Returns: undefined }
       organizer_confirm_fortune_reset: {
         Args: { p_request_id: string }
         Returns: undefined
@@ -1176,20 +1158,14 @@ export type Database = {
           transaction_id: string
         }[]
       }
-      purge_lottery_game: {
-        Args: { p_game_id: string }
-        Returns: undefined
-      }
+      purge_lottery_game: { Args: { p_game_id: string }; Returns: undefined }
       redeem_fc_by_rupees: {
         Args: { discount_rupees: number }
         Returns: {
           new_balance: number
         }[]
       }
-      update_lottery_statuses: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      update_lottery_statuses: { Args: never; Returns: undefined }
       user_has_ticket_in_game: {
         Args: { p_game_id: string; p_user_id?: string }
         Returns: boolean

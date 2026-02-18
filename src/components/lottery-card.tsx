@@ -85,7 +85,7 @@ export function LotteryCard({
 
   return (
     <Card 
-      className={`overflow-hidden transition-all duration-300 group cursor-pointer md:hover:scale-105 ${themeClasses.card}`}
+      className={`overflow-hidden transition-all duration-300 group cursor-pointer md:hover:scale-105 active:scale-[0.98] animate-slide-up ${themeClasses.card}`}
       onClick={() => onViewDetails(id)}
     >
       {/* Game Name Header with Details Button */}
