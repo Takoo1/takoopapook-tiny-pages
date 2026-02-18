@@ -70,10 +70,10 @@ export function MobileBottomNav() {
 
   return (
     <>
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-t border-border/50 shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.1)] dark:shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.3)]">
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/70 backdrop-blur-2xl border-t border-border/30 shadow-[0_-2px_20px_-4px_rgba(0,0,0,0.08)] dark:shadow-[0_-2px_20px_-4px_rgba(0,0,0,0.25)]">
         {/* Safe area padding for mobile devices */}
         <div className="pb-safe">
-          <div className="flex items-center justify-around px-2 py-1">
+          <div className="flex items-center justify-around px-1 py-1.5">
             {navItems.map((item, index) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path && item.path !== "/menu";
@@ -86,20 +86,20 @@ export function MobileBottomNav() {
                   onClick={() => handleNavigation(item.path)}
                   data-menu-trigger={item.path === "/menu" ? "true" : undefined}
                   className={cn(
-                    "flex flex-col items-center justify-center gap-0.5 h-12 w-18 px-1 py-0.5 rounded-xl transition-all duration-300 active:scale-90",
+                    "relative flex flex-col items-center justify-center gap-0.5 h-14 w-16 px-1 py-1 rounded-2xl transition-all duration-300 active:scale-90",
                     "animate-fade-in-up",
                     isActive 
-                      ? "text-primary bg-primary/10 shadow-sm shadow-primary/20" 
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                      ? "text-primary bg-primary/12 shadow-sm shadow-primary/15 ring-1 ring-primary/20" 
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
                   )}
                   style={{ animationDelay: `${index * 0.05}s` }}
                 >
-                  <Icon className={cn("h-5 w-5 transition-transform duration-200", isActive && "scale-110")} />
-                  <span className={cn("text-xs font-medium leading-none transition-all duration-200", isActive && "font-bold")}>
+                  <Icon className={cn("h-5 w-5 transition-all duration-300", isActive && "scale-110 drop-shadow-sm")} />
+                  <span className={cn("text-[10px] font-medium leading-none tracking-tight transition-all duration-200", isActive && "font-bold text-[10.5px]")}>
                     {item.label}
                   </span>
                   {isActive && (
-                    <div className="absolute -bottom-0.5 w-5 h-0.5 rounded-full bg-primary animate-scale-in" />
+                    <div className="absolute -bottom-0 w-6 h-[3px] rounded-full bg-gradient-to-r from-primary to-primary/60 animate-scale-in" />
                   )}
                 </Button>
               );

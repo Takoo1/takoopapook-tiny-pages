@@ -18,6 +18,10 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				sans: ['Inter', 'Roboto', 'Open Sans', 'Proxima Nova', 'system-ui', '-apple-system', 'sans-serif'],
+				display: ['Roboto', 'Inter', 'Open Sans', 'system-ui', 'sans-serif'],
+			},
 			spacing: {
 				'safe-top': 'env(safe-area-inset-top)',
 				'safe-bottom': 'env(safe-area-inset-bottom)',

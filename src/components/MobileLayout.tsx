@@ -17,16 +17,16 @@ export function MobileLayout({ children }: MobileLayoutProps) {
   const hideHeader = isMobile && location.pathname === '/videos';
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background">
       {/* Conditional Header - Mobile or Desktop */}
       {!hideHeader && (isMobile ? <MobileHeader /> : <DesktopHeader />)}
       
       {/* Main content with header padding */}
       <main className={cn(
-        "flex-1", 
-        !hideHeader && isMobile ? "pt-[52px] pb-20" : 
+        "flex-1 transition-all duration-200", 
+        !hideHeader && isMobile ? "pt-[56px] pb-[72px]" : 
         !hideHeader ? "pt-0" : 
-        isMobile ? "pb-20" : "pt-0" // No header padding for videos on mobile
+        isMobile ? "pb-[72px]" : "pt-0"
       )}>
         {children}
       </main>
