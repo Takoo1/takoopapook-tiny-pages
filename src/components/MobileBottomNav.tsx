@@ -70,14 +70,15 @@ export function MobileBottomNav() {
 
   return (
     <>
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/70 backdrop-blur-2xl border-t border-border/30 shadow-[0_-2px_20px_-4px_rgba(0,0,0,0.08)] dark:shadow-[0_-2px_20px_-4px_rgba(0,0,0,0.25)]">
-        {/* Safe area padding for mobile devices */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 glass border-t border-border/40 shadow-[0_-6px_30px_-6px_hsl(var(--primary)/0.18)]">
+        {/* top sheen */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
         <div className="pb-safe">
           <div className="flex items-center justify-around px-1 py-1.5">
             {navItems.map((item, index) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path && item.path !== "/menu";
-              
+
               return (
                 <Button
                   key={item.id}
@@ -86,20 +87,23 @@ export function MobileBottomNav() {
                   onClick={() => handleNavigation(item.path)}
                   data-menu-trigger={item.path === "/menu" ? "true" : undefined}
                   className={cn(
-                    "relative flex flex-col items-center justify-center gap-0.5 h-14 w-16 px-1 py-1 rounded-2xl transition-all duration-300 active:scale-90",
+                    "relative flex flex-col items-center justify-center gap-0.5 h-14 w-16 px-1 py-1 rounded-2xl transition-all duration-300 active:scale-90 overflow-visible",
                     "animate-fade-in-up",
-                    isActive 
-                      ? "text-primary bg-primary/12 shadow-sm shadow-primary/15 ring-1 ring-primary/20" 
+                    isActive
+                      ? "text-primary"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
                   )}
                   style={{ animationDelay: `${index * 0.05}s` }}
                 >
-                  <Icon className={cn("h-5 w-5 transition-all duration-300", isActive && "scale-110 drop-shadow-sm")} />
-                  <span className={cn("text-[10px] font-medium leading-none tracking-tight transition-all duration-200", isActive && "font-bold text-[10.5px]")}>
+                  {isActive && (
+                    <span className="absolute inset-1 rounded-2xl bg-gradient-to-br from-primary/20 via-primary/10 to-accent/15 ring-1 ring-primary/30 shadow-[0_4px_14px_-4px_hsl(var(--primary)/0.5)] animate-scale-in" />
+                  )}
+                  <Icon className={cn("relative h-5 w-5 transition-all duration-300", isActive && "scale-110 drop-shadow-[0_0_6px_hsl(var(--primary)/0.6)]")} />
+                  <span className={cn("relative text-[10px] font-medium leading-none tracking-tight transition-all duration-200", isActive && "font-bold text-[10.5px]")}>
                     {item.label}
                   </span>
                   {isActive && (
-                    <div className="absolute -bottom-0 w-6 h-[3px] rounded-full bg-gradient-to-r from-primary to-primary/60 animate-scale-in" />
+                    <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-7 h-[3px] rounded-full bg-gradient-to-r from-primary via-primary-glow to-accent shadow-[0_0_8px_hsl(var(--primary)/0.7)] animate-scale-in" />
                   )}
                 </Button>
               );
