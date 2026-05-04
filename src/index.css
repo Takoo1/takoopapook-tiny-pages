@@ -2,81 +2,70 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
 @layer base {
   :root {
-    /* Light mode colors */
-    --background: 0 0% 100%;
-    --foreground: 220 20% 7%;
-
+    --background: 40 30% 98%;
+    --foreground: 220 25% 9%;
     --card: 0 0% 100%;
-    --card-foreground: 220 20% 7%;
-
+    --card-foreground: 220 25% 9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 7%;
-
-    --primary: 45 100% 60%;
-    --primary-foreground: 220 20% 7%;
-
-    --secondary: 210 40% 98%;
-    --secondary-foreground: 220 20% 7%;
-
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 20% 45%;
-
-    --accent: 45 100% 60%;
-    --accent-foreground: 220 20% 7%;
-
+    --popover-foreground: 220 25% 9%;
+    --primary: 38 95% 55%;
+    --primary-foreground: 220 25% 9%;
+    --primary-glow: 45 100% 70%;
+    --secondary: 270 60% 96%;
+    --secondary-foreground: 270 40% 20%;
+    --muted: 220 20% 95%;
+    --muted-foreground: 220 12% 42%;
+    --accent: 280 80% 60%;
+    --accent-foreground: 0 0% 100%;
+    --accent-glow: 320 90% 70%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
+    --success: 142 70% 42%;
+    --success-foreground: 0 0% 100%;
+    --border: 220 20% 90%;
+    --input: 220 20% 90%;
+    --ring: 38 95% 55%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 45 100% 60%;
-
-    /* Lottery specific colors for light mode */
-    --lottery-gold: 45 100% 50%;
-    --lottery-gold-light: 45 100% 65%;
+    --lottery-gold: 42 100% 50%;
+    --lottery-gold-light: 50 100% 65%;
     --lottery-sold-offline: 217 91% 50%;
     --lottery-sold-online: 142 76% 30%;
     --lottery-available: 215 20% 45%;
 
-    /* Festival themed colors for different price tiers */
-    --tier-100-primary: 0 100% 50%; /* Red theme for ₹100 */
+    --tier-100-primary: 0 100% 50%;
     --tier-100-secondary: 15 100% 60%;
     --tier-100-accent: 350 100% 70%;
-    
-    --tier-500-primary: 270 100% 50%; /* Purple theme for ₹500 */
+    --tier-500-primary: 270 100% 50%;
     --tier-500-secondary: 285 100% 60%;
     --tier-500-accent: 255 100% 70%;
-    
-    --tier-1000-primary: 220 100% 50%; /* Blue theme for ₹1000 */
+    --tier-1000-primary: 220 100% 50%;
     --tier-1000-secondary: 210 100% 60%;
     --tier-1000-accent: 200 100% 70%;
-    
-    --tier-other-primary: 142 76% 40%; /* Green theme for other prices */
+    --tier-other-primary: 142 76% 40%;
     --tier-other-secondary: 155 76% 50%;
     --tier-other-accent: 170 76% 60%;
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(45 100% 50%), hsl(45 100% 65%));
-    --gradient-background: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 40% 98%));
-    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(210 40% 96%));
-    
-    /* Festival gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(38 95% 55%), hsl(50 100% 70%));
+    --gradient-aurora: linear-gradient(135deg, hsl(38 95% 60% / 0.18), hsl(280 80% 60% / 0.18) 50%, hsl(200 90% 65% / 0.18));
+    --gradient-sunset: linear-gradient(135deg, hsl(15 100% 60%), hsl(330 90% 65%));
+    --gradient-royal: linear-gradient(135deg, hsl(260 80% 55%), hsl(220 90% 60%));
+    --gradient-background: linear-gradient(180deg, hsl(40 30% 98%), hsl(220 30% 96%));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(220 30% 97%));
+    --gradient-shine: linear-gradient(90deg, transparent, hsl(0 0% 100% / 0.4), transparent);
     --gradient-tier-100: linear-gradient(135deg, hsl(0 100% 50%), hsl(15 100% 60%));
     --gradient-tier-500: linear-gradient(135deg, hsl(270 100% 50%), hsl(285 100% 60%));
     --gradient-tier-1000: linear-gradient(135deg, hsl(220 100% 50%), hsl(210 100% 60%));
     --gradient-tier-other: linear-gradient(135deg, hsl(142 76% 40%), hsl(155 76% 50%));
 
-    /* Shadows */
-    --shadow-lottery: 0 10px 30px -10px hsl(45 100% 50% / 0.3);
-    --shadow-card: 0 8px 32px -12px hsl(0 0% 0% / 0.1);
+    --shadow-lottery: 0 10px 40px -12px hsl(42 100% 50% / 0.35);
+    --shadow-card: 0 8px 32px -10px hsl(220 40% 20% / 0.12);
+    --shadow-glow: 0 0 32px hsl(45 100% 65% / 0.5);
+    --shadow-elevated: 0 20px 50px -15px hsl(220 40% 20% / 0.18);
+    --shadow-soft: 0 2px 8px -2px hsl(220 40% 20% / 0.08);
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -89,63 +78,62 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 220 20% 7%;
-    --foreground: 45 100% 95%;
-
-    --card: 220 15% 12%;
-    --card-foreground: 45 100% 95%;
-
-    --popover: 220 15% 12%;
-    --popover-foreground: 45 100% 95%;
-
-    --primary: 45 100% 60%;
-    --primary-foreground: 220 20% 7%;
-
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 45 100% 95%;
-
-    --muted: 217 33% 17%;
-    --muted-foreground: 45 20% 65%;
-
-    --accent: 45 100% 60%;
-    --accent-foreground: 220 20% 7%;
-
+    --background: 230 25% 6%;
+    --foreground: 45 30% 96%;
+    --card: 230 22% 11%;
+    --card-foreground: 45 30% 96%;
+    --popover: 230 22% 11%;
+    --popover-foreground: 45 30% 96%;
+    --primary: 42 100% 60%;
+    --primary-foreground: 230 25% 6%;
+    --primary-glow: 50 100% 72%;
+    --secondary: 260 30% 18%;
+    --secondary-foreground: 45 30% 96%;
+    --muted: 230 20% 16%;
+    --muted-foreground: 230 12% 65%;
+    --accent: 285 85% 65%;
+    --accent-foreground: 0 0% 100%;
+    --accent-glow: 320 90% 72%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 45 100% 95%;
+    --success: 142 70% 48%;
+    --success-foreground: 0 0% 100%;
+    --border: 230 22% 22%;
+    --input: 230 22% 22%;
+    --ring: 42 100% 60%;
 
-    --border: 217 33% 25%;
-    --input: 217 33% 25%;
-    --ring: 45 100% 60%;
-
-    /* Lottery specific colors for dark mode */
     --lottery-gold: 45 100% 60%;
-    --lottery-gold-light: 45 100% 75%;
+    --lottery-gold-light: 50 100% 75%;
     --lottery-sold-offline: 217 91% 60%;
     --lottery-sold-online: 142 76% 36%;
     --lottery-available: 45 20% 65%;
 
-    /* Festival themed colors for different price tiers - dark mode */
     --tier-100-primary: 0 100% 60%;
     --tier-100-secondary: 15 100% 70%;
     --tier-100-accent: 350 100% 80%;
-    
     --tier-500-primary: 270 100% 60%;
     --tier-500-secondary: 285 100% 70%;
     --tier-500-accent: 255 100% 80%;
-    
     --tier-1000-primary: 220 100% 60%;
     --tier-1000-secondary: 210 100% 70%;
     --tier-1000-accent: 200 100% 80%;
-    
     --tier-other-primary: 142 76% 50%;
     --tier-other-secondary: 155 76% 60%;
     --tier-other-accent: 170 76% 70%;
 
-    /* Festival gradients - dark mode */
     --gradient-tier-100: linear-gradient(135deg, hsl(0 100% 60%), hsl(15 100% 70%));
     --gradient-tier-500: linear-gradient(135deg, hsl(270 100% 60%), hsl(285 100% 70%));
     --gradient-tier-1000: linear-gradient(135deg, hsl(220 100% 60%), hsl(210 100% 70%));
     --gradient-tier-other: linear-gradient(135deg, hsl(142 76% 50%), hsl(155 76% 60%));
+
+    --gradient-aurora: linear-gradient(135deg, hsl(42 100% 60% / 0.18), hsl(285 85% 65% / 0.18) 50%, hsl(200 90% 65% / 0.18));
+    --gradient-card: linear-gradient(135deg, hsl(230 22% 12%), hsl(230 22% 9%));
+    --gradient-background: linear-gradient(180deg, hsl(230 25% 6%), hsl(230 25% 9%));
+
+    --shadow-glow: 0 0 32px hsl(45 100% 60% / 0.4);
+    --shadow-elevated: 0 20px 50px -15px hsl(0 0% 0% / 0.5);
+    --shadow-card: 0 8px 32px -10px hsl(0 0% 0% / 0.35);
+    --shadow-soft: 0 2px 8px -2px hsl(0 0% 0% / 0.3);
 
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
@@ -159,10 +147,7 @@ All colors MUST be HSL.
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-
+  * { @apply border-border; }
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', 'Roboto', 'Open Sans', 'Proxima Nova', system-ui, -apple-system, sans-serif;
@@ -170,57 +155,79 @@ All colors MUST be HSL.
     -moz-osx-font-smoothing: grayscale;
     letter-spacing: -0.01em;
   }
-
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Roboto', 'Inter', 'Open Sans', system-ui, sans-serif;
     font-weight: 700;
     letter-spacing: -0.02em;
   }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+}
 
-  /* Utility classes for scrollbar hiding */
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* Glassmorphism utility */
+@layer utilities {
   .glass {
-    background: hsl(var(--background) / 0.6);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid hsl(var(--border) / 0.3);
+    background: hsl(var(--background) / 0.65);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid hsl(var(--border) / 0.4);
   }
-
-  /* Shimmer gradient background */
+  .glass-card {
+    background: linear-gradient(135deg, hsl(var(--card) / 0.85), hsl(var(--card) / 0.6));
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border: 1px solid hsl(var(--border) / 0.3);
+    box-shadow: var(--shadow-card);
+  }
+  .text-gold-shimmer {
+    background: linear-gradient(90deg, hsl(var(--lottery-gold)), hsl(var(--lottery-gold-light)), hsl(var(--lottery-gold)));
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: shimmer-text 3s linear infinite;
+  }
+  .aurora-bg { position: relative; isolation: isolate; }
+  .aurora-bg::before {
+    content: '';
+    position: absolute;
+    inset: -20%;
+    z-index: -1;
+    background:
+      radial-gradient(40% 40% at 20% 10%, hsl(var(--primary) / 0.18), transparent 60%),
+      radial-gradient(45% 45% at 85% 25%, hsl(var(--accent) / 0.16), transparent 60%),
+      radial-gradient(50% 50% at 50% 100%, hsl(var(--primary-glow) / 0.14), transparent 60%);
+    filter: blur(40px);
+    pointer-events: none;
+    animation: aurora-drift 14s ease-in-out infinite alternate;
+  }
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.45;
+    pointer-events: none;
+    z-index: 0;
+  }
   .shimmer-bg {
-    background: linear-gradient(
-      90deg,
-      hsl(var(--muted) / 0.3) 25%,
-      hsl(var(--primary) / 0.08) 50%,
-      hsl(var(--muted) / 0.3) 75%
-    );
+    background: linear-gradient(90deg, hsl(var(--muted) / 0.4) 25%, hsl(var(--primary) / 0.1) 50%, hsl(var(--muted) / 0.4) 75%);
     background-size: 200% 100%;
     animation: shimmer 2s linear infinite;
   }
-
-  /* Stagger children animation utility */
-  .stagger-children > * {
-    opacity: 0;
-    animation: fade-in-up 0.5s ease-out forwards;
-  }
+  .card-premium { transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease; }
+  .card-premium:hover { transform: translateY(-4px); box-shadow: var(--shadow-elevated); }
+  .hover-lift { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+  .hover-lift:hover { transform: translateY(-2px); box-shadow: var(--shadow-card); }
+  .stagger-children > * { opacity: 0; animation: fade-in-up 0.5s ease-out forwards; }
   .stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
   .stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
   .stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
   .stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
   .stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
   .stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
-
-  @keyframes fade-in-up {
-    0% { opacity: 0; transform: translateY(20px); }
-    100% { opacity: 1; transform: translateY(0); }
-  }
 }
+
+@keyframes fade-in-up { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+@keyframes shimmer-text { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
+@keyframes aurora-drift { 0% { transform: translate3d(0,0,0) scale(1); } 100% { transform: translate3d(2%,-2%,0) scale(1.05); } }
+@keyframes blob-float { 0%,100% { transform: translate(0,0) scale(1); } 33% { transform: translate(20px,-30px) scale(1.05); } 66% { transform: translate(-15px,20px) scale(0.95); } }
