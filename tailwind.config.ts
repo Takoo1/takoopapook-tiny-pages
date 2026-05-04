@@ -116,6 +116,10 @@ export default {
 					'100%': { opacity: '1', transform: 'translateY(0) scale(1)' }
 				},
 				'shimmer': {
+					'0%': { transform: 'translateX(-100%)' },
+					'100%': { transform: 'translateX(100%)' }
+				},
+				'shimmer-bg': {
 					'0%': { backgroundPosition: '-200% 0' },
 					'100%': { backgroundPosition: '200% 0' }
 				},
