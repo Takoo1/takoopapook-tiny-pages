@@ -1104,7 +1104,45 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      lottery_tickets_public: {
+        Row: {
+          book_id: string | null
+          id: string | null
+          lottery_game_id: string | null
+          status: string | null
+          ticket_number: number | null
+        }
+        Insert: {
+          book_id?: string | null
+          id?: string | null
+          lottery_game_id?: string | null
+          status?: string | null
+          ticket_number?: number | null
+        }
+        Update: {
+          book_id?: string | null
+          id?: string | null
+          lottery_game_id?: string | null
+          status?: string | null
+          ticket_number?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lottery_tickets_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "lottery_books"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lottery_tickets_lottery_game_id_fkey"
+            columns: ["lottery_game_id"]
+            isOneToOne: false
+            referencedRelation: "lottery_games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       admin_request_fortune_reset: {
