@@ -84,23 +84,26 @@ export function LotteryCard({
   const themeClasses = getThemeClasses();
 
   return (
-    <Card 
-      className={`overflow-hidden transition-all duration-300 group cursor-pointer md:hover:scale-105 active:scale-[0.98] animate-slide-up ${themeClasses.card}`}
+    <Card
+      className={`relative overflow-hidden transition-all duration-500 group cursor-pointer md:hover:scale-[1.03] active:scale-[0.98] animate-slide-up rounded-2xl border-2 backdrop-blur-sm ${themeClasses.card} hover:shadow-[var(--shadow-elevated)]`}
       onClick={() => onViewDetails(id)}
     >
+      {/* Shine sweep on hover */}
+      <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/15 to-transparent opacity-0 group-hover:opacity-100 group-hover:translate-x-full transition-all duration-1000 ease-out" />
+
       {/* Game Name Header with Details Button */}
-      <div className="p-2 md:p-3 pb-0 flex items-center justify-between gap-2">
-        <h3 className="text-sm md:text-base font-semibold truncate flex-1 text-lottery-gold bg-gradient-to-r from-lottery-gold to-lottery-gold-light bg-clip-text text-transparent">
+      <div className="relative p-2.5 md:p-3 pb-0 flex items-center justify-between gap-2">
+        <h3 className="text-sm md:text-base font-bold truncate flex-1 text-gold-shimmer drop-shadow-sm">
           {title}
         </h3>
         <Button
           size="sm"
           variant="outline"
-          className={`px-2 md:px-3 py-0 md:py-0.5 text-xs font-medium min-w-[44px] shrink-0 transition-all duration-200 rounded-xl ${
-            theme === 'tier-100' ? 'border-red-300 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-950/20' :
-            theme === 'tier-500' ? 'border-blue-300 text-blue-600 hover:bg-blue-50 dark:border-blue-700 dark:text-blue-400 dark:hover:bg-blue-950/20' :
-            theme === 'tier-1000' ? 'border-purple-300 text-purple-600 hover:bg-purple-50 dark:border-purple-700 dark:text-purple-400 dark:hover:bg-purple-950/20' :
-            theme === 'tier-other' ? 'border-green-300 text-green-600 hover:bg-green-50 dark:border-green-700 dark:text-green-400 dark:hover:bg-green-950/20' :
+          className={`px-2.5 md:px-3 py-0 md:py-0.5 text-xs font-semibold min-w-[44px] shrink-0 transition-all duration-300 rounded-full backdrop-blur-sm shadow-sm hover:shadow-md hover:scale-105 ${
+            theme === 'tier-100' ? 'border-red-300 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-950/30' :
+            theme === 'tier-500' ? 'border-blue-300 text-blue-600 hover:bg-blue-50 dark:border-blue-700 dark:text-blue-400 dark:hover:bg-blue-950/30' :
+            theme === 'tier-1000' ? 'border-purple-300 text-purple-600 hover:bg-purple-50 dark:border-purple-700 dark:text-purple-400 dark:hover:bg-purple-950/30' :
+            theme === 'tier-other' ? 'border-green-300 text-green-600 hover:bg-green-50 dark:border-green-700 dark:text-green-400 dark:hover:bg-green-950/30' :
             'border-lottery-gold/50 text-lottery-gold hover:bg-lottery-gold/10'
           }`}
           onClick={(e) => {
@@ -108,7 +111,7 @@ export function LotteryCard({
             onViewDetails(id);
           }}
         >
-          Details
+          Details →
         </Button>
       </div>
 
