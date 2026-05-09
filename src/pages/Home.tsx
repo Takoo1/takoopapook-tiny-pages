@@ -457,7 +457,7 @@ export default function Home() {
                                   'Budget Collection';
                 
                 return (
-                  <div key={price} id={`price-section-${price}`} className={`relative p-4 md:p-8 rounded-3xl bg-gradient-to-br ${sectionTheme.gradient} border-2 ${sectionTheme.border} overflow-hidden`}>
+                  <div key={price} id={`price-section-${price}`} className={`relative p-4 md:p-8 rounded-3xl bg-gradient-to-br ${sectionTheme.gradient} border-2 ${sectionTheme.border} overflow-hidden scroll-mt-[72px] md:scroll-mt-20`}>
                     {/* Tier & Price Display - Top Center */}
                     <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20">
                       <div className="flex rounded-full overflow-hidden shadow-2xl bg-white/10 backdrop-blur-sm border border-white/20 w-64 md:w-80 h-8 md:h-12 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] drop-shadow-lg" style={{boxShadow: '0 10px 25px -5px rgba(0,0,0,0.3), 0 4px 6px -2px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.1)'}}>
