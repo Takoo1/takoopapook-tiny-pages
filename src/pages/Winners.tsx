@@ -329,30 +329,35 @@ export default function Winners() {
                       </div>
                     </div>
 
-                    {/* Row 4: Incentive Prizes - Vertical Stack */}
+                    {/* Incentive Prizes */}
                     {game.incentivePrizes.length > 0 && (
-                      <div className="space-y-2 md:space-y-3">
-                        <h3 className="text-sm md:text-lg font-semibold text-center">Incentive Prizes</h3>
-                        <div className="space-y-1 md:space-y-2">
+                      <div className="space-y-2 md:space-y-3 pt-2">
+                        <div className="flex items-center gap-2 md:gap-3">
+                          <span className="h-px flex-1 bg-gradient-to-r from-transparent to-border" />
+                          <h3 className="text-xs md:text-sm font-semibold uppercase tracking-[0.2em] text-muted-foreground">Incentive Prizes</h3>
+                          <span className="h-px flex-1 bg-gradient-to-l from-transparent to-border" />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3">
                           {game.incentivePrizes.map((winner) => (
-                            <Card key={winner.id} className="bg-gradient-to-r from-background/50 to-background/80 border-border/50">
+                            <Card key={winner.id} className="group bg-gradient-to-r from-background/70 to-background/50 border-border/60 backdrop-blur-sm hover:border-primary/40 hover:shadow-md transition-all duration-300">
                               <CardContent className="p-2 md:p-3">
                                 <div className="flex items-center space-x-2 md:space-x-3">
-                                  <div className="relative">
+                                  <div className="relative shrink-0">
                                     <img
                                       src={winner.image_url}
                                       alt={winner.name}
-                                      className="w-8 h-8 md:w-12 md:h-12 rounded-full object-cover border border-muted cursor-pointer hover:opacity-80 transition-opacity"
+                                      className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover ring-2 ring-border/50 cursor-pointer group-hover:ring-primary/50 group-hover:scale-105 transition-all duration-300"
                                       onClick={() => handleProfileClick(winner)}
                                     />
+                                    <div className="absolute -bottom-0.5 -right-0.5 bg-primary rounded-full p-0.5 ring-2 ring-background">
+                                      <Award className="w-2 h-2 md:w-2.5 md:h-2.5 text-primary-foreground" />
+                                    </div>
                                   </div>
                                   <div className="flex-1 min-w-0">
-                                    <div className="flex items-center space-x-1 md:space-x-2 mb-0.5 md:mb-1">
-                                      <Badge variant="secondary" className="text-[8px] md:text-xs">
-                                        Incentive Prize
-                                      </Badge>
-                                    </div>
-                                    <h4 className="font-semibold text-xs md:text-sm truncate">{winner.name}</h4>
+                                    <Badge variant="secondary" className="text-[8px] md:text-[10px] mb-1 font-medium">
+                                      Incentive
+                                    </Badge>
+                                    <h4 className="font-semibold text-xs md:text-sm truncate text-foreground">{winner.name}</h4>
                                     {winner.details && (
                                       <p className="text-[10px] md:text-xs text-muted-foreground truncate">{winner.details}</p>
                                     )}
