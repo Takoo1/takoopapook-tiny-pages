@@ -245,22 +245,25 @@ export default function Winners() {
                       {/* Left Column: 1st Prize */}
                       <div className="col-span-1">
                         {firstPrize && (
-                          <Card className="bg-gradient-to-br from-yellow-500/20 to-yellow-600/30 border-yellow-500/30 h-full">
-                            <CardContent className="p-3 md:p-4 text-center h-full flex flex-col justify-center">
-                              <div className="relative mb-2 md:mb-3">
+                          <Card className="relative bg-gradient-to-br from-yellow-400/30 via-amber-500/25 to-yellow-600/30 border-yellow-500/50 h-full overflow-hidden shadow-[0_8px_30px_-8px_rgba(234,179,8,0.5)]">
+                            <div aria-hidden className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent pointer-events-none" />
+                            <div aria-hidden className="absolute -top-6 -right-6 w-20 h-20 bg-yellow-400/30 rounded-full blur-2xl pointer-events-none" />
+                            <CardContent className="relative p-3 md:p-5 text-center h-full flex flex-col justify-center">
+                              <div className="relative mb-3 md:mb-4">
+                                <div aria-hidden className="absolute inset-0 -m-2 rounded-full bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-600 blur-md opacity-60" />
                                 <img
                                   src={firstPrize.image_url}
                                   alt={firstPrize.name}
-                                  className="w-16 h-16 md:w-24 md:h-24 rounded-full mx-auto object-cover border-2 md:border-3 border-yellow-500/50 cursor-pointer hover:opacity-80 transition-opacity"
+                                  className="relative w-20 h-20 md:w-28 md:h-28 rounded-full mx-auto object-cover ring-4 ring-yellow-500/70 shadow-xl cursor-pointer hover:scale-105 transition-transform duration-300"
                                   onClick={() => handleProfileClick(firstPrize)}
                                 />
-                                <div className="absolute -top-1 -right-1 md:-top-2 md:-right-2 bg-yellow-500 rounded-full p-1 md:p-2">
-                                  <Trophy className="w-3 h-3 md:w-5 md:h-5 text-white" />
+                                <div className="absolute -top-1 -right-1 md:-top-2 md:-right-2 bg-gradient-to-br from-yellow-400 to-amber-600 rounded-full p-1.5 md:p-2.5 shadow-lg ring-2 ring-background">
+                                  <Trophy className="w-3 h-3 md:w-5 md:h-5 text-white drop-shadow" />
                                 </div>
                               </div>
-                              <div className="space-y-1">
+                              <div className="space-y-1.5">
                                 {getPrizeBadge(1)}
-                                <h3 className="text-sm md:text-lg font-bold">{firstPrize.name}</h3>
+                                <h3 className="text-base md:text-xl font-display font-extrabold text-foreground tracking-tight">{firstPrize.name}</h3>
                                 {firstPrize.details && (
                                   <p className="text-[10px] md:text-xs text-muted-foreground line-clamp-2">{firstPrize.details}</p>
                                 )}
@@ -272,24 +275,24 @@ export default function Winners() {
 
                       {/* Right Column: 2nd and 3rd Prize */}
                       <div className="col-span-1 space-y-2 md:space-y-3">
-                        {/* 2nd Prize (top of right column) */}
                         {secondPrize && (
-                          <Card className="bg-gradient-to-br from-gray-500/10 to-gray-600/20 border-gray-500/30">
-                            <CardContent className="p-2 md:p-3 text-center">
+                          <Card className="relative bg-gradient-to-br from-slate-300/25 via-gray-400/20 to-slate-500/25 border-gray-400/40 overflow-hidden shadow-md">
+                            <div aria-hidden className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+                            <CardContent className="relative p-2 md:p-3 text-center">
                               <div className="relative mb-1 md:mb-2">
                                 <img
                                   src={secondPrize.image_url}
                                   alt={secondPrize.name}
-                                  className="w-10 h-10 md:w-14 md:h-14 rounded-full mx-auto object-cover border-2 border-gray-500/40 cursor-pointer hover:opacity-80 transition-opacity"
+                                  className="w-12 h-12 md:w-16 md:h-16 rounded-full mx-auto object-cover ring-2 ring-gray-400/60 shadow cursor-pointer hover:scale-105 transition-transform duration-300"
                                   onClick={() => handleProfileClick(secondPrize)}
                                 />
-                                <div className="absolute -top-0.5 -right-0.5 md:-top-1 md:-right-1 bg-gray-500 rounded-full p-1">
-                                  <Medal className="w-2 h-2 md:w-3 md:h-3 text-white" />
+                                <div className="absolute -top-0.5 -right-0.5 md:-top-1 md:-right-1 bg-gradient-to-br from-gray-300 to-slate-500 rounded-full p-1 shadow ring-2 ring-background">
+                                  <Medal className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 text-white" />
                                 </div>
                               </div>
                               <div className="space-y-0.5 md:space-y-1">
                                 {getPrizeBadge(2)}
-                                <h4 className="font-bold text-[10px] md:text-sm line-clamp-1">{secondPrize.name}</h4>
+                                <h4 className="font-bold text-[11px] md:text-sm line-clamp-1">{secondPrize.name}</h4>
                                 {secondPrize.details && (
                                   <p className="text-[8px] md:text-xs text-muted-foreground line-clamp-1">{secondPrize.details}</p>
                                 )}
@@ -298,24 +301,24 @@ export default function Winners() {
                           </Card>
                         )}
 
-                        {/* 3rd Prize (bottom of right column) */}
                         {thirdPrize && (
-                          <Card className="bg-gradient-to-br from-amber-600/10 to-amber-700/20 border-amber-600/30">
-                            <CardContent className="p-2 md:p-3 text-center">
+                          <Card className="relative bg-gradient-to-br from-amber-500/20 via-orange-500/15 to-amber-700/25 border-amber-600/40 overflow-hidden shadow-md">
+                            <div aria-hidden className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+                            <CardContent className="relative p-2 md:p-3 text-center">
                               <div className="relative mb-1 md:mb-2">
                                 <img
                                   src={thirdPrize.image_url}
                                   alt={thirdPrize.name}
-                                  className="w-10 h-10 md:w-14 md:h-14 rounded-full mx-auto object-cover border-2 border-amber-600/40 cursor-pointer hover:opacity-80 transition-opacity"
+                                  className="w-12 h-12 md:w-16 md:h-16 rounded-full mx-auto object-cover ring-2 ring-amber-600/60 shadow cursor-pointer hover:scale-105 transition-transform duration-300"
                                   onClick={() => handleProfileClick(thirdPrize)}
                                 />
-                                <div className="absolute -top-0.5 -right-0.5 md:-top-1 md:-right-1 bg-amber-600 rounded-full p-1">
-                                  <Award className="w-2 h-2 md:w-3 md:h-3 text-white" />
+                                <div className="absolute -top-0.5 -right-0.5 md:-top-1 md:-right-1 bg-gradient-to-br from-amber-500 to-orange-700 rounded-full p-1 shadow ring-2 ring-background">
+                                  <Award className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 text-white" />
                                 </div>
                               </div>
                               <div className="space-y-0.5 md:space-y-1">
                                 {getPrizeBadge(3)}
-                                <h4 className="font-bold text-[10px] md:text-sm line-clamp-1">{thirdPrize.name}</h4>
+                                <h4 className="font-bold text-[11px] md:text-sm line-clamp-1">{thirdPrize.name}</h4>
                                 {thirdPrize.details && (
                                   <p className="text-[8px] md:text-xs text-muted-foreground line-clamp-1">{thirdPrize.details}</p>
                                 )}
