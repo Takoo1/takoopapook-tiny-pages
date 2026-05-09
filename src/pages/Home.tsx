@@ -13,7 +13,7 @@ import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { ImageCarousel } from "@/components/ImageCarousel";
 import { VideoThumbnailCarousel } from "@/components/VideoThumbnailCarousel";
 import { HeroCarousel } from "@/components/HeroCarousel";
-import { MobileStickySearchFAB } from "@/components/MobileStickySearchFAB";
+import { MobilePriceFilterBar } from "@/components/MobilePriceFilterBar";
 import { FAQSection } from "@/components/FAQSection";
 
 interface LotteryGame {
@@ -412,10 +412,8 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Mobile Sticky Search FAB */}
-          <MobileStickySearchFAB
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
+          {/* Mobile floating price filter bar (above bottom nav) */}
+          <MobilePriceFilterBar
             selectedPriceFilter={selectedPriceFilter}
             onPriceFilterChange={setSelectedPriceFilter}
           />
