@@ -119,12 +119,12 @@ export default function Winners() {
   };
 
   const gameBackgrounds = [
-    'from-purple-500/10 to-pink-500/10 border-purple-500/20',
-    'from-blue-500/10 to-cyan-500/10 border-blue-500/20',
-    'from-green-500/10 to-emerald-500/10 border-green-500/20',
-    'from-orange-500/10 to-red-500/10 border-orange-500/20',
-    'from-indigo-500/10 to-purple-500/10 border-indigo-500/20',
-    'from-teal-500/10 to-green-500/10 border-teal-500/20',
+    'from-purple-500/15 via-pink-500/10 to-fuchsia-500/5 border-purple-400/30',
+    'from-sky-500/15 via-cyan-500/10 to-blue-500/5 border-sky-400/30',
+    'from-emerald-500/15 via-green-500/10 to-teal-500/5 border-emerald-400/30',
+    'from-orange-500/15 via-amber-500/10 to-red-500/5 border-orange-400/30',
+    'from-indigo-500/15 via-violet-500/10 to-purple-500/5 border-indigo-400/30',
+    'from-teal-500/15 via-emerald-500/10 to-green-500/5 border-teal-400/30',
   ];
 
   const getPrizeIcon = (position: number) => {
@@ -138,12 +138,12 @@ export default function Winners() {
 
   const getPrizeBadge = (position: number) => {
     const badges = {
-      1: { text: "1st Prize", className: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400" },
-      2: { text: "2nd Prize", className: "bg-gray-500/10 text-gray-700 dark:text-gray-400" },
-      3: { text: "3rd Prize", className: "bg-amber-600/10 text-amber-700 dark:text-amber-400" },
+      1: { text: "1st Prize", className: "bg-gradient-to-r from-yellow-400/30 to-amber-500/30 text-yellow-700 dark:text-yellow-300 border border-yellow-500/40" },
+      2: { text: "2nd Prize", className: "bg-gradient-to-r from-gray-300/30 to-slate-400/30 text-gray-700 dark:text-gray-300 border border-gray-400/40" },
+      3: { text: "3rd Prize", className: "bg-gradient-to-r from-amber-600/30 to-orange-700/30 text-amber-800 dark:text-amber-300 border border-amber-600/40" },
     };
     const badge = badges[position as keyof typeof badges] || { text: `${position}th Prize`, className: "bg-muted" };
-    return <Badge className={`${badge.className} text-[10px] md:text-xs`}>{badge.text}</Badge>;
+    return <Badge className={`${badge.className} text-[10px] md:text-xs font-semibold tracking-wide shadow-sm`}>{badge.text}</Badge>;
   };
 
   if (loading) {
@@ -163,24 +163,40 @@ export default function Winners() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-background/50 py-3 md:py-6">
-      <div className="container mx-auto px-2 md:px-4 space-y-4 md:space-y-6">
-        {/* Header */}
-        <div className="text-center">
-          <h1 className="text-lg md:text-2xl font-bold mb-1 md:mb-2 bg-gradient-to-r from-lottery-gold to-accent bg-clip-text text-transparent">
-            🏆 Winners Gallery
+    <div className="min-h-screen relative bg-gradient-to-br from-background via-background to-muted/40 py-3 md:py-8 overflow-hidden">
+      {/* Decorative backdrop */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+        <div className="absolute inset-0 spot-gold opacity-70" />
+        <div className="absolute inset-0 pattern-dots opacity-[0.15]" />
+        <div className="absolute -top-20 -left-20 w-72 h-72 rounded-full bg-lottery-gold/20 blur-3xl" />
+        <div className="absolute top-1/3 -right-24 w-80 h-80 rounded-full bg-primary/15 blur-3xl" />
+      </div>
+
+      <div className="relative z-10 container mx-auto px-2 md:px-4 space-y-5 md:space-y-8">
+        {/* Premium Header */}
+        <div className="text-center space-y-2 md:space-y-3 animate-fade-in-up">
+          <div className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-lottery-gold/20 via-amber-400/20 to-lottery-gold/20 border border-lottery-gold/40 backdrop-blur-sm shadow-[0_4px_20px_-4px_hsl(var(--lottery-gold)/0.5)]">
+            <Trophy className="w-3.5 h-3.5 md:w-4 md:h-4 text-lottery-gold" />
+            <span className="text-[10px] md:text-xs font-semibold tracking-[0.2em] uppercase text-lottery-gold">Hall of Fame</span>
+            <Trophy className="w-3.5 h-3.5 md:w-4 md:h-4 text-lottery-gold" />
+          </div>
+          <h1 className="text-3xl md:text-5xl font-display font-extrabold tracking-tight text-gold-shimmer">
+            Winners Gallery
           </h1>
-          <p className="text-xs md:text-sm text-muted-foreground">Celebrating our lucky winners!</p>
+          <div className="w-16 md:w-24 h-1 bg-gradient-to-r from-transparent via-lottery-gold to-transparent rounded-full mx-auto" />
+          <p className="text-xs md:text-base text-muted-foreground max-w-md mx-auto">
+            Celebrating the champions whose fortune turned bright
+          </p>
         </div>
 
         {gameWinners.length === 0 ? (
-          <div className="text-center py-12 md:py-16">
-            <Trophy className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-3 md:mb-4 text-muted-foreground" />
+          <div className="text-center py-16 md:py-24 glass-card rounded-3xl mx-auto max-w-md">
+            <Trophy className="w-14 h-14 md:w-20 md:h-20 mx-auto mb-4 text-muted-foreground/60" />
             <h2 className="text-lg md:text-xl font-semibold mb-1 md:mb-2">No Winners Yet</h2>
             <p className="text-xs md:text-sm text-muted-foreground">Winners will be announced here after the draw!</p>
           </div>
         ) : (
-          <div className="space-y-8 md:space-y-10">
+          <div className="space-y-6 md:space-y-10">
             {gameWinners.map((game, gameIndex) => {
               const bgClass = gameBackgrounds[gameIndex % gameBackgrounds.length];
               const firstPrize = game.mainPrizes.find(w => w.prize_position === 1);
@@ -188,13 +204,25 @@ export default function Winners() {
               const thirdPrize = game.mainPrizes.find(w => w.prize_position === 3);
 
               return (
-                <Card key={game.gameId} className={`bg-gradient-to-br ${bgClass} overflow-hidden`}>
-                  <CardContent className="p-3 md:p-6 space-y-3 md:space-y-4">
-                    {/* Row 1: Game Name with "Winners of" prefix */}
-                    <div className="text-center">
-                      <h2 className="text-2xl md:text-3xl font-bold">
-                        <span className="text-primary">Winners of </span>
-                        <span className="text-foreground">{game.gameTitle}</span>
+                <Card
+                  key={game.gameId}
+                  className={`relative bg-gradient-to-br ${bgClass} border-2 overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 animate-fade-in-up backdrop-blur-sm`}
+                  style={{ animationDelay: `${gameIndex * 80}ms` }}
+                >
+                  {/* Decorative corner accents */}
+                  <div aria-hidden className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-lottery-gold/20 to-transparent rounded-bl-full pointer-events-none" />
+                  <div aria-hidden className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-primary/15 to-transparent rounded-tr-full pointer-events-none" />
+
+                  <CardContent className="relative p-4 md:p-7 space-y-4 md:space-y-5">
+                    {/* Game Title */}
+                    <div className="text-center space-y-1.5">
+                      <div className="inline-flex items-center gap-2">
+                        <span className="h-px w-6 md:w-10 bg-gradient-to-r from-transparent to-lottery-gold/60" />
+                        <span className="text-[10px] md:text-xs font-semibold uppercase tracking-[0.25em] text-lottery-gold">Winners of</span>
+                        <span className="h-px w-6 md:w-10 bg-gradient-to-l from-transparent to-lottery-gold/60" />
+                      </div>
+                      <h2 className="text-xl md:text-3xl font-display font-extrabold tracking-tight text-foreground">
+                        {game.gameTitle}
                       </h2>
                     </div>
 
