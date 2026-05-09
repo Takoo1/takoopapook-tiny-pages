@@ -304,7 +304,14 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-background/50">
+    <div className="min-h-screen relative bg-gradient-to-br from-background via-background to-muted/40">
+      {/* Global decorative backdrop layers */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+        <div className="absolute inset-0 spot-gold opacity-70" />
+        <div className="absolute inset-0 pattern-dots opacity-[0.18]" />
+        <div className="absolute inset-0 pattern-noise opacity-[0.06] mix-blend-overlay" />
+      </div>
+      <div className="relative z-10">
       {showReferralBanner && (
         <div className="fixed top-16 left-0 right-0 z-50 bg-gradient-to-r from-primary/20 to-accent/20 border-b border-primary/30 backdrop-blur-sm">
           <div className="max-w-4xl mx-auto p-4">
@@ -345,17 +352,21 @@ export default function Home() {
       )}
 
       {/* Hero Section */}
-      <section className="relative w-full bg-gradient-to-b from-primary/5 to-transparent" style={{ aspectRatio: '16/9' }}>
-        <HeroCarousel />
+      <section className="relative w-full bg-gradient-to-b from-primary/10 via-primary/5 to-transparent" style={{ aspectRatio: '16/9' }}>
+        <div aria-hidden className="absolute inset-0 pattern-diagonal opacity-60 pointer-events-none" />
+        <div className="relative z-10 h-full"><HeroCarousel /></div>
       </section>
 
       {/* Image Carousel Section */}
-      <div className="bg-gradient-to-b from-accent/5 via-accent/8 to-transparent">
-        <ImageCarousel />
+      <div className="relative bg-gradient-to-b from-accent/10 via-accent/5 to-transparent">
+        <div aria-hidden className="absolute inset-0 spot-accent opacity-80 pointer-events-none" />
+        <div className="relative z-10"><ImageCarousel /></div>
       </div>
 
-      <section id="games" className="py-6 md:py-20 px-3 md:px-6 bg-gradient-to-b from-secondary/10 via-secondary/5 to-transparent scroll-mt-16 md:scroll-mt-0">
-        <div className="max-w-6xl mx-auto">
+      <section id="games" className="relative py-6 md:py-20 px-3 md:px-6 bg-gradient-to-b from-secondary/15 via-secondary/8 to-transparent scroll-mt-16 md:scroll-mt-0 overflow-hidden">
+        <div aria-hidden className="absolute inset-0 spot-primary opacity-80 pointer-events-none" />
+        <div aria-hidden className="absolute inset-0 pattern-grid opacity-[0.08] pointer-events-none" />
+        <div className="relative z-10 max-w-6xl mx-auto">
           <h2 className="font-display text-2xl md:text-4xl font-extrabold text-center mb-3 md:mb-8 text-foreground animate-fade-in-up tracking-tight">
             Choose Your Fortune
           </h2>
@@ -494,13 +505,16 @@ export default function Home() {
       </section>
 
       {/* FAQ Section */}
-      <div className="bg-gradient-to-b from-muted/15 via-muted/10 to-transparent">
-        <FAQSection />
+      <div className="relative bg-gradient-to-b from-muted/25 via-muted/10 to-transparent">
+        <div aria-hidden className="absolute inset-0 spot-accent opacity-60 pointer-events-none" />
+        <div aria-hidden className="absolute inset-0 pattern-dots opacity-[0.10] pointer-events-none" />
+        <div className="relative z-10"><FAQSection /></div>
       </div>
 
       {/* Video Thumbnail Carousel - Desktop Only */}
-      <div className="hidden md:block bg-gradient-to-b from-primary/5 via-accent/5 to-transparent">
-        <VideoThumbnailCarousel />
+      <div className="hidden md:block relative bg-gradient-to-b from-primary/8 via-accent/6 to-transparent">
+        <div aria-hidden className="absolute inset-0 pattern-diagonal opacity-40 pointer-events-none" />
+        <div className="relative z-10"><VideoThumbnailCarousel /></div>
       </div>
 
       {/* Footer - Hidden on mobile */}
@@ -529,6 +543,7 @@ export default function Home() {
           </div>
         </footer>
       )}
+      </div>
     </div>
   );
 }
