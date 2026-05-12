@@ -8,6 +8,13 @@ interface MobilePriceFilterBarProps {
 
 const FILTERS = [
   {
+    value: "all",
+    label: "All",
+    base: "from-amber-500 to-orange-600",
+    ring: "ring-amber-300/60",
+    glow: "shadow-[0_-6px_20px_-6px_hsl(35_90%_50%/0.7)]",
+  },
+  {
     value: "200",
     label: "Rs. 200",
     base: "from-emerald-500 to-green-600",
