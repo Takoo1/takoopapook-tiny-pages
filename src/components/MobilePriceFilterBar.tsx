@@ -65,15 +65,30 @@ export function MobilePriceFilterBar({
     };
   }, []);
 
+  const scrollToId = (id: string) => {
+    requestAnimationFrame(() => {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  };
+
   const handleClick = (value: string) => {
     if (value === "all") {
       onPriceFilterChange("all");
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      scrollToId("games");
       return;
     }
-    onPriceFilterChange(selectedPriceFilter === value ? "all" : value);
-    const section = document.getElementById(`price-section-${value}`);
-    if (section) section.scrollIntoView({ behavior: "smooth", block: "start" });
+    onPriceFilterChange(value);
+    // Wait a tick for the section to render after filter change, then scroll.
+    // Fall back to the games section if that price tier has no tickets.
+    setTimeout(() => {
+      const target = document.getElementById(`price-section-${value}`);
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else {
+        scrollToId("games");
+      }
+    }, 80);
   };
 
   return (
