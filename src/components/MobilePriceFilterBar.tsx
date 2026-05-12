@@ -66,6 +66,11 @@ export function MobilePriceFilterBar({
   }, []);
 
   const handleClick = (value: string) => {
+    if (value === "all") {
+      onPriceFilterChange("all");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
     onPriceFilterChange(selectedPriceFilter === value ? "all" : value);
     const section = document.getElementById(`price-section-${value}`);
     if (section) section.scrollIntoView({ behavior: "smooth", block: "start" });
