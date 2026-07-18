@@ -27,6 +27,7 @@ import Profile from "./pages/Profile";
 import Wallet from "./pages/Wallet";
 import NotFound from "./pages/NotFound";
 import NotificationDetail from "./pages/NotificationDetail";
+import OAuthConsent from "./pages/OAuthConsent";
 import { MobileLayout } from "./components/MobileLayout";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
@@ -82,6 +83,7 @@ const App = () => (
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/wallet" element={<Wallet />} />
                   <Route path="/notifications/:id" element={<NotificationDetail />} />
+                  <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
