@@ -17,7 +17,7 @@ export function MobileLayout({ children }: MobileLayoutProps) {
   const hideHeader = isMobile && location.pathname === '/videos';
 
   return (
-    <div className="min-h-screen flex flex-col bg-background relative overflow-x-hidden">
+    <div className="home-noir min-h-screen flex flex-col bg-background relative overflow-x-hidden">
       {/* Soft ambient tint (very subtle) */}
       {isMobile && (
         <div

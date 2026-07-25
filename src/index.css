@@ -354,6 +354,27 @@
     --noir-gold: 43 55% 54%;
     --noir-gold-soft: 43 74% 74%;
     --noir-cream: 43 35% 92%;
+
+    /* Re-map semantic tokens so every shadcn component inherits Noir & Gold */
+    --background: var(--noir-deep);
+    --foreground: var(--noir-cream);
+    --card: var(--noir-mid);
+    --card-foreground: var(--noir-cream);
+    --popover: var(--noir-mid);
+    --popover-foreground: var(--noir-cream);
+    --primary: var(--noir-gold);
+    --primary-foreground: var(--noir-deep);
+    --primary-glow: var(--noir-gold-soft);
+    --secondary: var(--noir-charcoal);
+    --secondary-foreground: var(--noir-cream);
+    --muted: var(--noir-charcoal);
+    --muted-foreground: 43 20% 72%;
+    --accent: var(--noir-gold-soft);
+    --accent-foreground: var(--noir-deep);
+    --border: 43 25% 22%;
+    --input: 43 25% 22%;
+    --ring: var(--noir-gold);
+
     background-color: hsl(var(--noir-deep));
     color: hsl(var(--noir-cream));
   }
