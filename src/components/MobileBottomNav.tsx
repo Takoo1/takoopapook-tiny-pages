@@ -72,7 +72,7 @@ export function MobileBottomNav() {
     <>
       <nav
         aria-label="Primary"
-        className="fixed bottom-0 left-0 right-0 z-50 bg-background/85 backdrop-blur-xl border-t border-border/50 shadow-[0_-4px_20px_-8px_hsl(var(--foreground)/0.12)]"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-xl border-t border-border/60"
       >
         <div className="pb-safe">
           <div className="flex items-stretch justify-between px-2 pt-1.5 pb-1 max-w-md mx-auto">
