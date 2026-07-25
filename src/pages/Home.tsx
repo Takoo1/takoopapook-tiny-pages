@@ -450,11 +450,11 @@ export default function Home() {
           
           {lotteryGames.length === 0 ? (
             <div className="home-empty mx-auto max-w-md text-center py-14 px-6 mt-4 animate-fade-in-up">
-              <div className="mx-auto mb-4 w-14 h-14 rounded-full flex items-center justify-center" style={{ background: 'hsl(var(--em-mid))', border: '1px solid hsl(var(--em-gold)/0.35)' }}>
-                <Trophy className="w-7 h-7" style={{ color: 'hsl(var(--em-gold))' }} />
+              <div className="mx-auto mb-4 w-14 h-14 rounded-full flex items-center justify-center" style={{ background: 'hsl(var(--noir-mid))', border: '1px solid hsl(var(--noir-gold)/0.35)' }}>
+                <Trophy className="w-7 h-7" style={{ color: 'hsl(var(--noir-gold))' }} />
               </div>
               <h3 className="home-section-title text-lg mb-1">No Active Draws</h3>
-              <p className="text-sm" style={{ color: 'hsl(var(--em-cream)/0.7)' }}>
+              <p className="text-sm" style={{ color: 'hsl(var(--noir-cream)/0.7)' }}>
                 New premium draws are on their way. Check back shortly.
               </p>
             </div>
