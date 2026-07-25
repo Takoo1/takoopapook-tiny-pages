@@ -5,7 +5,9 @@ interface MobilePriceFilterBarProps {
   selectedPriceFilter: string;
   onPriceFilterChange: (filter: string) => void;
   targetRef?: RefObject<HTMLElement>;
+  blockSelector?: string;
 }
+
 
 const FILTERS = [
   {
