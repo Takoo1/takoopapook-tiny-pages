@@ -312,15 +312,15 @@ export default function Home() {
       </div>
       <div className="relative z-10">
       {showReferralBanner && (
-        <div className="fixed top-16 left-0 right-0 z-50 backdrop-blur-md" style={{ background: 'linear-gradient(90deg, hsl(var(--em-mid)/0.85), hsl(var(--em-deep)/0.85))', borderBottom: '1px solid hsl(var(--em-gold)/0.35)' }}>
+        <div className="fixed top-16 left-0 right-0 z-50 backdrop-blur-md" style={{ background: 'linear-gradient(90deg, hsl(var(--noir-mid)/0.85), hsl(var(--noir-deep)/0.85))', borderBottom: '1px solid hsl(var(--noir-gold)/0.35)' }}>
           <div className="max-w-4xl mx-auto p-4">
             <Alert className="border-0 bg-transparent">
-              <Gift className="h-4 w-4" style={{ color: 'hsl(var(--em-gold))' }} />
-              <AlertDescription style={{ color: 'hsl(var(--em-cream))' }}>
+              <Gift className="h-4 w-4" style={{ color: 'hsl(var(--noir-gold))' }} />
+              <AlertDescription style={{ color: 'hsl(var(--noir-cream))' }}>
                 <div className="flex items-center justify-between flex-wrap gap-4">
                   <div className="flex-1">
-                    <strong style={{ color: 'hsl(var(--em-gold))' }}>{referrerName}</strong> invited you to Fortune Bridge!
-                    Sign up now and get <strong style={{ color: 'hsl(var(--em-gold))' }}>50 FC free</strong> to start playing!
+                    <strong style={{ color: 'hsl(var(--noir-gold))' }}>{referrerName}</strong> invited you to Fortune Bridge!
+                    Sign up now and get <strong style={{ color: 'hsl(var(--noir-gold))' }}>50 FC free</strong> to start playing!
                   </div>
                   <div className="flex gap-2">
                     <Button
@@ -338,7 +338,7 @@ export default function Home() {
                       size="sm"
                       variant="ghost"
                       onClick={() => setShowReferralBanner(false)}
-                      style={{ color: 'hsl(var(--em-cream)/0.75)' }}
+                      style={{ color: 'hsl(var(--noir-cream)/0.75)' }}
                     >
                       Dismiss
                     </Button>
