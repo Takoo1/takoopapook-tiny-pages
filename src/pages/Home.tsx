@@ -304,23 +304,23 @@ export default function Home() {
   }
 
   return (
-    <div className="home-emerald min-h-screen relative font-['Manrope']">
+    <div className="home-noir min-h-screen relative font-['Manrope']">
       {/* Ambient gold spot */}
       <div aria-hidden className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-        <div className="absolute -top-24 -right-24 w-[420px] h-[420px] rounded-full blur-3xl opacity-[0.18]" style={{ background: 'radial-gradient(circle, hsl(var(--em-gold)/0.6), transparent 60%)' }} />
-        <div className="absolute bottom-0 -left-32 w-[380px] h-[380px] rounded-full blur-3xl opacity-[0.12]" style={{ background: 'radial-gradient(circle, hsl(var(--em-mid)/0.9), transparent 60%)' }} />
+        <div className="absolute -top-24 -right-24 w-[420px] h-[420px] rounded-full blur-3xl opacity-[0.18]" style={{ background: 'radial-gradient(circle, hsl(var(--noir-gold)/0.6), transparent 60%)' }} />
+        <div className="absolute bottom-0 -left-32 w-[380px] h-[380px] rounded-full blur-3xl opacity-[0.12]" style={{ background: 'radial-gradient(circle, hsl(var(--noir-mid)/0.9), transparent 60%)' }} />
       </div>
       <div className="relative z-10">
       {showReferralBanner && (
-        <div className="fixed top-16 left-0 right-0 z-50 backdrop-blur-md" style={{ background: 'linear-gradient(90deg, hsl(var(--em-mid)/0.85), hsl(var(--em-deep)/0.85))', borderBottom: '1px solid hsl(var(--em-gold)/0.35)' }}>
+        <div className="fixed top-16 left-0 right-0 z-50 backdrop-blur-md" style={{ background: 'linear-gradient(90deg, hsl(var(--noir-mid)/0.85), hsl(var(--noir-deep)/0.85))', borderBottom: '1px solid hsl(var(--noir-gold)/0.35)' }}>
           <div className="max-w-4xl mx-auto p-4">
             <Alert className="border-0 bg-transparent">
-              <Gift className="h-4 w-4" style={{ color: 'hsl(var(--em-gold))' }} />
-              <AlertDescription style={{ color: 'hsl(var(--em-cream))' }}>
+              <Gift className="h-4 w-4" style={{ color: 'hsl(var(--noir-gold))' }} />
+              <AlertDescription style={{ color: 'hsl(var(--noir-cream))' }}>
                 <div className="flex items-center justify-between flex-wrap gap-4">
                   <div className="flex-1">
-                    <strong style={{ color: 'hsl(var(--em-gold))' }}>{referrerName}</strong> invited you to Fortune Bridge!
-                    Sign up now and get <strong style={{ color: 'hsl(var(--em-gold))' }}>50 FC free</strong> to start playing!
+                    <strong style={{ color: 'hsl(var(--noir-gold))' }}>{referrerName}</strong> invited you to Fortune Bridge!
+                    Sign up now and get <strong style={{ color: 'hsl(var(--noir-gold))' }}>50 FC free</strong> to start playing!
                   </div>
                   <div className="flex gap-2">
                     <Button
@@ -338,7 +338,7 @@ export default function Home() {
                       size="sm"
                       variant="ghost"
                       onClick={() => setShowReferralBanner(false)}
-                      style={{ color: 'hsl(var(--em-cream)/0.75)' }}
+                      style={{ color: 'hsl(var(--noir-cream)/0.75)' }}
                     >
                       Dismiss
                     </Button>
@@ -387,7 +387,7 @@ export default function Home() {
           <div className="text-center mb-6 md:mb-10 animate-fade-in-up">
             <div className="home-eyebrow mb-2">Featured Draws</div>
             <h2 className="home-section-title text-3xl md:text-4xl">Choose Your Fortune</h2>
-            <div className="w-12 h-[3px] mt-3 mx-auto rounded-full" style={{ background: 'linear-gradient(90deg, hsl(var(--em-gold)), hsl(var(--em-gold-soft)))' }} />
+            <div className="w-12 h-[3px] mt-3 mx-auto rounded-full" style={{ background: 'linear-gradient(90deg, hsl(var(--noir-gold)), hsl(var(--noir-gold-soft)))' }} />
           </div>
 
           {/* Desktop Search and Filters */}
@@ -450,11 +450,11 @@ export default function Home() {
           
           {lotteryGames.length === 0 ? (
             <div className="home-empty mx-auto max-w-md text-center py-14 px-6 mt-4 animate-fade-in-up">
-              <div className="mx-auto mb-4 w-14 h-14 rounded-full flex items-center justify-center" style={{ background: 'hsl(var(--em-mid))', border: '1px solid hsl(var(--em-gold)/0.35)' }}>
-                <Trophy className="w-7 h-7" style={{ color: 'hsl(var(--em-gold))' }} />
+              <div className="mx-auto mb-4 w-14 h-14 rounded-full flex items-center justify-center" style={{ background: 'hsl(var(--noir-mid))', border: '1px solid hsl(var(--noir-gold)/0.35)' }}>
+                <Trophy className="w-7 h-7" style={{ color: 'hsl(var(--noir-gold))' }} />
               </div>
               <h3 className="home-section-title text-lg mb-1">No Active Draws</h3>
-              <p className="text-sm" style={{ color: 'hsl(var(--em-cream)/0.7)' }}>
+              <p className="text-sm" style={{ color: 'hsl(var(--noir-cream)/0.7)' }}>
                 New premium draws are on their way. Check back shortly.
               </p>
             </div>
@@ -481,8 +481,8 @@ export default function Home() {
                     id={`price-section-${price}`}
                     className="relative rounded-[24px] p-4 md:p-8 overflow-hidden scroll-mt-[72px] md:scroll-mt-20 animate-fade-in-up"
                     style={{
-                      background: 'linear-gradient(180deg, hsl(var(--em-mid)/0.28), hsl(var(--em-deep)/0.6))',
-                      border: '1px solid hsl(var(--em-gold)/0.18)',
+                      background: 'linear-gradient(180deg, hsl(var(--noir-mid)/0.28), hsl(var(--noir-deep)/0.6))',
+                      border: '1px solid hsl(var(--noir-gold)/0.18)',
                       boxShadow: '0 10px 32px -18px hsl(0 0% 0% / 0.55)'
                     }}
                   >

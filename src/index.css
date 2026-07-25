@@ -345,81 +345,82 @@
     @apply flex flex-col items-center justify-center text-center gap-4 p-8 rounded-[20px];
   }
 
-  /* ============ HOME SCREEN — Emerald Prestige palette ============ */
-  /* Scoped to .home-emerald root so the rest of the app is untouched */
-  .home-emerald {
-    --em-deep: 162 85% 16%;
-    --em-mid: 159 80% 26%;
-    --em-gold: 43 55% 54%;
-    --em-gold-soft: 43 74% 75%;
-    --em-cream: 45 65% 92%;
-    background-color: hsl(var(--em-deep));
-    color: hsl(var(--em-cream));
+  /* ============ HOME SCREEN — Noir & Gold palette ============ */
+  /* Scoped to .home-noir root so the rest of the app is untouched */
+  .home-noir {
+    --noir-deep: 0 0% 5%;
+    --noir-mid: 0 0% 10%;
+    --noir-charcoal: 0 0% 14%;
+    --noir-gold: 43 55% 54%;
+    --noir-gold-soft: 43 74% 74%;
+    --noir-cream: 43 35% 92%;
+    background-color: hsl(var(--noir-deep));
+    color: hsl(var(--noir-cream));
   }
-  .home-emerald .home-band {
+  .home-noir .home-band {
     background:
-      radial-gradient(60% 40% at 90% 0%, hsl(var(--em-gold) / 0.10), transparent 70%),
-      linear-gradient(180deg, hsl(var(--em-mid) / 0.35), hsl(var(--em-deep)));
-    border-top: 1px solid hsl(var(--em-gold) / 0.10);
+      radial-gradient(60% 40% at 90% 0%, hsl(var(--noir-gold) / 0.10), transparent 70%),
+      linear-gradient(180deg, hsl(var(--noir-mid) / 0.55), hsl(var(--noir-deep)));
+    border-top: 1px solid hsl(var(--noir-gold) / 0.10);
   }
-  .home-emerald .home-band-dark {
+  .home-noir .home-band-dark {
     background:
-      radial-gradient(50% 40% at 10% 100%, hsl(var(--em-gold) / 0.08), transparent 70%),
-      hsl(var(--em-deep));
+      radial-gradient(50% 40% at 10% 100%, hsl(var(--noir-gold) / 0.08), transparent 70%),
+      hsl(var(--noir-deep));
   }
-  .home-emerald .home-tier-pill {
+  .home-noir .home-tier-pill {
     display: inline-flex; align-items: center; gap: 0.5rem;
     padding: 0.3rem 0.8rem; border-radius: 9999px;
-    background: hsl(var(--em-mid) / 0.5);
-    border: 1px solid hsl(var(--em-gold) / 0.35);
-    color: hsl(var(--em-cream));
+    background: hsl(var(--noir-charcoal) / 0.7);
+    border: 1px solid hsl(var(--noir-gold) / 0.35);
+    color: hsl(var(--noir-cream));
     font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
     font-weight: 700; font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase;
   }
-  .home-emerald .home-tier-pill .dot {
+  .home-noir .home-tier-pill .dot {
     width: 6px; height: 6px; border-radius: 9999px;
-    background: hsl(var(--em-gold)); box-shadow: 0 0 8px hsl(var(--em-gold) / 0.7);
+    background: hsl(var(--noir-gold)); box-shadow: 0 0 8px hsl(var(--noir-gold) / 0.7);
   }
-  .home-emerald .home-tier-price {
+  .home-noir .home-tier-price {
     font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
-    font-weight: 700; color: hsl(var(--em-gold)); font-size: 1.05rem;
+    font-weight: 700; color: hsl(var(--noir-gold)); font-size: 1.05rem;
   }
-  .home-emerald .home-section-title {
+  .home-noir .home-section-title {
     font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
-    font-weight: 700; letter-spacing: -0.01em; color: hsl(var(--em-cream));
+    font-weight: 700; letter-spacing: -0.01em; color: hsl(var(--noir-cream));
   }
-  .home-emerald .home-eyebrow {
+  .home-noir .home-eyebrow {
     font-family: 'Sora', ui-sans-serif, system-ui, sans-serif;
-    color: hsl(var(--em-gold)); font-size: 0.68rem;
+    color: hsl(var(--noir-gold)); font-size: 0.68rem;
     font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
   }
-  .home-emerald .home-viewall { color: hsl(var(--em-gold)); font-weight: 700; font-size: 0.8rem; }
-  .home-emerald .home-gold-btn {
-    background: linear-gradient(180deg, hsl(var(--em-gold-soft)), hsl(var(--em-gold)));
-    color: hsl(var(--em-deep)); font-weight: 700; border-radius: 14px;
+  .home-noir .home-viewall { color: hsl(var(--noir-gold)); font-weight: 700; font-size: 0.8rem; }
+  .home-noir .home-gold-btn {
+    background: linear-gradient(180deg, hsl(var(--noir-gold-soft)), hsl(var(--noir-gold)));
+    color: hsl(var(--noir-deep)); font-weight: 700; border-radius: 14px;
     padding: 0.65rem 1.15rem;
-    box-shadow: 0 6px 18px -6px hsl(var(--em-gold) / 0.55);
+    box-shadow: 0 6px 18px -6px hsl(var(--noir-gold) / 0.55);
     transition: transform 150ms ease;
   }
-  .home-emerald .home-gold-btn:active { transform: scale(0.97); }
-  .home-emerald .home-chip-row {
-    border-top: 1px solid hsl(var(--em-cream) / 0.10);
-    border-bottom: 1px solid hsl(var(--em-cream) / 0.10);
+  .home-noir .home-gold-btn:active { transform: scale(0.97); }
+  .home-noir .home-chip-row {
+    border-top: 1px solid hsl(var(--noir-cream) / 0.10);
+    border-bottom: 1px solid hsl(var(--noir-cream) / 0.10);
   }
-  .home-emerald .home-chip { display: flex; flex-direction: column; align-items: center; gap: 0.35rem; min-width: max-content; }
-  .home-emerald .home-chip .ico {
+  .home-noir .home-chip { display: flex; flex-direction: column; align-items: center; gap: 0.35rem; min-width: max-content; }
+  .home-noir .home-chip .ico {
     width: 40px; height: 40px; border-radius: 9999px;
     display: flex; align-items: center; justify-content: center;
-    background: hsl(var(--em-mid)); color: hsl(var(--em-gold));
-    border: 1px solid hsl(var(--em-gold) / 0.25);
+    background: hsl(var(--noir-charcoal)); color: hsl(var(--noir-gold));
+    border: 1px solid hsl(var(--noir-gold) / 0.25);
   }
-  .home-emerald .home-chip .lbl {
+  .home-noir .home-chip .lbl {
     font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
-    color: hsl(var(--em-cream) / 0.8); font-weight: 600;
+    color: hsl(var(--noir-cream) / 0.8); font-weight: 600;
   }
-  .home-emerald .home-empty {
-    background: hsl(var(--em-mid) / 0.25);
-    border: 1px dashed hsl(var(--em-gold) / 0.3);
-    border-radius: 24px; color: hsl(var(--em-cream));
+  .home-noir .home-empty {
+    background: hsl(var(--noir-charcoal) / 0.35);
+    border: 1px dashed hsl(var(--noir-gold) / 0.3);
+    border-radius: 24px; color: hsl(var(--noir-cream));
   }
 }
