@@ -500,23 +500,37 @@ export default function Home() {
                       <span className="home-tier-price whitespace-nowrap">₹{price}</span>
                     </div>
 
-                    <div className="relative z-10 grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 stagger-children">
+                    <div
+                      className={
+                        selectedPriceFilter === "all"
+                          ? "relative z-10 flex md:grid md:grid-cols-2 lg:grid-cols-3 overflow-x-auto md:overflow-visible snap-x snap-mandatory gap-4 md:gap-6 -mx-4 md:mx-0 px-4 md:px-0 pb-2 md:pb-0 scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden stagger-children"
+                          : "relative z-10 grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 stagger-children"
+                      }
+                    >
                       {games.map((game) => (
-                        <LotteryCard
+                        <div
                           key={game.id}
-                          id={game.id}
-                          title={game.title}
-                          description={game.description}
-                          gameDate={game.game_date}
-                          ticketImageUrl={game.ticket_image_url}
-                          ticketPrice={game.ticket_price}
-                          totalTickets={game.total_tickets}
-                          availableTickets={game.available_tickets}
-                          organizingGroup={game.organising_group_name}
-                          onViewDetails={handleViewDetails}
-                          theme={getThemeForPrice(game.ticket_price)}
-                          status={game.status}
-                        />
+                          className={
+                            selectedPriceFilter === "all"
+                              ? "snap-start shrink-0 w-[82%] sm:w-[60%] md:w-auto md:shrink"
+                              : "contents"
+                          }
+                        >
+                          <LotteryCard
+                            id={game.id}
+                            title={game.title}
+                            description={game.description}
+                            gameDate={game.game_date}
+                            ticketImageUrl={game.ticket_image_url}
+                            ticketPrice={game.ticket_price}
+                            totalTickets={game.total_tickets}
+                            availableTickets={game.available_tickets}
+                            organizingGroup={game.organising_group_name}
+                            onViewDetails={handleViewDetails}
+                            theme={getThemeForPrice(game.ticket_price)}
+                            status={game.status}
+                          />
+                        </div>
                       ))}
                     </div>
                   </section>
