@@ -121,7 +121,7 @@ export function MobilePriceFilterBar({
   }, [blockSelector]);
 
 
-  const hidden = scrollHidden || !inView;
+  const hidden = scrollHidden || !inView || blocked;
 
   const scrollToId = (id: string) => {
     requestAnimationFrame(() => {
