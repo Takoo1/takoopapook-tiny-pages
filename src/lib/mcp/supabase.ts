@@ -1,6 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 import type { ToolContext } from "@lovable.dev/mcp-js";
 
+declare const process: { env: Record<string, string | undefined> };
+
+
 export function supabaseForUser(ctx: ToolContext) {
   return createClient(
     process.env.SUPABASE_URL!,
