@@ -62,7 +62,8 @@ export const FAQSection: React.FC = () => {
   if (faqs.length === 0) return null;
 
   return (
-    <section className="py-10 px-4">
+    <section data-block-filter-bar="true" className="py-10 px-4">
+
       <div className="max-w-2xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-6 animate-fade-in">
