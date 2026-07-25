@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { LotteryCard } from "@/components/lottery-card";
@@ -43,6 +43,7 @@ export default function Home() {
   const [referralCode, setReferralCode] = useState<string | null>(null);
   const [referrerName, setReferrerName] = useState<string | null>(null);
   const [showReferralBanner, setShowReferralBanner] = useState(false);
+  const gamesSectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     fetchLotteryGames();
@@ -382,7 +383,7 @@ export default function Home() {
         <div className="relative z-10"><ImageCarousel /></div>
       </div>
 
-      <section id="games" className="relative py-8 md:py-20 px-3 md:px-6 home-band scroll-mt-16 md:scroll-mt-0 overflow-hidden">
+      <section ref={gamesSectionRef} id="games" className="relative py-8 md:py-20 px-3 md:px-6 home-band scroll-mt-16 md:scroll-mt-0 overflow-hidden">
         <div className="relative z-10 max-w-6xl mx-auto">
           <div className="text-center mb-6 md:mb-10 animate-fade-in-up">
             <div className="home-eyebrow mb-2">Featured Draws</div>
@@ -446,7 +447,9 @@ export default function Home() {
           <MobilePriceFilterBar
             selectedPriceFilter={selectedPriceFilter}
             onPriceFilterChange={setSelectedPriceFilter}
+            targetRef={gamesSectionRef}
           />
+
           
           {lotteryGames.length === 0 ? (
             <div className="home-empty mx-auto max-w-md text-center py-14 px-6 mt-4 animate-fade-in-up">
@@ -497,23 +500,37 @@ export default function Home() {
                       <span className="home-tier-price whitespace-nowrap">₹{price}</span>
                     </div>
 
-                    <div className="relative z-10 grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 stagger-children">
+                    <div
+                      className={
+                        selectedPriceFilter === "all"
+                          ? "relative z-10 flex md:grid md:grid-cols-2 lg:grid-cols-3 overflow-x-auto md:overflow-visible snap-x snap-mandatory gap-4 md:gap-6 -mx-4 md:mx-0 px-4 md:px-0 pb-2 md:pb-0 scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden stagger-children"
+                          : "relative z-10 grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 stagger-children"
+                      }
+                    >
                       {games.map((game) => (
-                        <LotteryCard
+                        <div
                           key={game.id}
-                          id={game.id}
-                          title={game.title}
-                          description={game.description}
-                          gameDate={game.game_date}
-                          ticketImageUrl={game.ticket_image_url}
-                          ticketPrice={game.ticket_price}
-                          totalTickets={game.total_tickets}
-                          availableTickets={game.available_tickets}
-                          organizingGroup={game.organising_group_name}
-                          onViewDetails={handleViewDetails}
-                          theme={getThemeForPrice(game.ticket_price)}
-                          status={game.status}
-                        />
+                          className={
+                            selectedPriceFilter === "all"
+                              ? "snap-start shrink-0 w-[82%] sm:w-[60%] md:w-auto md:shrink"
+                              : "contents"
+                          }
+                        >
+                          <LotteryCard
+                            id={game.id}
+                            title={game.title}
+                            description={game.description}
+                            gameDate={game.game_date}
+                            ticketImageUrl={game.ticket_image_url}
+                            ticketPrice={game.ticket_price}
+                            totalTickets={game.total_tickets}
+                            availableTickets={game.available_tickets}
+                            organizingGroup={game.organising_group_name}
+                            onViewDetails={handleViewDetails}
+                            theme={getThemeForPrice(game.ticket_price)}
+                            status={game.status}
+                          />
+                        </div>
                       ))}
                     </div>
                   </section>
