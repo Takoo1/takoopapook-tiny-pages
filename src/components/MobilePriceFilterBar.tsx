@@ -44,11 +44,14 @@ export function MobilePriceFilterBar({
   selectedPriceFilter,
   onPriceFilterChange,
   targetRef,
+  blockSelector,
 }: MobilePriceFilterBarProps) {
   const [scrollHidden, setScrollHidden] = useState(false);
   const [inView, setInView] = useState(false);
+  const [blocked, setBlocked] = useState(false);
   const lastY = useRef(0);
   const idleTimer = useRef<number | null>(null);
+
 
   useEffect(() => {
     lastY.current = window.scrollY;
