@@ -43,6 +43,7 @@ export default function Home() {
   const [referralCode, setReferralCode] = useState<string | null>(null);
   const [referrerName, setReferrerName] = useState<string | null>(null);
   const [showReferralBanner, setShowReferralBanner] = useState(false);
+  const gamesSectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     fetchLotteryGames();
