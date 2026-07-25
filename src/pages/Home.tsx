@@ -447,7 +447,9 @@ export default function Home() {
           <MobilePriceFilterBar
             selectedPriceFilter={selectedPriceFilter}
             onPriceFilterChange={setSelectedPriceFilter}
+            targetRef={gamesSectionRef}
           />
+
           
           {lotteryGames.length === 0 ? (
             <div className="home-empty mx-auto max-w-md text-center py-14 px-6 mt-4 animate-fade-in-up">
