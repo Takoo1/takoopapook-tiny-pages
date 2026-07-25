@@ -447,18 +447,37 @@ export default function Videos() {
 
   if (loading) {
     return (
-      <div className="h-screen flex items-center justify-center pb-20">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="min-h-screen px-4 pt-5 pb-32">
+        <div className="mb-5 animate-fade-in">
+          <div className="h-6 w-40 bg-muted rounded-lg animate-pulse mb-2" />
+          <div className="h-3 w-56 bg-muted rounded-lg animate-pulse" />
+        </div>
+        <div className="grid grid-cols-2 gap-3 max-w-md mx-auto">
+          {[0,1,2,3,4,5].map((i) => (
+            <div key={i} className="space-y-2">
+              <div className="aspect-[3/4] rounded-2xl bg-muted animate-pulse" />
+              <div className="h-3 w-4/5 mx-auto rounded bg-muted animate-pulse" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
 
   if (videos.length === 0) {
     return (
-      <div className="h-screen flex items-center justify-center pb-20">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold mb-2">No Videos Available</h2>
-          <p className="text-muted-foreground">Check back later for new content!</p>
+      <div className="min-h-[70vh] flex items-center justify-center px-6 pb-24">
+        <div className="text-center max-w-sm">
+          <div className="mx-auto w-20 h-20 rounded-3xl bg-gradient-to-br from-primary/20 to-accent/10 border border-primary/25 flex items-center justify-center mb-5 shadow-[0_10px_30px_-10px_hsl(var(--primary)/0.5)]">
+            <Video className="w-10 h-10 text-primary" />
+          </div>
+          <h2 className="text-xl font-bold mb-2">No Videos Yet</h2>
+          <p className="text-sm text-muted-foreground mb-5">
+            Check back soon for premium draw highlights and updates from Fortune Bridge.
+          </p>
+          <Button onClick={() => window.location.assign('/')} className="rounded-2xl h-12 px-6">
+            Browse Lotteries
+          </Button>
         </div>
       </div>
     );
@@ -583,92 +602,100 @@ export default function Videos() {
   }
 
   // Mobile Video Grid View
+  const categories: { id: typeof selectedCategory; label: string }[] = [
+    { id: 'all', label: 'All' },
+    { id: 'from_fortune_bridge', label: 'Fortune Bridge' },
+    { id: 'about_games', label: 'Lottery Games' },
+  ];
+
   return (
-    <div className="min-h-screen pb-32 px-4 pt-4">
-      {/* Video Grid - Simple 2-column layout */}
-      <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
+    <div className="min-h-screen pb-32 px-4 pt-5">
+      {/* Page Header */}
+      <div className="mb-4 animate-fade-in">
+        <h1 className="text-2xl font-bold tracking-tight">Videos</h1>
+        <p className="text-sm text-muted-foreground mt-1">Draw highlights, previews and updates</p>
+      </div>
+
+      {/* Video Grid - Premium 2-column layout */}
+      <div className="grid grid-cols-2 gap-3 max-w-md mx-auto">
         {filteredVideos.map((video, index) => (
-          <div key={video.id} className="space-y-2">
-            <div
-              className="relative aspect-[3/4] rounded-lg overflow-hidden cursor-pointer group"
-              onClick={() => handleThumbnailClick(video)}
-            >
-              {/* Thumbnail Image */}
+          <button
+            key={video.id}
+            onClick={() => handleThumbnailClick(video)}
+            className="group text-left animate-fade-in active:scale-[0.98] transition-transform"
+            style={{ animationDelay: `${Math.min(index * 40, 320)}ms` }}
+          >
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden border border-border/60 bg-card shadow-[0_6px_20px_-10px_hsl(var(--primary)/0.35)]">
+              {/* Thumbnail */}
               <img
                 src={video.preview_image_url || video.thumbnail_url || '/placeholder.svg'}
                 alt={video.title}
-                className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                loading="lazy"
+                onLoad={(e) => e.currentTarget.classList.add('opacity-100')}
+                className="w-full h-full object-cover opacity-0 transition-opacity duration-500 group-hover:scale-[1.03]"
               />
-              
-              {/* Serial Number Overlay */}
-              <div className="absolute top-2 left-2 bg-black/70 text-white text-xl font-bold rounded-full w-8 h-8 flex items-center justify-center">
+
+              {/* Gradient veil for legibility */}
+              <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+
+              {/* Serial pill */}
+              <div className="absolute top-2 left-2 h-6 min-w-6 px-1.5 rounded-full bg-black/60 backdrop-blur-sm border border-white/10 text-white text-[11px] font-bold flex items-center justify-center">
                 {index + 1}
               </div>
-              
-              {/* Play Button Overlay */}
-              <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity">
-                <div className="bg-white/90 rounded-full p-3">
-                  <Play className="h-8 w-8 text-black fill-black ml-1" />
+
+              {/* Play button */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-primary/95 border border-primary-foreground/20 shadow-[0_8px_24px_-6px_hsl(var(--primary)/0.7)] flex items-center justify-center transition-transform group-active:scale-90">
+                  <Play className="h-5 w-5 text-primary-foreground fill-primary-foreground ml-0.5" />
                 </div>
               </div>
+
+              {/* Title overlay */}
+              <div className="absolute inset-x-0 bottom-0 p-2.5">
+                <h3 className="text-white text-[12px] font-semibold leading-snug line-clamp-2 drop-shadow">
+                  {video.title}
+                </h3>
+                {video.description && (
+                  <p className="text-white/70 text-[10px] line-clamp-1 mt-0.5">{video.description}</p>
+                )}
+              </div>
             </div>
-            
-            {/* Title Below Image */}
-            <h3 className="text-foreground text-sm font-medium line-clamp-2 text-center px-1">
-              {video.title}
-            </h3>
-          </div>
+          </button>
         ))}
       </div>
 
-      {/* No Videos Message */}
+      {/* Empty in category */}
       {filteredVideos.length === 0 && (
-        <div className="text-center py-12">
-          <Video className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-          <h3 className="text-lg font-semibold mb-2">No videos in this category</h3>
-          <p className="text-muted-foreground">Try selecting a different category</p>
+        <div className="text-center py-16">
+          <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/10 border border-primary/25 flex items-center justify-center mb-4">
+            <Video className="h-7 w-7 text-primary" />
+          </div>
+          <h3 className="text-base font-semibold mb-1">Nothing here yet</h3>
+          <p className="text-xs text-muted-foreground">Try selecting a different category</p>
         </div>
       )}
 
-      {/* Category Filter Buttons - Fixed at bottom above nav */}
-      <div className="fixed bottom-[3.75rem] left-0 right-0 z-30 bg-background/80 backdrop-blur-sm">
-        <div className="flex justify-center gap-2 py-2 px-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setSelectedCategory('all')}
-            className={`rounded-md text-xs px-3 py-2 h-8 border ${
-              selectedCategory === 'all' 
-                ? 'bg-primary text-primary-foreground border-primary' 
-                : 'border-border bg-background/70'
-            }`}
-          >
-            All Videos
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setSelectedCategory('from_fortune_bridge')}
-            className={`rounded-md text-xs px-3 py-2 h-8 border ${
-              selectedCategory === 'from_fortune_bridge' 
-                ? 'bg-primary text-primary-foreground border-primary' 
-                : 'border-border bg-background/70'
-            }`}
-          >
-            From Fortune Bridge
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setSelectedCategory('about_games')}
-            className={`rounded-md text-xs px-3 py-2 h-8 border ${
-              selectedCategory === 'about_games' 
-                ? 'bg-primary text-primary-foreground border-primary' 
-                : 'border-border bg-background/70'
-            }`}
-          >
-            Lottery Games
-          </Button>
+      {/* Category Filter Bar - premium noir pills */}
+      <div className="fixed bottom-[3.75rem] left-0 right-0 z-30">
+        <div className="mx-3 mb-2 rounded-2xl border border-primary/25 bg-card/90 backdrop-blur-xl shadow-[0_10px_30px_-10px_hsl(var(--primary)/0.5)] px-2 py-2">
+          <div className="flex justify-center gap-1.5">
+            {categories.map((c) => {
+              const active = selectedCategory === c.id;
+              return (
+                <button
+                  key={c.id}
+                  onClick={() => setSelectedCategory(c.id)}
+                  className={`flex-1 h-9 rounded-xl text-[12px] font-semibold transition-all active:scale-[0.97] ${
+                    active
+                      ? 'bg-gradient-to-r from-primary to-primary-glow text-primary-foreground shadow-[0_4px_16px_-4px_hsl(var(--primary)/0.6)]'
+                      : 'bg-muted/40 text-muted-foreground hover:bg-muted/60'
+                  }`}
+                >
+                  {c.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
