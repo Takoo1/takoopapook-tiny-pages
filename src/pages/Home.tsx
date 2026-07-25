@@ -387,7 +387,7 @@ export default function Home() {
           <div className="text-center mb-6 md:mb-10 animate-fade-in-up">
             <div className="home-eyebrow mb-2">Featured Draws</div>
             <h2 className="home-section-title text-3xl md:text-4xl">Choose Your Fortune</h2>
-            <div className="w-12 h-[3px] mt-3 mx-auto rounded-full" style={{ background: 'linear-gradient(90deg, hsl(var(--em-gold)), hsl(var(--em-gold-soft)))' }} />
+            <div className="w-12 h-[3px] mt-3 mx-auto rounded-full" style={{ background: 'linear-gradient(90deg, hsl(var(--noir-gold)), hsl(var(--noir-gold-soft)))' }} />
           </div>
 
           {/* Desktop Search and Filters */}
