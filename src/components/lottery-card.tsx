@@ -1,6 +1,8 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "lucide-react";
+import { Calendar, Ticket, Radio, Clock, Hourglass, XCircle, Ban, Trophy, ArrowRight } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface LotteryCardProps {
   id: string;
@@ -15,164 +17,154 @@ interface LotteryCardProps {
   onViewDetails: (id: string) => void;
   theme?: 'tier-100' | 'tier-500' | 'tier-1000' | 'tier-other' | 'default';
   status?: 'online' | 'booking_stopped' | 'live';
+  prizeAmount?: number | string;
 }
 
-export function LotteryCard({ 
-  id, 
-  title, 
-  description, 
-  gameDate, 
-  ticketImageUrl, 
-  ticketPrice, 
-  totalTickets, 
-  availableTickets, 
-  organizingGroup,
+type StatusKey = 'live' | 'closing_soon' | 'coming_soon' | 'sold_out' | 'booking_closed' | 'winner_declared';
+
+function resolveStatus(status: LotteryCardProps['status'], availableTickets: number, totalTickets: number, gameDate: string): StatusKey {
+  if (status === 'live') return 'live';
+  if (status === 'booking_stopped') return 'booking_closed';
+  if (availableTickets === 0 && totalTickets > 0) return 'sold_out';
+  const now = Date.now();
+  const draw = new Date(gameDate).getTime();
+  const diffH = (draw - now) / 36e5;
+  if (!isNaN(diffH)) {
+    if (diffH < 0) return 'winner_declared';
+    if (diffH <= 24) return 'closing_soon';
+    if (diffH > 24 * 7) return 'coming_soon';
+  }
+  return 'live';
+}
+
+const STATUS_META: Record<StatusKey, { label: string; icon: any; className: string }> = {
+  live: { label: 'Live', icon: Radio, className: 'bg-red-500/15 text-red-500 ring-1 ring-red-500/30' },
+  closing_soon: { label: 'Closing Soon', icon: Hourglass, className: 'bg-amber-500/15 text-amber-500 ring-1 ring-amber-500/30' },
+  coming_soon: { label: 'Coming Soon', icon: Clock, className: 'bg-sky-500/15 text-sky-500 ring-1 ring-sky-500/30' },
+  sold_out: { label: 'Sold Out', icon: XCircle, className: 'bg-muted text-muted-foreground ring-1 ring-border' },
+  booking_closed: { label: 'Booking Closed', icon: Ban, className: 'bg-orange-500/15 text-orange-500 ring-1 ring-orange-500/30' },
+  winner_declared: { label: 'Winner Declared', icon: Trophy, className: 'bg-emerald-500/15 text-emerald-500 ring-1 ring-emerald-500/30' },
+};
+
+function tierAccent(theme: LotteryCardProps['theme']) {
+  switch (theme) {
+    case 'tier-100': return { chip: 'bg-red-500 text-white', ring: 'ring-red-500/20', dot: 'bg-red-500' };
+    case 'tier-500': return { chip: 'bg-blue-500 text-white', ring: 'ring-blue-500/20', dot: 'bg-blue-500' };
+    case 'tier-1000': return { chip: 'bg-purple-500 text-white', ring: 'ring-purple-500/20', dot: 'bg-purple-500' };
+    case 'tier-other': return { chip: 'bg-emerald-500 text-white', ring: 'ring-emerald-500/20', dot: 'bg-emerald-500' };
+    default: return { chip: 'bg-lottery-gold text-black', ring: 'ring-lottery-gold/20', dot: 'bg-lottery-gold' };
+  }
+}
+
+export function LotteryCard({
+  id,
+  title,
+  gameDate,
+  ticketImageUrl,
+  ticketPrice,
+  totalTickets,
+  availableTickets,
   onViewDetails,
   theme = 'default',
-  status
+  status,
+  prizeAmount,
 }: LotteryCardProps) {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
+  const [imgLoaded, setImgLoaded] = useState(false);
+  const statusKey = resolveStatus(status, availableTickets, totalTickets, gameDate);
+  const StatusIcon = STATUS_META[statusKey].icon;
+  const accent = tierAccent(theme);
 
-  const getThemeClasses = () => {
-    switch (theme) {
-      case 'tier-100':
-        return {
-          card: 'bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950/20 dark:to-red-900/20 border-red-200 dark:border-red-800/50 hover:border-red-400 dark:hover:border-red-600 shadow-red-100/50 dark:shadow-red-900/20',
-          price: 'text-red-600 dark:text-red-400',
-          progress: 'from-red-500 to-red-400',
-          title: 'group-hover:text-red-600 dark:group-hover:text-red-400'
-        };
-      case 'tier-500':
-        return {
-          card: 'bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/20 dark:to-blue-900/20 border-blue-200 dark:border-blue-800/50 hover:border-blue-400 dark:hover:border-blue-600 shadow-blue-100/50 dark:shadow-blue-900/20',
-          price: 'text-blue-600 dark:text-blue-400',
-          progress: 'from-blue-500 to-blue-400',
-          title: 'group-hover:text-blue-600 dark:group-hover:text-blue-400'
-        };
-      case 'tier-1000':
-        return {
-          card: 'bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950/20 dark:to-purple-900/20 border-purple-200 dark:border-purple-800/50 hover:border-purple-400 dark:hover:border-purple-600 shadow-purple-100/50 dark:shadow-purple-900/20',
-          price: 'text-purple-600 dark:text-purple-400',
-          progress: 'from-purple-500 to-purple-400',
-          title: 'group-hover:text-purple-600 dark:group-hover:text-purple-400'
-        };
-      case 'tier-other':
-        return {
-          card: 'bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950/20 dark:to-green-900/20 border-green-200 dark:border-green-800/50 hover:border-green-400 dark:hover:border-green-600 shadow-green-100/50 dark:shadow-green-900/20',
-          price: 'text-green-600 dark:text-green-400',
-          progress: 'from-green-500 to-green-400',
-          title: 'group-hover:text-green-600 dark:group-hover:text-green-400'
-        };
-      default:
-        return {
-          card: 'bg-gradient-to-br from-card to-card/80 border-border/50 hover:border-primary/30 shadow-[var(--shadow-lottery)]',
-          price: 'text-lottery-gold',
-          progress: 'from-lottery-gold to-lottery-gold-light',
-          title: 'group-hover:text-lottery-gold'
-        };
-    }
-  };
+  const drawDate = new Date(gameDate).toLocaleDateString('en-US', {
+    month: 'short', day: 'numeric', year: 'numeric'
+  });
 
-  const themeClasses = getThemeClasses();
+  const unavailable = statusKey === 'sold_out' || statusKey === 'booking_closed' || statusKey === 'winner_declared';
 
   return (
     <Card
-      className={`relative overflow-hidden transition-all duration-500 group cursor-pointer md:hover:scale-[1.03] active:scale-[0.98] animate-slide-up rounded-2xl border-2 backdrop-blur-sm ${themeClasses.card} hover:shadow-[var(--shadow-elevated)]`}
       onClick={() => onViewDetails(id)}
+      className={`group relative overflow-hidden cursor-pointer rounded-[20px] border border-border/60 bg-card p-5 flex flex-col gap-4 transition-all duration-300 ease-out shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_24px_-12px_rgba(0,0,0,0.15)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.06),0_20px_40px_-16px_rgba(0,0,0,0.25)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] animate-fade-in ring-1 ${accent.ring}`}
     >
-      {/* Shine sweep on hover */}
-      <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/15 to-transparent opacity-0 group-hover:opacity-100 group-hover:translate-x-full transition-all duration-1000 ease-out" />
+      {/* Ticket image — edge-to-edge with rounded corners */}
+      {ticketImageUrl ? (
+        <div className="relative -mx-1 aspect-[16/9] overflow-hidden rounded-2xl bg-muted">
+          {!imgLoaded && <Skeleton className="absolute inset-0 rounded-2xl" />}
+          <img
+            src={ticketImageUrl}
+            alt={`${title} ticket`}
+            loading="lazy"
+            onLoad={() => setImgLoaded(true)}
+            className={`w-full h-full object-cover transition-all duration-500 ${imgLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'} md:group-hover:scale-[1.03]`}
+          />
+          {/* subtle top gradient for badge legibility */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-black/25 to-transparent" />
+          {/* Status pill (top-left) */}
+          <div className="absolute top-3 left-3">
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold backdrop-blur-md bg-background/80 ${STATUS_META[statusKey].className}`}>
+              <StatusIcon className="w-3 h-3" strokeWidth={2.5} />
+              {STATUS_META[statusKey].label}
+            </span>
+          </div>
+          {/* Price chip (top-right) */}
+          <div className="absolute top-3 right-3">
+            <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold shadow-md ${accent.chip}`}>
+              <Ticket className="w-3 h-3" strokeWidth={2.5} />
+              ₹{ticketPrice}
+            </span>
+          </div>
+        </div>
+      ) : (
+        <div className="relative -mx-1 aspect-[16/9] overflow-hidden rounded-2xl bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center">
+          <Ticket className="w-10 h-10 text-muted-foreground/40" />
+        </div>
+      )}
 
-      {/* Game Name Header with Details Button */}
-      <div className="relative p-2.5 md:p-3 pb-0 flex items-center justify-between gap-2">
-        <h3 className="text-sm md:text-base font-bold truncate flex-1 text-gold-shimmer drop-shadow-sm">
+      {/* Content */}
+      <div className="flex flex-col gap-3">
+        {/* Title */}
+        <h3 className="text-lg font-bold leading-tight tracking-tight text-foreground line-clamp-2">
           {title}
         </h3>
+
+        {/* Prize (if provided) */}
+        {prizeAmount != null && (
+          <div className="flex items-baseline gap-2">
+            <span className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">Prize</span>
+            <span className="text-xl font-extrabold text-gold-shimmer leading-none">
+              {typeof prizeAmount === 'number' ? `₹${prizeAmount.toLocaleString('en-IN')}` : prizeAmount}
+            </span>
+          </div>
+        )}
+
+        {/* Metadata row */}
+        <div className="flex items-center justify-between gap-3 text-sm">
+          <div className="flex items-center gap-1.5 text-muted-foreground min-w-0">
+            <Calendar className="w-3.5 h-3.5 shrink-0" strokeWidth={2.25} />
+            <span className="truncate font-medium">{drawDate}</span>
+          </div>
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className={`w-1.5 h-1.5 rounded-full ${accent.dot}`} />
+            <span className="truncate text-xs font-medium text-muted-foreground">
+              {unavailable
+                ? 'Not Available'
+                : `${availableTickets}/${totalTickets} left`}
+            </span>
+          </div>
+        </div>
+
+        {/* CTA */}
         <Button
           size="sm"
-          variant="outline"
-          className={`px-2.5 md:px-3 py-0 md:py-0.5 text-xs font-semibold min-w-[44px] shrink-0 transition-all duration-300 rounded-full backdrop-blur-sm shadow-sm hover:shadow-md hover:scale-105 ${
-            theme === 'tier-100' ? 'border-red-300 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-950/30' :
-            theme === 'tier-500' ? 'border-blue-300 text-blue-600 hover:bg-blue-50 dark:border-blue-700 dark:text-blue-400 dark:hover:bg-blue-950/30' :
-            theme === 'tier-1000' ? 'border-purple-300 text-purple-600 hover:bg-purple-50 dark:border-purple-700 dark:text-purple-400 dark:hover:bg-purple-950/30' :
-            theme === 'tier-other' ? 'border-green-300 text-green-600 hover:bg-green-50 dark:border-green-700 dark:text-green-400 dark:hover:bg-green-950/30' :
-            'border-lottery-gold/50 text-lottery-gold hover:bg-lottery-gold/10'
-          }`}
+          className="w-full h-11 rounded-2xl font-semibold text-sm mt-1 group/btn"
           onClick={(e) => {
             e.stopPropagation();
             onViewDetails(id);
           }}
         >
-          Details →
+          View Details
+          <ArrowRight className="w-4 h-4 ml-1 transition-transform duration-300 group-hover/btn:translate-x-0.5" strokeWidth={2.5} />
         </Button>
       </div>
-
-      {/* Ticket Image - 16:9 Aspect Ratio */}
-      {ticketImageUrl && (
-        <div className="aspect-video overflow-hidden bg-muted relative mx-2 md:mx-3 rounded-md">
-          <img 
-            src={ticketImageUrl} 
-            alt={`${title} ticket`}
-            className="w-full h-full object-cover md:group-hover:scale-105 transition-transform duration-300 rounded-md"
-          />
-          {/* Status Badge */}
-          {status === 'booking_stopped' && (
-            <div className="absolute top-2 right-2 bg-orange-500 text-white px-2 py-1 rounded-md text-xs font-semibold shadow-lg">
-              Booking Stopped
-            </div>
-          )}
-          {status === 'live' && (
-            <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs font-semibold shadow-lg animate-pulse">
-              Live
-            </div>
-          )}
-        </div>
-      )}
-      
-      <CardContent className="p-2 md:p-4">
-        {/* Single row with game date, price, and availability */}
-        <div className="flex items-center justify-between gap-1 md:gap-2 text-xs md:text-sm">
-          {/* Game Date */}
-          <div className="flex items-center gap-1 text-muted-foreground min-w-0">
-            <Calendar className="w-3 md:w-4 h-3 md:h-4 flex-shrink-0" />
-            <span className="truncate">
-              {new Date(gameDate).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric'
-              })}
-            </span>
-          </div>
-          
-          {/* Price with background */}
-          <div className={`px-1.5 md:px-3 py-0.5 md:py-1 rounded-full font-bold text-white flex-shrink-0 text-xs md:text-sm ${
-            theme === 'tier-100' ? 'bg-red-500' :
-            theme === 'tier-500' ? 'bg-blue-500' :
-            theme === 'tier-1000' ? 'bg-purple-500' :
-            theme === 'tier-other' ? 'bg-green-500' :
-            'bg-lottery-gold'
-          }`}>
-            ₹{ticketPrice}
-          </div>
-          
-          {/* Available tickets */}
-          <div className="text-muted-foreground text-right min-w-0">
-            <span className="truncate">
-              {status === 'booking_stopped' || status === 'live' 
-                ? 'Tickets Not Available'
-                : `${availableTickets}/${totalTickets} available`
-              }
-            </span>
-          </div>
-        </div>
-      </CardContent>
     </Card>
   );
 }
