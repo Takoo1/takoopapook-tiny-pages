@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, Copy, Plus, Gift, Users, Wallet as WalletIcon, Sparkles, Check, Share2, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Copy, Gift, Wallet as WalletIcon, Sparkles, Check, Share2, ShieldCheck, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
