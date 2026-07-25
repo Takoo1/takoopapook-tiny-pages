@@ -126,7 +126,7 @@ export function MobilePriceFilterBar({
     <div
       aria-hidden={hidden}
       className={cn(
-        "md:hidden fixed left-0 right-0 z-40 pointer-events-none",
+        "md:hidden fixed left-0 right-0 z-50 pointer-events-none",
         "transition-all duration-300 ease-out",
         hidden ? "translate-y-[120%] opacity-0" : "translate-y-0 opacity-100"
       )}
