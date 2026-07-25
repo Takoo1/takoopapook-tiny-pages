@@ -383,7 +383,7 @@ export default function Home() {
         <div className="relative z-10"><ImageCarousel /></div>
       </div>
 
-      <section id="games" className="relative py-8 md:py-20 px-3 md:px-6 home-band scroll-mt-16 md:scroll-mt-0 overflow-hidden">
+      <section ref={gamesSectionRef} id="games" className="relative py-8 md:py-20 px-3 md:px-6 home-band scroll-mt-16 md:scroll-mt-0 overflow-hidden">
         <div className="relative z-10 max-w-6xl mx-auto">
           <div className="text-center mb-6 md:mb-10 animate-fade-in-up">
             <div className="home-eyebrow mb-2">Featured Draws</div>
