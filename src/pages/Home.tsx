@@ -448,7 +448,9 @@ export default function Home() {
             selectedPriceFilter={selectedPriceFilter}
             onPriceFilterChange={setSelectedPriceFilter}
             targetRef={gamesSectionRef}
+            blockSelector="[data-block-filter-bar='true']"
           />
+
 
           
           {lotteryGames.length === 0 ? (

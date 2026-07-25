@@ -5,7 +5,9 @@ interface MobilePriceFilterBarProps {
   selectedPriceFilter: string;
   onPriceFilterChange: (filter: string) => void;
   targetRef?: RefObject<HTMLElement>;
+  blockSelector?: string;
 }
+
 
 const FILTERS = [
   {
@@ -42,11 +44,14 @@ export function MobilePriceFilterBar({
   selectedPriceFilter,
   onPriceFilterChange,
   targetRef,
+  blockSelector,
 }: MobilePriceFilterBarProps) {
   const [scrollHidden, setScrollHidden] = useState(false);
   const [inView, setInView] = useState(false);
+  const [blocked, setBlocked] = useState(false);
   const lastY = useRef(0);
   const idleTimer = useRef<number | null>(null);
+
 
   useEffect(() => {
     lastY.current = window.scrollY;
@@ -94,7 +99,29 @@ export function MobilePriceFilterBar({
     };
   }, [targetRef]);
 
-  const hidden = scrollHidden || !inView;
+  // Block completely when any element matching blockSelector is in the viewport.
+  useEffect(() => {
+    if (!blockSelector) return;
+    const evaluate = () => {
+      const els = Array.from(document.querySelectorAll(blockSelector)) as HTMLElement[];
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      const anyVisible = els.some((el) => {
+        const r = el.getBoundingClientRect();
+        return r.bottom > 0 && r.top < vh;
+      });
+      setBlocked(anyVisible);
+    };
+    evaluate();
+    window.addEventListener("scroll", evaluate, { passive: true });
+    window.addEventListener("resize", evaluate);
+    return () => {
+      window.removeEventListener("scroll", evaluate);
+      window.removeEventListener("resize", evaluate);
+    };
+  }, [blockSelector]);
+
+
+  const hidden = scrollHidden || !inView || blocked;
 
   const scrollToId = (id: string) => {
     requestAnimationFrame(() => {
