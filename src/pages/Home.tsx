@@ -304,11 +304,11 @@ export default function Home() {
   }
 
   return (
-    <div className="home-emerald min-h-screen relative font-['Manrope']">
+    <div className="home-noir min-h-screen relative font-['Manrope']">
       {/* Ambient gold spot */}
       <div aria-hidden className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-        <div className="absolute -top-24 -right-24 w-[420px] h-[420px] rounded-full blur-3xl opacity-[0.18]" style={{ background: 'radial-gradient(circle, hsl(var(--em-gold)/0.6), transparent 60%)' }} />
-        <div className="absolute bottom-0 -left-32 w-[380px] h-[380px] rounded-full blur-3xl opacity-[0.12]" style={{ background: 'radial-gradient(circle, hsl(var(--em-mid)/0.9), transparent 60%)' }} />
+        <div className="absolute -top-24 -right-24 w-[420px] h-[420px] rounded-full blur-3xl opacity-[0.18]" style={{ background: 'radial-gradient(circle, hsl(var(--noir-gold)/0.6), transparent 60%)' }} />
+        <div className="absolute bottom-0 -left-32 w-[380px] h-[380px] rounded-full blur-3xl opacity-[0.12]" style={{ background: 'radial-gradient(circle, hsl(var(--noir-mid)/0.9), transparent 60%)' }} />
       </div>
       <div className="relative z-10">
       {showReferralBanner && (
