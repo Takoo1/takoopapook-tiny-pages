@@ -481,8 +481,8 @@ export default function Home() {
                     id={`price-section-${price}`}
                     className="relative rounded-[24px] p-4 md:p-8 overflow-hidden scroll-mt-[72px] md:scroll-mt-20 animate-fade-in-up"
                     style={{
-                      background: 'linear-gradient(180deg, hsl(var(--em-mid)/0.28), hsl(var(--em-deep)/0.6))',
-                      border: '1px solid hsl(var(--em-gold)/0.18)',
+                      background: 'linear-gradient(180deg, hsl(var(--noir-mid)/0.28), hsl(var(--noir-deep)/0.6))',
+                      border: '1px solid hsl(var(--noir-gold)/0.18)',
                       boxShadow: '0 10px 32px -18px hsl(0 0% 0% / 0.55)'
                     }}
                   >
