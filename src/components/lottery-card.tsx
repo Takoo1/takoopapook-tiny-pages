@@ -83,7 +83,7 @@ export function LotteryCard({
   return (
     <Card
       onClick={() => onViewDetails(id)}
-      className={`group relative overflow-hidden cursor-pointer rounded-[20px] border border-border/60 bg-card p-5 flex flex-col gap-4 transition-all duration-300 ease-out shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_24px_-12px_rgba(0,0,0,0.15)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.06),0_20px_40px_-16px_rgba(0,0,0,0.25)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] animate-fade-in ring-1 ${accent.ring}`}
+      className={`group relative overflow-hidden cursor-pointer rounded-[20px] border border-border/60 bg-card p-5 flex flex-col gap-4 transition-all duration-300 ease-out shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_24px_-12px_rgba(0,0,0,0.15)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.06),0_20px_40px_-16px_rgba(0,0,0,0.25)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] animate-fade-in`}
     >
       {/* Ticket image — edge-to-edge with rounded corners */}
       {ticketImageUrl ? (
