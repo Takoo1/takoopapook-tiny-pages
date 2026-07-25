@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, Copy, Plus, Gift, Users } from "lucide-react";
+import { ArrowLeft, Copy, Gift, Wallet as WalletIcon, Sparkles, Check, Share2, ShieldCheck, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import type { User as SupabaseUser } from '@supabase/supabase-js';
+
 const fcCoin = "https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/FC%20coin.png";
 
 export default function Wallet() {
@@ -16,39 +18,38 @@ export default function Wallet() {
   const [referralCode, setReferralCode] = useState<string>("");
   const [customAmount, setCustomAmount] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
+  const [purchasingId, setPurchasingId] = useState<number | null>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
   const fcPackages = [
-    { amount: 100, price: 33, popular: false },
-    { amount: 300, price: 100, popular: true },
-    { amount: 500, price: 167, popular: false },
-    { amount: 1000, price: 333, popular: false }
+    { amount: 100, price: 33, popular: false, label: "Starter" },
+    { amount: 300, price: 100, popular: true, label: "Popular" },
+    { amount: 500, price: 167, popular: false, label: "Value" },
+    { amount: 1000, price: 333, popular: false, label: "Elite" }
   ];
 
   useEffect(() => {
-    // Check auth and load data
     const loadData = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) {
         navigate('/');
         return;
       }
-      
       setUser(session.user);
       await Promise.all([
         loadFcBalance(session.user.id),
         loadReferralCode(session.user.id)
       ]);
+      setInitialLoading(false);
     };
 
     loadData();
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!session?.user) {
-        navigate('/');
-      }
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session?.user) navigate('/');
     });
 
     return () => subscription.unsubscribe();
@@ -61,10 +62,7 @@ export default function Wallet() {
         .select('balance')
         .eq('user_id', userId)
         .single();
-
-      if (!error && data) {
-        setFcBalance(data.balance);
-      }
+      if (!error && data) setFcBalance(data.balance);
     } catch (error) {
       console.error('Error loading FC balance:', error);
     }
@@ -77,10 +75,7 @@ export default function Wallet() {
         .select('referral_code')
         .eq('user_id', userId)
         .single();
-
-      if (!error && data?.referral_code) {
-        setReferralCode(data.referral_code);
-      }
+      if (!error && data?.referral_code) setReferralCode(data.referral_code);
     } catch (error) {
       console.error('Error loading referral code:', error);
     }
@@ -89,29 +84,28 @@ export default function Wallet() {
   const copyReferralLink = () => {
     const referralLink = `${window.location.origin}?ref=${referralCode}`;
     navigator.clipboard.writeText(referralLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1800);
     toast({
       title: "Referral link copied!",
-      description: "Share this link to earn 100 FC for each friend who signs up and makes their first purchase.",
+      description: "Share and earn 100 FC for each friend's first purchase.",
     });
   };
 
   const handleFcPurchase = async (amount: number) => {
     if (!user) return;
-    
     setLoading(true);
+    setPurchasingId(amount);
     try {
       const { data, error } = await supabase.rpc('purchase_fc', {
         amount_fc: amount,
         payment_details: { method: 'demo', package: amount }
       });
-
       if (error) throw error;
-
       toast({
         title: "FC Purchase Successful!",
-        description: `You purchased ${amount} FC. Your new balance is ${data[0]?.new_balance || 0} FC.`,
+        description: `You purchased ${amount} FC. New balance: ${data[0]?.new_balance || 0} FC.`,
       });
-
       await loadFcBalance(user.id);
     } catch (error) {
       console.error('Error purchasing FC:', error);
@@ -122,6 +116,7 @@ export default function Wallet() {
       });
     } finally {
       setLoading(false);
+      setPurchasingId(null);
     }
   };
 
@@ -135,169 +130,282 @@ export default function Wallet() {
       });
       return;
     }
-
     await handleFcPurchase(amount);
     setCustomAmount("");
   };
 
+  const equivalentValue = Math.round((fcBalance / 3) * 100) / 100;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted p-3 md:p-4">
-      <div className="max-w-4xl mx-auto space-y-4 md:space-y-6">
+    <div className="min-h-screen relative font-['Manrope']">
+      {/* Ambient gold spot (matches Home) */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div
+          className="absolute -top-24 -right-24 w-[420px] h-[420px] rounded-full blur-3xl opacity-[0.18]"
+          style={{ background: 'radial-gradient(circle, hsl(var(--noir-gold)/0.6), transparent 60%)' }}
+        />
+        <div
+          className="absolute top-[40%] -left-24 w-[360px] h-[360px] rounded-full blur-3xl opacity-[0.10]"
+          style={{ background: 'radial-gradient(circle, hsl(var(--noir-gold)/0.5), transparent 60%)' }}
+        />
+      </div>
+
+      <div className="relative z-10 max-w-4xl mx-auto px-4 md:px-6 pt-4 pb-24 space-y-6">
         {/* Header */}
-        <div className="flex items-center gap-3 md:gap-4 mb-4 md:mb-6">
+        <div className="flex items-center gap-3 animate-fade-in-up">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => navigate(-1)}
-            className="h-9 w-9 md:h-10 md:w-10"
+            className="h-10 w-10 rounded-full"
           >
-            <ArrowLeft className="h-4 w-4 md:h-5 md:w-5" />
+            <ArrowLeft className="h-5 w-5" />
           </Button>
-          <div>
-            <h1 className="text-lg md:text-2xl font-bold text-foreground">My Wallet</h1>
-            <p className="text-xs md:text-sm text-muted-foreground">Manage your Fortune Coins (FC)</p>
+          <div className="flex-1 min-w-0">
+            <div className="home-eyebrow">Fortune Wallet</div>
+            <h1 className="home-section-title text-2xl md:text-3xl leading-tight">My Wallet</h1>
           </div>
         </div>
 
-        {/* Current Balance */}
-        <Card className="bg-gradient-to-br from-primary/10 to-accent/10 border-primary/20">
-          <CardContent className="p-4 md:p-6">
-            <div className="flex items-center justify-center gap-3 md:gap-4">
-              <img src={fcCoin} alt="FC" className="w-10 h-10 md:w-12 md:h-12" />
-              <div className="text-center">
-                <div className="text-xl md:text-3xl font-bold text-primary">
-                  {fcBalance.toLocaleString()}
+        {/* Balance Summary Card */}
+        {initialLoading ? (
+          <Skeleton className="h-40 rounded-[24px]" />
+        ) : (
+          <section
+            className="relative rounded-[24px] p-5 md:p-7 overflow-hidden animate-fade-in-up"
+            style={{
+              background: 'linear-gradient(180deg, hsl(var(--noir-mid)/0.55), hsl(var(--noir-deep)/0.75))',
+              border: '1px solid hsl(var(--noir-gold)/0.28)',
+              boxShadow: '0 12px 36px -18px hsl(0 0% 0% / 0.65)'
+            }}
+          >
+            <div
+              className="absolute -top-16 -right-10 w-52 h-52 rounded-full blur-3xl opacity-30"
+              style={{ background: 'radial-gradient(circle, hsl(var(--noir-gold)/0.55), transparent 60%)' }}
+            />
+            <div className="relative flex items-center gap-4">
+              <div
+                className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
+                style={{
+                  background: 'hsl(var(--noir-charcoal))',
+                  border: '1px solid hsl(var(--noir-gold)/0.35)',
+                  boxShadow: '0 8px 20px -8px hsl(var(--noir-gold)/0.35)'
+                }}
+              >
+                <img src={fcCoin} alt="FC" className="w-11 h-11" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="home-eyebrow mb-1 flex items-center gap-1.5">
+                  <WalletIcon className="w-3 h-3" style={{ color: 'hsl(var(--noir-gold))' }} />
+                  Current Balance
                 </div>
-                <div className="text-xs md:text-sm text-muted-foreground">Fortune Coins (FC)</div>
+                <div
+                  className="text-3xl md:text-4xl font-extrabold tracking-tight"
+                  style={{ color: 'hsl(var(--noir-gold))' }}
+                >
+                  {fcBalance.toLocaleString()}
+                  <span className="text-base md:text-lg font-semibold ml-1.5" style={{ color: 'hsl(var(--noir-cream)/0.7)' }}>
+                    FC
+                  </span>
+                </div>
+                <div className="text-xs mt-1" style={{ color: 'hsl(var(--noir-cream)/0.65)' }}>
+                  ≈ ₹{equivalentValue.toLocaleString()} discount value
+                </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Purchase FC Packages */}
-        <Card>
-          <CardHeader className="p-4 md:p-6">
-            <CardTitle className="flex items-center gap-2 text-sm md:text-lg font-bold">
-              <Plus className="h-4 w-4 md:h-5 md:w-5" />
-              Purchase FC Packages
-            </CardTitle>
-            <CardDescription className="text-xs md:text-sm">
-              Get Fortune Coins to participate in lotteries. 3 FC = ₹1 discount when buying tickets.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="p-3 md:p-6 pt-0">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6 mt-6">
+            <div className="mt-5 pt-4 flex items-start gap-2 text-xs" style={{ borderTop: '1px solid hsl(var(--noir-cream)/0.08)', color: 'hsl(var(--noir-cream)/0.75)' }}>
+              <Sparkles className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" style={{ color: 'hsl(var(--noir-gold))' }} />
+              <span>3 FC = ₹1 discount when purchasing tickets. Redeem instantly at checkout.</span>
+            </div>
+          </section>
+        )}
+
+        {/* Purchase Packages */}
+        <section
+          className="relative rounded-[24px] p-4 md:p-7 overflow-hidden animate-fade-in-up"
+          style={{
+            background: 'linear-gradient(180deg, hsl(var(--noir-mid)/0.28), hsl(var(--noir-deep)/0.6))',
+            border: '1px solid hsl(var(--noir-gold)/0.18)',
+            boxShadow: '0 10px 32px -18px hsl(0 0% 0% / 0.55)'
+          }}
+        >
+          <div className="flex items-center justify-between mb-5">
+            <div className="min-w-0">
+              <div className="home-eyebrow">Top Up</div>
+              <h2 className="home-section-title text-xl md:text-2xl">Purchase Packages</h2>
+            </div>
+            <span className="home-tier-pill flex-shrink-0">
+              <span className="dot" />
+              FC Store
+            </span>
+          </div>
+
+          {initialLoading ? (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              {[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-40 rounded-[18px]" />)}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
               {fcPackages.map((pkg) => (
-                <Card 
-                  key={pkg.amount} 
-                  className={`relative transition-all hover:shadow-md ${pkg.popular ? 'border-primary shadow-lg bg-gradient-to-br from-primary/5 to-primary/10' : 'hover:border-primary/20'}`}
+                <div
+                  key={pkg.amount}
+                  className="relative rounded-[18px] p-4 flex flex-col items-center text-center transition-transform active:scale-[0.98]"
+                  style={{
+                    background: pkg.popular
+                      ? 'linear-gradient(180deg, hsl(var(--noir-gold)/0.10), hsl(var(--noir-mid)/0.55))'
+                      : 'hsl(var(--noir-charcoal)/0.55)',
+                    border: pkg.popular
+                      ? '1px solid hsl(var(--noir-gold)/0.55)'
+                      : '1px solid hsl(var(--noir-gold)/0.15)',
+                    boxShadow: pkg.popular
+                      ? '0 10px 28px -12px hsl(var(--noir-gold)/0.35)'
+                      : '0 6px 18px -12px hsl(0 0% 0% / 0.5)'
+                  }}
                 >
                   {pkg.popular && (
-                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10 px-1">
-                      <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-medium shadow-sm whitespace-nowrap">
-                        Most Popular
-                      </span>
-                    </div>
-                  )}
-                  <CardContent className="p-3 md:p-4 text-center">
-                    <div className="text-lg md:text-2xl font-bold text-primary mb-1 md:mb-2">
-                      {pkg.amount} FC
-                    </div>
-                    <div className="text-base md:text-xl font-semibold mb-3 md:mb-4">
-                      ₹{pkg.price}
-                    </div>
-                    <Button 
-                      onClick={() => handleFcPurchase(pkg.amount)}
-                      disabled={loading}
-                      className="w-full h-8 md:h-10 text-[10px] md:text-sm"
-                      variant={pkg.popular ? "default" : "outline"}
+                    <span
+                      className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide whitespace-nowrap"
+                      style={{
+                        background: 'linear-gradient(180deg, hsl(var(--noir-gold-soft)), hsl(var(--noir-gold)))',
+                        color: 'hsl(var(--noir-deep))'
+                      }}
                     >
-                      {loading ? "Processing..." : "Purchase"}
-                    </Button>
-                  </CardContent>
-                </Card>
+                      BEST VALUE
+                    </span>
+                  )}
+                  <div className="text-[10px] uppercase tracking-[0.14em] font-semibold mb-2" style={{ color: 'hsl(var(--noir-cream)/0.65)' }}>
+                    {pkg.label}
+                  </div>
+                  <img src={fcCoin} alt="FC" className="w-8 h-8 mb-2" />
+                  <div className="text-lg md:text-xl font-extrabold" style={{ color: 'hsl(var(--noir-gold))' }}>
+                    {pkg.amount} FC
+                  </div>
+                  <div className="text-sm md:text-base font-semibold mt-0.5 mb-3" style={{ color: 'hsl(var(--noir-cream))' }}>
+                    ₹{pkg.price}
+                  </div>
+                  <button
+                    onClick={() => handleFcPurchase(pkg.amount)}
+                    disabled={loading}
+                    className="home-gold-btn w-full text-xs disabled:opacity-60"
+                  >
+                    {purchasingId === pkg.amount ? "Processing..." : "Purchase"}
+                  </button>
+                </div>
               ))}
             </div>
+          )}
 
-            {/* Custom Amount */}
-            <div className="border-t pt-3 md:pt-4">
-              <Label htmlFor="custom-amount" className="text-xs md:text-sm font-medium">
-                Or purchase a custom amount:
+          {/* Custom Amount */}
+          <div className="mt-6 pt-5" style={{ borderTop: '1px solid hsl(var(--noir-cream)/0.08)' }}>
+            <Label htmlFor="custom-amount" className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'hsl(var(--noir-cream)/0.75)' }}>
+              Custom Amount
+            </Label>
+            <div className="flex gap-2 mt-2">
+              <Input
+                id="custom-amount"
+                type="number"
+                placeholder="Enter FC amount"
+                value={customAmount}
+                onChange={(e) => setCustomAmount(e.target.value)}
+                min="1"
+                className="text-sm"
+              />
+              <button
+                onClick={handleCustomPurchase}
+                disabled={loading || !customAmount}
+                className="home-gold-btn text-xs whitespace-nowrap disabled:opacity-60"
+              >
+                {loading && !purchasingId ? "..." : "Purchase"}
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* Referral Section */}
+        <section
+          id="referral-section"
+          className="relative rounded-[24px] p-4 md:p-7 overflow-hidden animate-fade-in-up scroll-mt-[72px]"
+          style={{
+            background: 'linear-gradient(180deg, hsl(var(--noir-mid)/0.28), hsl(var(--noir-deep)/0.6))',
+            border: '1px solid hsl(var(--noir-gold)/0.18)',
+            boxShadow: '0 10px 32px -18px hsl(0 0% 0% / 0.55)'
+          }}
+        >
+          <div className="flex items-center justify-between mb-5">
+            <div className="min-w-0">
+              <div className="home-eyebrow">Earn Together</div>
+              <h2 className="home-section-title text-xl md:text-2xl">Referral Program</h2>
+            </div>
+            <span className="home-tier-pill flex-shrink-0">
+              <span className="dot" />
+              +100 FC
+            </span>
+          </div>
+
+          {initialLoading ? (
+            <Skeleton className="h-32 rounded-[18px]" />
+          ) : (
+            <>
+              <Label htmlFor="referral-link" className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'hsl(var(--noir-cream)/0.75)' }}>
+                Your Referral Link
               </Label>
               <div className="flex gap-2 mt-2">
                 <Input
-                  id="custom-amount"
-                  type="number"
-                  placeholder="Enter FC amount"
-                  value={customAmount}
-                  onChange={(e) => setCustomAmount(e.target.value)}
-                  min="1"
-                  className="text-sm"
+                  id="referral-link"
+                  value={`${window.location.origin}?ref=${referralCode}`}
+                  readOnly
+                  className="text-xs md:text-sm"
                 />
-                <Button 
-                  onClick={handleCustomPurchase}
-                  disabled={loading || !customAmount}
-                  className="h-9 md:h-10 text-xs md:text-sm"
+                <button
+                  onClick={copyReferralLink}
+                  className="home-gold-btn flex items-center gap-1.5 text-xs whitespace-nowrap"
+                  aria-label="Copy referral link"
                 >
-                  Purchase
-                </Button>
+                  {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                  {copied ? "Copied" : "Copy"}
+                </button>
               </div>
-            </div>
-          </CardContent>
-        </Card>
 
-        {/* Referral System */}
-        <Card id="referral-section">
-          <CardHeader className="p-4 md:p-6">
-            <CardTitle className="flex items-center gap-2 text-sm md:text-lg font-bold">
-              <Users className="h-4 w-4 md:h-5 md:w-5" />
-              Referral Program
-            </CardTitle>
-            <CardDescription className="text-xs md:text-sm">
-              Earn 100 FC for each friend who signs up and makes their first purchase.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="p-3 md:p-6 pt-0">
-            <div className="space-y-3 md:space-y-4">
-              <div>
-                <Label htmlFor="referral-link" className="text-xs md:text-sm font-medium">
-                  Your Referral Link:
-                </Label>
-                <div className="flex gap-2 mt-2">
-                  <Input
-                    id="referral-link"
-                    value={`${window.location.origin}?ref=${referralCode}`}
-                    readOnly
-                    className="bg-muted text-xs md:text-sm"
-                  />
-                  <Button
-                    onClick={copyReferralLink}
-                    variant="outline"
-                    size="icon"
-                    className="h-9 w-9 md:h-10 md:w-10"
+              {/* How it works rows */}
+              <div className="mt-5 space-y-2.5">
+                {[
+                  { icon: Share2, title: "Share your link", desc: "Send it to friends across any app." },
+                  { icon: UserPlus, title: "They sign up", desc: "New user joins using your link." },
+                  { icon: Gift, title: "You earn 100 FC", desc: "Credited on their first purchase." },
+                  { icon: ShieldCheck, title: "No limits", desc: "Refer as many friends as you like." },
+                ].map(({ icon: Icon, title, desc }) => (
+                  <div
+                    key={title}
+                    className="flex items-center gap-3 p-3 rounded-[14px]"
+                    style={{
+                      background: 'hsl(var(--noir-charcoal)/0.45)',
+                      border: '1px solid hsl(var(--noir-gold)/0.12)'
+                    }}
                   >
-                    <Copy className="h-3 w-3 md:h-4 md:w-4" />
-                  </Button>
-                </div>
-              </div>
-              
-              <div className="bg-primary/10 p-3 md:p-4 rounded-lg">
-                <div className="flex items-start gap-2 md:gap-3">
-                  <Gift className="h-4 w-4 md:h-5 md:w-5 text-primary mt-0.5 flex-shrink-0" />
-                  <div>
-                    <div className="font-medium text-primary text-xs md:text-sm">How it works:</div>
-                    <ul className="text-[10px] md:text-xs text-muted-foreground mt-1 space-y-0.5 md:space-y-1">
-                      <li>• Share your referral link with friends</li>
-                      <li>• They sign up using your link</li>
-                      <li>• When they make their first purchase, you earn 100 FC</li>
-                      <li>• No limit on referrals!</li>
-                    </ul>
+                    <div
+                      className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+                      style={{
+                        background: 'hsl(var(--noir-mid))',
+                        border: '1px solid hsl(var(--noir-gold)/0.3)'
+                      }}
+                    >
+                      <Icon className="w-4 h-4" style={{ color: 'hsl(var(--noir-gold))' }} />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-sm font-semibold leading-tight" style={{ color: 'hsl(var(--noir-cream))' }}>
+                        {title}
+                      </div>
+                      <div className="text-xs mt-0.5" style={{ color: 'hsl(var(--noir-cream)/0.65)' }}>
+                        {desc}
+                      </div>
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </>
+          )}
+        </section>
       </div>
     </div>
   );
