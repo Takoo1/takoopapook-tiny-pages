@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { HelpCircle, MessageCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import {
   Accordion,
@@ -47,75 +47,71 @@ export const FAQSection: React.FC = () => {
 
   if (loading) {
     return (
-      <section className="py-12 md:py-16 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
-            <div className="h-8 bg-muted rounded-lg animate-pulse mb-4"></div>
-            <div className="h-4 bg-muted rounded-lg animate-pulse max-w-md mx-auto"></div>
-          </div>
-          <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-16 bg-muted rounded-lg animate-pulse"></div>
-            ))}
-          </div>
+      <section className="py-10 px-4">
+        <div className="max-w-2xl mx-auto space-y-3">
+          <div className="h-6 w-48 mx-auto bg-muted rounded-lg animate-pulse" />
+          <div className="h-3 w-64 mx-auto bg-muted rounded-lg animate-pulse mb-4" />
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="h-16 rounded-2xl bg-muted animate-pulse" />
+          ))}
         </div>
       </section>
     );
   }
 
-  if (faqs.length === 0) {
-    return null;
-  }
+  if (faqs.length === 0) return null;
 
   return (
-    <section className="py-12 md:py-16 px-4 bg-gradient-to-br from-muted/30 to-background">
-      <div className="max-w-4xl mx-auto">
+    <section className="py-10 px-4">
+      <div className="max-w-2xl mx-auto">
         {/* Section Header */}
-        <div className="text-center mb-8 md:mb-12">
-          <h2 className="text-2xl md:text-4xl font-bold text-black dark:text-white mb-3 md:mb-4">
-            Questions You May Ask
+        <div className="text-center mb-6 animate-fade-in">
+          <div className="mx-auto w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/10 border border-primary/25 flex items-center justify-center mb-3">
+            <HelpCircle className="w-5 h-5 text-primary" />
+          </div>
+          <h2 className="text-xl md:text-2xl font-bold tracking-tight">
+            <span className="text-gold-shimmer">Questions You May Ask</span>
           </h2>
-          <p className="text-muted-foreground text-sm md:text-lg max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-xs md:text-sm mt-2">
             Find answers to common questions about our lottery games and services
           </p>
         </div>
 
-        {/* FAQ Accordion */}
-        <div className="bg-card/50 backdrop-blur-sm rounded-2xl border border-border/50 overflow-hidden shadow-lg">
-          <Accordion type="single" collapsible className="w-full">
-            {faqs.map((faq, index) => (
-              <AccordionItem 
-                key={faq.id} 
-                value={faq.id}
-                className={`border-b border-border/30 last:border-b-0 ${
-                  index % 2 === 0 ? 'bg-background/30' : 'bg-muted/20'
-                }`}
-              >
-                <AccordionTrigger className="px-4 md:px-6 py-3 md:py-5 text-left hover:no-underline group">
-                  <div className="w-full">
-                    <h3 className="text-sm md:text-lg font-semibold text-foreground group-hover:text-primary transition-colors duration-200 text-left pr-4">
-                      {faq.question}
-                    </h3>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="px-4 md:px-6 pb-4 md:pb-6">
-                  <div className="pr-4">
-                    <div className="text-muted-foreground leading-relaxed whitespace-pre-line text-xs md:text-base">
-                      {faq.answer}
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
+        {/* Accordion */}
+        <Accordion type="single" collapsible className="w-full space-y-2.5">
+          {faqs.map((faq, index) => (
+            <AccordionItem
+              key={faq.id}
+              value={faq.id}
+              className="border border-border/60 bg-card rounded-2xl overflow-hidden shadow-[0_4px_16px_-10px_hsl(var(--primary)/0.3)] data-[state=open]:border-primary/40 data-[state=open]:shadow-[0_10px_30px_-15px_hsl(var(--primary)/0.5)] transition-all animate-fade-in"
+              style={{ animationDelay: `${Math.min(index * 40, 320)}ms` }}
+            >
+              <AccordionTrigger className="px-4 py-4 text-left hover:no-underline group [&[data-state=open]]:pb-3">
+                <div className="flex items-start gap-3 w-full">
+                  <span className="flex-shrink-0 w-7 h-7 rounded-lg bg-gradient-to-br from-primary/20 to-accent/10 border border-primary/25 flex items-center justify-center text-primary font-bold text-[11px]">
+                    {index + 1}
+                  </span>
+                  <h3 className="text-sm md:text-base font-semibold leading-snug text-foreground group-hover:text-primary transition-colors pr-2">
+                    {faq.question}
+                  </h3>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="px-4 pb-4">
+                <div className="ml-10 text-muted-foreground leading-relaxed whitespace-pre-line text-xs md:text-sm">
+                  {faq.answer}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
 
-        {/* Bottom CTA */}
-        <div className="text-center mt-6 md:mt-8 p-4 md:p-6 bg-primary/5 rounded-xl border border-primary/10">
-          <p className="text-muted-foreground mb-2 text-xs md:text-base">
-            Still have questions?
-          </p>
-          <p className="text-xs md:text-sm text-primary font-medium">
+        {/* Bottom card */}
+        <div className="mt-6 rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/10 to-transparent p-4 text-center animate-fade-in">
+          <div className="inline-flex items-center gap-2 text-primary">
+            <MessageCircle className="w-4 h-4" />
+            <span className="text-xs font-semibold uppercase tracking-wider">Still have questions?</span>
+          </div>
+          <p className="text-[11px] text-muted-foreground mt-1.5">
             Contact our support team for personalized assistance
           </p>
         </div>

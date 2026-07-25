@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronUp } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { ChevronDown, FileText, Mail, Home as HomeIcon, Calendar } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Link } from "react-router-dom";
 
 interface PolicyTerm {
   id: string;
@@ -28,10 +28,8 @@ export default function PolicyPageTemplate({ policyType, title, description }: P
 
   useEffect(() => {
     fetchPolicyContent();
-    
-    // Update document meta tags
+
     document.title = `${title} | Fortune Bridge`;
-    
     let metaDescription = document.querySelector('meta[name="description"]');
     if (!metaDescription) {
       metaDescription = document.createElement('meta');
@@ -39,8 +37,7 @@ export default function PolicyPageTemplate({ policyType, title, description }: P
       document.head.appendChild(metaDescription);
     }
     metaDescription.setAttribute('content', description || `Fortune Bridge ${title} - Professional lottery platform with secure payments and transparent policies.`);
-    
-    // Add canonical link
+
     let canonical = document.querySelector('link[rel="canonical"]');
     if (!canonical) {
       canonical = document.createElement('link');
@@ -61,12 +58,8 @@ export default function PolicyPageTemplate({ policyType, title, description }: P
         .order('section_order');
 
       if (error) throw error;
-      
       setTerms(data || []);
-      // Open first section by default
-      if (data && data.length > 0) {
-        setOpenSections([data[0].id]);
-      }
+      if (data && data.length > 0) setOpenSections([data[0].id]);
     } catch (error) {
       console.error('Error fetching policy content:', error);
       toast.error('Failed to load policy content');
@@ -76,20 +69,16 @@ export default function PolicyPageTemplate({ policyType, title, description }: P
   };
 
   const toggleSection = (sectionId: string) => {
-    setOpenSections(prev => 
-      prev.includes(sectionId) 
-        ? prev.filter(id => id !== sectionId)
-        : [...prev, sectionId]
+    setOpenSections(prev =>
+      prev.includes(sectionId) ? prev.filter(id => id !== sectionId) : [...prev, sectionId]
     );
   };
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(`section-${sectionId}`);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-      if (!openSections.includes(sectionId)) {
-        toggleSection(sectionId);
-      }
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (!openSections.includes(sectionId)) toggleSection(sectionId);
     }
   };
 
@@ -97,149 +86,134 @@ export default function PolicyPageTemplate({ policyType, title, description }: P
     if (!terms.length) return '';
     const lastUpdated = Math.max(...terms.map(term => new Date(term.updated_at).getTime()));
     return new Date(lastUpdated).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+      year: 'numeric', month: 'long', day: 'numeric',
     });
   };
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <div className="space-y-6">
-          <Skeleton className="h-12 w-3/4" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-2/3" />
-          {[...Array(5)].map((_, i) => (
-            <Card key={i} className="w-full">
-              <CardHeader>
-                <Skeleton className="h-6 w-1/2" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-20 w-full" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+      <div className="px-4 py-5 pb-8 max-w-2xl mx-auto space-y-4">
+        <div className="h-8 w-2/3 bg-muted rounded-lg animate-pulse" />
+        <div className="h-3 w-full bg-muted rounded-lg animate-pulse" />
+        <div className="h-3 w-1/2 bg-muted rounded-lg animate-pulse" />
+        {[0,1,2,3,4].map(i => (
+          <div key={i} className="h-20 rounded-2xl bg-muted animate-pulse" />
+        ))}
       </div>
     );
   }
 
   if (!terms.length) {
     return (
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <div className="text-center py-12">
-          <h1 className="text-3xl font-bold mb-4">{title}</h1>
-          <p className="text-muted-foreground">No content available at this time.</p>
+      <div className="px-4 py-16 text-center max-w-lg mx-auto">
+        <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/10 border border-primary/25 flex items-center justify-center mb-4">
+          <FileText className="w-8 h-8 text-primary" />
         </div>
+        <h1 className="text-xl font-bold mb-2">{title}</h1>
+        <p className="text-sm text-muted-foreground">No content available at this time.</p>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      {/* Header */}
-      <header className="text-center mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold mb-4">{title}</h1>
+    <div className="px-4 py-5 pb-10 max-w-2xl mx-auto space-y-5">
+      {/* Page Header */}
+      <header className="animate-fade-in">
+        <div className="flex items-center gap-2 text-[11px] text-muted-foreground mb-2">
+          <Calendar className="w-3 h-3" /> Last updated: {getLastUpdated()}
+        </div>
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+          <span className="text-gold-shimmer">{title}</span>
+        </h1>
         {description && (
-          <p className="text-muted-foreground text-lg mb-4">{description}</p>
+          <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{description}</p>
         )}
-        <p className="text-sm text-muted-foreground">
-          Last updated: {getLastUpdated()}
-        </p>
       </header>
 
       {/* Quick Navigation */}
       {terms.length > 3 && (
-        <Card className="mb-8 bg-muted/20">
-          <CardHeader>
-            <CardTitle className="text-lg">Quick Navigation</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {terms.map((term) => (
-                <button
-                  key={term.id}
-                  onClick={() => scrollToSection(term.id)}
-                  className="text-left p-2 rounded hover:bg-muted/40 transition-colors text-sm text-primary hover:underline"
-                >
-                  {term.section_order}. {term.section_name}
-                </button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        <section className="animate-fade-in">
+          <h2 className="px-1 mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Quick Navigation
+          </h2>
+          <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-[0_4px_20px_-12px_hsl(var(--primary)/0.25)]">
+            {terms.map((term, i) => (
+              <button
+                key={term.id}
+                onClick={() => scrollToSection(term.id)}
+                className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors active:bg-muted/60 ${
+                  i < terms.length - 1 ? 'border-b border-border/60' : ''
+                }`}
+              >
+                <span className="flex-shrink-0 w-7 h-7 rounded-lg bg-gradient-to-br from-primary/20 to-accent/10 border border-primary/25 flex items-center justify-center text-primary font-bold text-[11px]">
+                  {term.section_order}
+                </span>
+                <span className="text-sm font-medium truncate flex-1">{term.section_name}</span>
+                <ChevronDown className="w-4 h-4 text-muted-foreground -rotate-90" />
+              </button>
+            ))}
+          </div>
+        </section>
       )}
 
-      {/* Policy Content */}
-      <div className="space-y-4">
-        {terms.map((term, index) => (
-          <Card 
-            key={term.id} 
-            id={`section-${term.id}`}
-            className="overflow-hidden transition-all duration-200 hover:shadow-md"
-          >
-            <Collapsible 
-              open={openSections.includes(term.id)}
-              onOpenChange={() => toggleSection(term.id)}
+      {/* Sections */}
+      <div className="space-y-3">
+        {terms.map((term, index) => {
+          const isOpen = openSections.includes(term.id);
+          return (
+            <section
+              key={term.id}
+              id={`section-${term.id}`}
+              className="rounded-2xl border border-border bg-card overflow-hidden shadow-[0_4px_20px_-12px_hsl(var(--primary)/0.25)] animate-fade-in transition-all data-[open=true]:border-primary/40"
+              data-open={isOpen}
+              style={{ animationDelay: `${Math.min(index * 30, 240)}ms` }}
             >
-              <CollapsibleTrigger className="w-full">
-                <CardHeader className="hover:bg-muted/20 transition-colors cursor-pointer">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-left flex items-center gap-3">
-                      <span className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm">
-                        {term.section_order}
-                      </span>
-                      <span className="text-lg">{term.section_name}</span>
-                    </CardTitle>
-                    {openSections.includes(term.id) ? (
-                      <ChevronUp className="h-5 w-5 text-muted-foreground" />
-                    ) : (
-                      <ChevronDown className="h-5 w-5 text-muted-foreground" />
-                    )}
+              <Collapsible open={isOpen} onOpenChange={() => toggleSection(term.id)}>
+                <CollapsibleTrigger className="w-full text-left">
+                  <div className="flex items-center gap-3 px-4 py-4 hover:bg-muted/40 transition-colors">
+                    <span className="flex-shrink-0 w-8 h-8 rounded-xl bg-gradient-to-br from-primary/20 to-accent/10 border border-primary/25 flex items-center justify-center text-primary font-bold text-xs">
+                      {term.section_order}
+                    </span>
+                    <h3 className="flex-1 text-sm md:text-base font-semibold leading-snug">{term.section_name}</h3>
+                    <ChevronDown className={`w-4 h-4 text-muted-foreground shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                   </div>
-                </CardHeader>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <CardContent className="pt-0">
-                  <div className="ml-11 text-muted-foreground leading-relaxed whitespace-pre-line">
-                    {term.content}
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="px-4 pb-5">
+                    <div className="ml-11 border-l border-primary/20 pl-4">
+                      <div className="whitespace-pre-wrap text-[13px] md:text-sm leading-[1.7] text-foreground/85">
+                        {term.content || 'Content for this section is currently being prepared.'}
+                      </div>
+                    </div>
                   </div>
-                </CardContent>
-              </CollapsibleContent>
-            </Collapsible>
-          </Card>
-        ))}
+                </CollapsibleContent>
+              </Collapsible>
+            </section>
+          );
+        })}
       </div>
 
-        {/* Footer */}
-        <footer className="mt-12 p-6 bg-muted/20 rounded-lg text-center">
-          <div className="mb-4">
-            <h3 className="font-semibold mb-2">Fortune Bridge Platform</h3>
-            <p className="text-sm text-muted-foreground mb-2">
-              Professional lottery platform providing secure and transparent gaming services.
-            </p>
-            <div className="text-xs text-muted-foreground space-y-1">
-              <p>Business Registration: Fortune Bridge Digital Services</p>
-              <p>Email: support@fortunebridge.online | Legal: legal@fortunebridge.online</p>
-              <p>Platform operated under applicable gaming regulations</p>
-            </div>
-          </div>
-          
-          <div className="border-t pt-4">
-            <p className="text-muted-foreground mb-2">
-              Questions about this policy?
-            </p>
-            <div className="space-y-1">
-              <p className="text-sm">
-                Contact us at: <a href="mailto:support@fortunebridge.online" className="text-primary hover:underline">support@fortunebridge.online</a>
-              </p>
-              <p className="text-sm">
-                Visit our <a href="/contact" className="text-primary hover:underline">Contact Page</a> or return to <a href="/" className="text-primary hover:underline">Home</a>
-              </p>
-            </div>
-          </div>
-        </footer>
-      </div>
+      {/* Footer */}
+      <footer className="rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/10 to-transparent p-5 text-center animate-fade-in">
+        <div className="inline-flex items-center gap-2 text-primary mb-2">
+          <Mail className="w-4 h-4" />
+          <span className="text-xs font-semibold uppercase tracking-wider">Questions?</span>
+        </div>
+        <p className="text-xs text-muted-foreground mb-3">
+          Contact us at{' '}
+          <a href="mailto:support@fortunebridge.online" className="text-primary underline">
+            support@fortunebridge.online
+          </a>
+        </p>
+        <div className="flex flex-col sm:flex-row gap-2 justify-center">
+          <Button variant="outline" asChild className="rounded-2xl h-10">
+            <Link to="/contact"><Mail className="w-4 h-4 mr-1.5" /> Contact Us</Link>
+          </Button>
+          <Button variant="outline" asChild className="rounded-2xl h-10">
+            <Link to="/"><HomeIcon className="w-4 h-4 mr-1.5" /> Return Home</Link>
+          </Button>
+        </div>
+      </footer>
+    </div>
   );
 }
