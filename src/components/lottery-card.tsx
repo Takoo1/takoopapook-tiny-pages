@@ -37,24 +37,14 @@ function resolveStatus(status: LotteryCardProps['status'], availableTickets: num
   return 'live';
 }
 
-const STATUS_META: Record<StatusKey, { label: string; icon: any; className: string }> = {
-  live: { label: 'Live', icon: Radio, className: 'bg-red-500/15 text-red-500 ring-1 ring-red-500/30' },
-  closing_soon: { label: 'Closing Soon', icon: Hourglass, className: 'bg-amber-500/15 text-amber-500 ring-1 ring-amber-500/30' },
-  coming_soon: { label: 'Coming Soon', icon: Clock, className: 'bg-sky-500/15 text-sky-500 ring-1 ring-sky-500/30' },
-  sold_out: { label: 'Sold Out', icon: XCircle, className: 'bg-muted text-muted-foreground ring-1 ring-border' },
-  booking_closed: { label: 'Booking Closed', icon: Ban, className: 'bg-orange-500/15 text-orange-500 ring-1 ring-orange-500/30' },
-  winner_declared: { label: 'Winner Declared', icon: Trophy, className: 'bg-emerald-500/15 text-emerald-500 ring-1 ring-emerald-500/30' },
+const STATUS_META: Record<StatusKey, { label: string; icon: any; dotClass: string; textClass: string }> = {
+  live: { label: 'Live', icon: Radio, dotClass: 'bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.8)] animate-pulse', textClass: 'text-white' },
+  closing_soon: { label: 'Closing Soon', icon: Hourglass, dotClass: 'bg-amber-400', textClass: 'text-amber-200' },
+  coming_soon: { label: 'Coming Soon', icon: Clock, dotClass: 'bg-sky-400', textClass: 'text-sky-200' },
+  sold_out: { label: 'Sold Out', icon: XCircle, dotClass: 'bg-muted-foreground', textClass: 'text-muted-foreground' },
+  booking_closed: { label: 'Booking Closed', icon: Ban, dotClass: 'bg-orange-400', textClass: 'text-orange-200' },
+  winner_declared: { label: 'Winner Declared', icon: Trophy, dotClass: 'bg-emerald-400', textClass: 'text-emerald-200' },
 };
-
-function tierAccent(theme: LotteryCardProps['theme']) {
-  switch (theme) {
-    case 'tier-100': return { chip: 'bg-red-500 text-white', ring: 'ring-red-500/20', dot: 'bg-red-500' };
-    case 'tier-500': return { chip: 'bg-blue-500 text-white', ring: 'ring-blue-500/20', dot: 'bg-blue-500' };
-    case 'tier-1000': return { chip: 'bg-purple-500 text-white', ring: 'ring-purple-500/20', dot: 'bg-purple-500' };
-    case 'tier-other': return { chip: 'bg-emerald-500 text-white', ring: 'ring-emerald-500/20', dot: 'bg-emerald-500' };
-    default: return { chip: 'bg-lottery-gold text-black', ring: 'ring-lottery-gold/20', dot: 'bg-lottery-gold' };
-  }
-}
 
 export function LotteryCard({
   id,
@@ -65,14 +55,11 @@ export function LotteryCard({
   totalTickets,
   availableTickets,
   onViewDetails,
-  theme = 'default',
   status,
-  prizeAmount,
 }: LotteryCardProps) {
   const [imgLoaded, setImgLoaded] = useState(false);
   const statusKey = resolveStatus(status, availableTickets, totalTickets, gameDate);
-  const StatusIcon = STATUS_META[statusKey].icon;
-  const accent = tierAccent(theme);
+  const statusMeta = STATUS_META[statusKey];
 
   const drawDate = new Date(gameDate).toLocaleDateString('en-US', {
     month: 'short', day: 'numeric', year: 'numeric'
@@ -83,86 +70,67 @@ export function LotteryCard({
   return (
     <Card
       onClick={() => onViewDetails(id)}
-      className={`group relative overflow-hidden cursor-pointer rounded-[20px] border border-border/60 bg-card p-5 flex flex-col gap-4 transition-all duration-300 ease-out shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_24px_-12px_rgba(0,0,0,0.15)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.06),0_20px_40px_-16px_rgba(0,0,0,0.25)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] animate-fade-in`}
+      className="group relative overflow-hidden cursor-pointer rounded-[20px] border border-border/50 bg-card flex flex-col transition-all duration-300 ease-out shadow-[0_1px_2px_rgba(0,0,0,0.06),0_6px_18px_-10px_rgba(0,0,0,0.35)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.08),0_16px_32px_-14px_rgba(0,0,0,0.45)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] animate-fade-in"
     >
-      {/* Ticket image — edge-to-edge with rounded corners */}
-      {ticketImageUrl ? (
-        <div className="relative -mx-1 aspect-[16/9] overflow-hidden rounded-2xl bg-muted">
-          {!imgLoaded && <Skeleton className="absolute inset-0 rounded-2xl" />}
-          <img
-            src={ticketImageUrl}
-            alt={`${title} ticket`}
-            loading="lazy"
-            onLoad={() => setImgLoaded(true)}
-            className={`w-full h-full object-cover transition-all duration-500 ${imgLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'} md:group-hover:scale-[1.03]`}
-          />
-          {/* subtle top gradient for badge legibility */}
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-black/25 to-transparent" />
-          {/* Status pill (top-left) */}
-          <div className="absolute top-3 left-3">
-            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold backdrop-blur-md bg-background/80 ${STATUS_META[statusKey].className}`}>
-              <StatusIcon className="w-3 h-3" strokeWidth={2.5} />
-              {STATUS_META[statusKey].label}
-            </span>
+      {/* Hero image — edge-to-edge, top-rounded */}
+      <div className="relative w-full aspect-[16/10] overflow-hidden rounded-t-[20px] bg-muted">
+        {ticketImageUrl ? (
+          <>
+            {!imgLoaded && <Skeleton className="absolute inset-0" />}
+            <img
+              src={ticketImageUrl}
+              alt={`${title} ticket`}
+              loading="lazy"
+              onLoad={() => setImgLoaded(true)}
+              className={`w-full h-full object-cover transition-all duration-500 ${imgLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'} md:group-hover:scale-[1.02]`}
+            />
+          </>
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted to-muted/50">
+            <Ticket className="w-10 h-10 text-muted-foreground/40" />
           </div>
-          {/* Price chip (top-right) */}
-          <div className="absolute top-3 right-3">
-            <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold shadow-md ${accent.chip}`}>
-              <Ticket className="w-3 h-3" strokeWidth={2.5} />
+        )}
+
+        {/* Single glass overlay bar: status (left) + price (right) */}
+        <div className="absolute top-2.5 left-2.5 right-2.5">
+          <div className="flex items-center justify-between gap-2 rounded-full pl-3 pr-1 py-1 bg-black/45 backdrop-blur-md ring-1 ring-white/10">
+            <div className={`flex items-center gap-1.5 text-[11px] font-semibold ${statusMeta.textClass}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${statusMeta.dotClass}`} />
+              {statusMeta.label}
+            </div>
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-lottery-gold text-black">
               ₹{ticketPrice}
             </span>
           </div>
         </div>
-      ) : (
-        <div className="relative -mx-1 aspect-[16/9] overflow-hidden rounded-2xl bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center">
-          <Ticket className="w-10 h-10 text-muted-foreground/40" />
-        </div>
-      )}
+      </div>
 
       {/* Content */}
-      <div className="flex flex-col gap-3">
-        {/* Title */}
-        <h3 className="text-lg font-bold leading-tight tracking-tight text-foreground line-clamp-2">
+      <div className="flex flex-col gap-2 p-4 pt-3">
+        <h3 className="text-[17px] font-bold leading-snug tracking-tight text-foreground line-clamp-2">
           {title}
         </h3>
 
-        {/* Prize (if provided) */}
-        {prizeAmount != null && (
-          <div className="flex items-baseline gap-2">
-            <span className="text-[11px] uppercase tracking-wider font-semibold text-muted-foreground">Prize</span>
-            <span className="text-xl font-extrabold text-gold-shimmer leading-none">
-              {typeof prizeAmount === 'number' ? `₹${prizeAmount.toLocaleString('en-IN')}` : prizeAmount}
-            </span>
-          </div>
-        )}
-
-        {/* Metadata row */}
-        <div className="flex items-center justify-between gap-3 text-sm">
-          <div className="flex items-center gap-1.5 text-muted-foreground min-w-0">
-            <Calendar className="w-3.5 h-3.5 shrink-0" strokeWidth={2.25} />
-            <span className="truncate font-medium">{drawDate}</span>
-          </div>
+        <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
           <div className="flex items-center gap-1.5 min-w-0">
-            <span className={`w-1.5 h-1.5 rounded-full ${accent.dot}`} />
-            <span className="truncate text-xs font-medium text-muted-foreground">
-              {unavailable
-                ? 'Not Available'
-                : `${availableTickets}/${totalTickets} left`}
-            </span>
+            <Calendar className="w-3.5 h-3.5 shrink-0" strokeWidth={2.25} />
+            <span className="truncate">{drawDate}</span>
           </div>
+          <span className="truncate">
+            {unavailable ? 'Not Available' : `${availableTickets}/${totalTickets} left`}
+          </span>
         </div>
 
-        {/* CTA */}
         <Button
           size="sm"
-          className="w-full h-11 rounded-2xl font-semibold text-sm mt-1 group/btn"
+          className="self-center mt-2 h-8 px-4 rounded-full font-semibold text-xs shadow-none group/btn"
           onClick={(e) => {
             e.stopPropagation();
             onViewDetails(id);
           }}
         >
           View Details
-          <ArrowRight className="w-4 h-4 ml-1 transition-transform duration-300 group-hover/btn:translate-x-0.5" strokeWidth={2.5} />
+          <ArrowRight className="w-3.5 h-3.5 ml-1 transition-transform duration-300 group-hover/btn:translate-x-0.5" strokeWidth={2.5} />
         </Button>
       </div>
     </Card>
