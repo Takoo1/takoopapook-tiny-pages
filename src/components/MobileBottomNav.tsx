@@ -70,47 +70,58 @@ export function MobileBottomNav() {
 
   return (
     <>
-      <div className="fixed bottom-0 left-0 right-0 z-50 glass border-t border-border/40 shadow-[0_-6px_30px_-6px_hsl(var(--primary)/0.18)]">
-        {/* top sheen */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+      <nav
+        aria-label="Primary"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-background/85 backdrop-blur-xl border-t border-border/50 shadow-[0_-4px_20px_-8px_hsl(var(--foreground)/0.12)]"
+      >
         <div className="pb-safe">
-          <div className="flex items-center justify-around px-1 py-1.5">
-            {navItems.map((item, index) => {
+          <div className="flex items-stretch justify-between px-2 pt-1.5 pb-1 max-w-md mx-auto">
+            {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path && item.path !== "/menu";
 
               return (
-                <Button
+                <button
                   key={item.id}
-                  variant="ghost"
-                  size="sm"
+                  type="button"
                   onClick={() => handleNavigation(item.path)}
                   data-menu-trigger={item.path === "/menu" ? "true" : undefined}
+                  aria-label={item.label}
+                  aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "relative flex flex-col items-center justify-center gap-0.5 h-14 w-16 px-1 py-1 rounded-2xl transition-all duration-300 active:scale-90 overflow-visible",
-                    "animate-fade-in-up",
-                    isActive
-                      ? "text-primary"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                    "group relative flex-1 flex flex-col items-center justify-center gap-1 py-1.5 min-h-[56px] rounded-2xl transition-all duration-200 active:scale-[0.94] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+                    isActive ? "text-primary" : "text-muted-foreground"
                   )}
-                  style={{ animationDelay: `${index * 0.05}s` }}
                 >
-                  {isActive && (
-                    <span className="absolute inset-1 rounded-2xl bg-gradient-to-br from-primary/20 via-primary/10 to-accent/15 ring-1 ring-primary/30 shadow-[0_4px_14px_-4px_hsl(var(--primary)/0.5)] animate-scale-in" />
-                  )}
-                  <Icon className={cn("relative h-5 w-5 transition-all duration-300", isActive && "scale-110 drop-shadow-[0_0_6px_hsl(var(--primary)/0.6)]")} />
-                  <span className={cn("relative text-[10px] font-medium leading-none tracking-tight transition-all duration-200", isActive && "font-bold text-[10.5px]")}>
+                  <span
+                    className={cn(
+                      "flex items-center justify-center h-8 w-14 rounded-full transition-all duration-300",
+                      isActive
+                        ? "bg-primary/12"
+                        : "bg-transparent group-hover:bg-muted/60"
+                    )}
+                  >
+                    <Icon
+                      className={cn(
+                        "h-[22px] w-[22px] transition-all duration-300",
+                        isActive ? "stroke-[2.4]" : "stroke-2"
+                      )}
+                    />
+                  </span>
+                  <span
+                    className={cn(
+                      "text-[11px] leading-none tracking-tight transition-all duration-200",
+                      isActive ? "font-semibold" : "font-medium"
+                    )}
+                  >
                     {item.label}
                   </span>
-                  {isActive && (
-                    <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-7 h-[3px] rounded-full bg-gradient-to-r from-primary via-primary-glow to-accent shadow-[0_0_8px_hsl(var(--primary)/0.7)] animate-scale-in" />
-                  )}
-                </Button>
+                </button>
               );
             })}
           </div>
         </div>
-      </div>
+      </nav>
 
       {/* Slide Menu */}
       <MobileSlideMenu

@@ -148,20 +148,50 @@
 
 @layer base {
   * { @apply border-border; }
+  html {
+    -webkit-tap-highlight-color: transparent;
+    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+  }
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', 'Roboto', 'Open Sans', 'Proxima Nova', system-ui, -apple-system, sans-serif;
+    font-feature-settings: 'cv02','cv03','cv04','cv11','ss01';
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.011em;
+    line-height: 1.55;
+    overscroll-behavior-y: none;
   }
+  /* Typographic hierarchy */
+  h1 { @apply text-3xl md:text-4xl font-bold tracking-tight leading-[1.15]; }
+  h2 { @apply text-2xl md:text-3xl font-bold tracking-tight leading-[1.2]; }
+  h3 { @apply text-xl md:text-2xl font-semibold tracking-tight leading-[1.25]; }
+  h4 { @apply text-lg font-semibold tracking-tight leading-snug; }
+  h5 { @apply text-base font-semibold tracking-tight; }
+  h6 { @apply text-sm font-semibold tracking-tight uppercase text-muted-foreground; }
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Roboto', 'Inter', 'Open Sans', system-ui, sans-serif;
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    font-family: 'Inter', 'Roboto', 'Open Sans', system-ui, sans-serif;
+  }
+  p { line-height: 1.6; }
+  small, .caption { @apply text-xs text-muted-foreground; }
+  label { @apply text-sm font-medium leading-none; }
+
+  /* Native-feel scroll on mobile */
+  html, body {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
   }
   .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
   .scrollbar-hide::-webkit-scrollbar { display: none; }
+
+  /* Subtle scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-thumb { background: hsl(var(--muted-foreground) / 0.25); border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.4); }
+
+  /* Auto-fade page transition */
+  main > * { animation: page-enter 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
 }
 
 @layer utilities {
@@ -270,3 +300,48 @@
 @keyframes shimmer-text { 0% { background-position: 0% center; } 100% { background-position: 200% center; } }
 @keyframes aurora-drift { 0% { transform: translate3d(0,0,0) scale(1); } 100% { transform: translate3d(2%,-2%,0) scale(1.05); } }
 @keyframes blob-float { 0%,100% { transform: translate(0,0) scale(1); } 33% { transform: translate(20px,-30px) scale(1.05); } 66% { transform: translate(-15px,20px) scale(0.95); } }
+@keyframes page-enter { 0% { opacity: 0; transform: translateY(6px); } 100% { opacity: 1; transform: translateY(0); } }
+@keyframes ripple { 0% { transform: scale(0); opacity: 0.4; } 100% { transform: scale(2.4); opacity: 0; } }
+
+@layer utilities {
+  /* Elevation scale — soft Material-inspired */
+  .elev-1 { box-shadow: 0 1px 2px hsl(var(--foreground) / 0.05), 0 1px 3px hsl(var(--foreground) / 0.08); }
+  .elev-2 { box-shadow: 0 2px 4px hsl(var(--foreground) / 0.04), 0 4px 12px -2px hsl(var(--foreground) / 0.1); }
+  .elev-3 { box-shadow: 0 4px 8px hsl(var(--foreground) / 0.05), 0 8px 24px -6px hsl(var(--foreground) / 0.14); }
+  .elev-4 { box-shadow: 0 8px 16px hsl(var(--foreground) / 0.06), 0 16px 40px -10px hsl(var(--foreground) / 0.18); }
+
+  /* Ripple-style interactive surface */
+  .press {
+    @apply transition-transform duration-150 active:scale-[0.97];
+  }
+  .ripple {
+    @apply relative overflow-hidden;
+  }
+  .ripple::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at var(--rx, 50%) var(--ry, 50%), hsl(var(--foreground) / 0.12) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+  }
+  .ripple:active::after { opacity: 1; transition: opacity 0s; }
+
+  /* Focus ring helper */
+  .focus-ring { @apply focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20 focus-visible:border-primary; }
+
+  /* Text scale utilities matching the 8-point system */
+  .text-display { @apply text-4xl md:text-5xl font-bold tracking-tight leading-[1.05]; }
+  .text-page-title { @apply text-2xl md:text-3xl font-bold tracking-tight; }
+  .text-section-title { @apply text-lg md:text-xl font-semibold tracking-tight; }
+  .text-card-title { @apply text-base font-semibold tracking-tight; }
+  .text-body { @apply text-sm leading-relaxed text-foreground; }
+  .text-caption { @apply text-xs text-muted-foreground; }
+  .text-label { @apply text-xs font-medium uppercase tracking-wider text-muted-foreground; }
+
+  /* Empty state block */
+  .empty-state {
+    @apply flex flex-col items-center justify-center text-center gap-4 p-8 rounded-[20px];
+  }
+}
