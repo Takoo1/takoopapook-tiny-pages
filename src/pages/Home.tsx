@@ -304,29 +304,28 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen relative bg-gradient-to-br from-background via-background to-muted/40">
-      {/* Global decorative backdrop layers */}
+    <div className="home-emerald min-h-screen relative font-['Manrope']">
+      {/* Ambient gold spot */}
       <div aria-hidden className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-        <div className="absolute inset-0 spot-gold opacity-70" />
-        <div className="absolute inset-0 pattern-dots opacity-[0.18]" />
-        <div className="absolute inset-0 pattern-noise opacity-[0.06] mix-blend-overlay" />
+        <div className="absolute -top-24 -right-24 w-[420px] h-[420px] rounded-full blur-3xl opacity-[0.18]" style={{ background: 'radial-gradient(circle, hsl(var(--em-gold)/0.6), transparent 60%)' }} />
+        <div className="absolute bottom-0 -left-32 w-[380px] h-[380px] rounded-full blur-3xl opacity-[0.12]" style={{ background: 'radial-gradient(circle, hsl(var(--em-mid)/0.9), transparent 60%)' }} />
       </div>
       <div className="relative z-10">
       {showReferralBanner && (
-        <div className="fixed top-16 left-0 right-0 z-50 bg-gradient-to-r from-primary/20 to-accent/20 border-b border-primary/30 backdrop-blur-sm">
+        <div className="fixed top-16 left-0 right-0 z-50 backdrop-blur-md" style={{ background: 'linear-gradient(90deg, hsl(var(--em-mid)/0.85), hsl(var(--em-deep)/0.85))', borderBottom: '1px solid hsl(var(--em-gold)/0.35)' }}>
           <div className="max-w-4xl mx-auto p-4">
-            <Alert className="border-primary/50 bg-primary/10">
-              <Gift className="h-4 w-4 text-primary" />
-              <AlertDescription className="text-foreground">
+            <Alert className="border-0 bg-transparent">
+              <Gift className="h-4 w-4" style={{ color: 'hsl(var(--em-gold))' }} />
+              <AlertDescription style={{ color: 'hsl(var(--em-cream))' }}>
                 <div className="flex items-center justify-between flex-wrap gap-4">
                   <div className="flex-1">
-                    <strong className="text-primary">{referrerName}</strong> invited you to Fortune Bridge! 
-                    Sign up now and get <strong className="text-primary">50 FC free</strong> to start playing!
+                    <strong style={{ color: 'hsl(var(--em-gold))' }}>{referrerName}</strong> invited you to Fortune Bridge!
+                    Sign up now and get <strong style={{ color: 'hsl(var(--em-gold))' }}>50 FC free</strong> to start playing!
                   </div>
                   <div className="flex gap-2">
-                    <Button 
-                      size="sm" 
-                      className="bg-primary hover:bg-primary/90"
+                    <Button
+                      size="sm"
+                      className="home-gold-btn border-0"
                       onClick={() => {
                         const authButton = document.querySelector('[data-auth-trigger]') as HTMLElement;
                         authButton?.click();
@@ -335,11 +334,11 @@ export default function Home() {
                       <UserPlus className="w-4 h-4 mr-2" />
                       Sign Up & Get 50 FC
                     </Button>
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       variant="ghost"
                       onClick={() => setShowReferralBanner(false)}
-                      className="text-muted-foreground hover:text-foreground"
+                      style={{ color: 'hsl(var(--em-cream)/0.75)' }}
                     >
                       Dismiss
                     </Button>
@@ -352,25 +351,45 @@ export default function Home() {
       )}
 
       {/* Hero Section */}
-      <section className="relative w-full bg-gradient-to-b from-primary/10 via-primary/5 to-transparent" style={{ aspectRatio: '16/9' }}>
-        <div aria-hidden className="absolute inset-0 pattern-diagonal opacity-60 pointer-events-none" />
+      <section className="relative w-full home-band" style={{ aspectRatio: '16/9' }}>
         <div className="relative z-10 h-full"><HeroCarousel /></div>
       </section>
 
+      {/* Why Choose strip (mobile-friendly trust markers) */}
+      <section className="home-band-dark px-5 md:px-6 py-4">
+        <div className="max-w-6xl mx-auto flex justify-between items-center gap-8 overflow-x-auto no-scrollbar home-chip-row py-4">
+          <div className="home-chip">
+            <div className="ico"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg></div>
+            <span className="lbl">Secure</span>
+          </div>
+          <div className="home-chip">
+            <div className="ico"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+            <span className="lbl">Instant</span>
+          </div>
+          <div className="home-chip">
+            <div className="ico"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+            <span className="lbl">Verified</span>
+          </div>
+          <div className="home-chip">
+            <div className="ico"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg></div>
+            <span className="lbl">Fair Play</span>
+          </div>
+        </div>
+      </section>
+
       {/* Image Carousel Section */}
-      <div className="relative bg-gradient-to-b from-accent/10 via-accent/5 to-transparent">
-        <div aria-hidden className="absolute inset-0 spot-accent opacity-80 pointer-events-none" />
+      <div className="relative home-band-dark">
         <div className="relative z-10"><ImageCarousel /></div>
       </div>
 
-      <section id="games" className="relative py-6 md:py-20 px-3 md:px-6 bg-gradient-to-b from-secondary/15 via-secondary/8 to-transparent scroll-mt-16 md:scroll-mt-0 overflow-hidden">
-        <div aria-hidden className="absolute inset-0 spot-primary opacity-80 pointer-events-none" />
-        <div aria-hidden className="absolute inset-0 pattern-grid opacity-[0.08] pointer-events-none" />
+      <section id="games" className="relative py-8 md:py-20 px-3 md:px-6 home-band scroll-mt-16 md:scroll-mt-0 overflow-hidden">
         <div className="relative z-10 max-w-6xl mx-auto">
-          <h2 className="font-display text-2xl md:text-4xl font-extrabold text-center mb-3 md:mb-8 text-foreground animate-fade-in-up tracking-tight">
-            Choose Your Fortune
-          </h2>
-          <div className="w-12 h-1 bg-gradient-to-r from-primary to-primary/30 rounded-full mx-auto mb-5 md:mb-10 animate-scale-in" style={{ animationDelay: '0.2s' }}></div>
+          <div className="text-center mb-6 md:mb-10 animate-fade-in-up">
+            <div className="home-eyebrow mb-2">Featured Draws</div>
+            <h2 className="home-section-title text-3xl md:text-4xl">Choose Your Fortune</h2>
+            <div className="w-12 h-[3px] mt-3 mx-auto rounded-full" style={{ background: 'linear-gradient(90deg, hsl(var(--em-gold)), hsl(var(--em-gold-soft)))' }} />
+          </div>
+
           {/* Desktop Search and Filters */}
           <div className="mb-6 md:mb-12 space-y-4 md:space-y-6 hidden md:block">
             <div className="relative max-w-md mx-auto px-2">
@@ -430,18 +449,19 @@ export default function Home() {
           />
           
           {lotteryGames.length === 0 ? (
-            <div className="text-center py-12">
-              <Trophy className="w-16 h-16 text-lottery-gold mx-auto mb-4 opacity-50" />
-              <h3 className="text-xl font-semibold mb-2 text-foreground">No Active Games</h3>
-              <p className="text-muted-foreground">
-                Check back soon for exciting new lottery games!
+            <div className="home-empty mx-auto max-w-md text-center py-14 px-6 mt-4 animate-fade-in-up">
+              <div className="mx-auto mb-4 w-14 h-14 rounded-full flex items-center justify-center" style={{ background: 'hsl(var(--em-mid))', border: '1px solid hsl(var(--em-gold)/0.35)' }}>
+                <Trophy className="w-7 h-7" style={{ color: 'hsl(var(--em-gold))' }} />
+              </div>
+              <h3 className="home-section-title text-lg mb-1">No Active Draws</h3>
+              <p className="text-sm" style={{ color: 'hsl(var(--em-cream)/0.7)' }}>
+                New premium draws are on their way. Check back shortly.
               </p>
             </div>
           ) : (
-            <div className="space-y-16">
+            <div className="space-y-10 md:space-y-14 mt-4">
               {Object.entries(groupGamesByPrice(filteredGames))
                 .sort(([priceA], [priceB]) => {
-                  // Sort order: 1000 first, then 500, then others in descending order
                   const getPriority = (price: string) => {
                     if (price === '1000') return 1;
                     if (price === '500') return 2;
@@ -450,34 +470,34 @@ export default function Home() {
                   return getPriority(priceA) - getPriority(priceB);
                 })
                 .map(([price, games]) => {
-                const sectionTheme = getSectionTheme(price);
                 const sectionTitle = price === '100' ? 'Budget Collection' :
                                   price === '500' ? 'Premium Collection' :
                                   price === '1000' ? 'Elite Selection' :
-                                  'Budget Collection';
-                
+                                  'Featured Collection';
+
                 return (
-                  <div key={price} id={`price-section-${price}`} className={`relative p-4 md:p-8 rounded-3xl bg-gradient-to-br ${sectionTheme.gradient} border-2 ${sectionTheme.border} overflow-hidden scroll-mt-[72px] md:scroll-mt-20`}>
-                    {/* Tier & Price Display - Top Center */}
-                    <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20">
-                      <div className="flex rounded-full overflow-hidden shadow-2xl bg-white/10 backdrop-blur-sm border border-white/20 w-64 md:w-80 h-8 md:h-12 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] drop-shadow-lg" style={{boxShadow: '0 10px 25px -5px rgba(0,0,0,0.3), 0 4px 6px -2px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.1)'}}>
-                        {/* Tier Name - 70% */}
-                        <div className={`${sectionTheme.badge} flex-[7] flex items-center justify-center rounded-l-full`}>
-                          <span className="text-white font-bold text-xs md:text-base leading-none">{sectionTitle}</span>
-                        </div>
-                        {/* Price - 30% */}
-                        <div className="bg-white/90 flex-[3] flex items-center justify-center rounded-r-full">
-                          <span className="text-gray-900 font-bold text-xs md:text-base leading-none">₹{price}</span>
-                        </div>
+                  <section
+                    key={price}
+                    id={`price-section-${price}`}
+                    className="relative rounded-[24px] p-4 md:p-8 overflow-hidden scroll-mt-[72px] md:scroll-mt-20 animate-fade-in-up"
+                    style={{
+                      background: 'linear-gradient(180deg, hsl(var(--em-mid)/0.28), hsl(var(--em-deep)/0.6))',
+                      border: '1px solid hsl(var(--em-gold)/0.18)',
+                      boxShadow: '0 10px 32px -18px hsl(0 0% 0% / 0.55)'
+                    }}
+                  >
+                    {/* Section header */}
+                    <div className="flex items-center justify-between gap-3 mb-5 md:mb-8">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span className="home-tier-pill">
+                          <span className="dot" />
+                          {sectionTitle}
+                        </span>
                       </div>
+                      <span className="home-tier-price whitespace-nowrap">₹{price}</span>
                     </div>
 
-                    <div className="absolute inset-0 opacity-5">
-                      <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent" />
-                      <div className="absolute top-4 left-4 text-6xl opacity-30">{sectionTheme.icon}</div>
-                    </div>
-                    
-                    <div className="relative z-10 grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-16 stagger-children">
+                    <div className="relative z-10 grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 stagger-children">
                       {games.map((game) => (
                         <LotteryCard
                           key={game.id}
@@ -496,7 +516,7 @@ export default function Home() {
                         />
                       ))}
                     </div>
-                  </div>
+                  </section>
                 );
               })}
             </div>
@@ -505,17 +525,15 @@ export default function Home() {
       </section>
 
       {/* FAQ Section */}
-      <div className="relative bg-gradient-to-b from-muted/25 via-muted/10 to-transparent">
-        <div aria-hidden className="absolute inset-0 spot-accent opacity-60 pointer-events-none" />
-        <div aria-hidden className="absolute inset-0 pattern-dots opacity-[0.10] pointer-events-none" />
+      <div className="relative home-band-dark">
         <div className="relative z-10"><FAQSection /></div>
       </div>
 
       {/* Video Thumbnail Carousel - Desktop Only */}
-      <div className="hidden md:block relative bg-gradient-to-b from-primary/8 via-accent/6 to-transparent">
-        <div aria-hidden className="absolute inset-0 pattern-diagonal opacity-40 pointer-events-none" />
+      <div className="hidden md:block relative home-band">
         <div className="relative z-10"><VideoThumbnailCarousel /></div>
       </div>
+
 
       {/* Footer - Hidden on mobile */}
       {!isMobile && (
