@@ -99,6 +99,28 @@ export function MobilePriceFilterBar({
     };
   }, [targetRef]);
 
+  // Block completely when any element matching blockSelector is in the viewport.
+  useEffect(() => {
+    if (!blockSelector) return;
+    const evaluate = () => {
+      const els = Array.from(document.querySelectorAll(blockSelector)) as HTMLElement[];
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      const anyVisible = els.some((el) => {
+        const r = el.getBoundingClientRect();
+        return r.bottom > 0 && r.top < vh;
+      });
+      setBlocked(anyVisible);
+    };
+    evaluate();
+    window.addEventListener("scroll", evaluate, { passive: true });
+    window.addEventListener("resize", evaluate);
+    return () => {
+      window.removeEventListener("scroll", evaluate);
+      window.removeEventListener("resize", evaluate);
+    };
+  }, [blockSelector]);
+
+
   const hidden = scrollHidden || !inView;
 
   const scrollToId = (id: string) => {
