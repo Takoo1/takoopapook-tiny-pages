@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface MobilePriceFilterBarProps {
   selectedPriceFilter: string;
   onPriceFilterChange: (filter: string) => void;
+  targetRef?: RefObject<HTMLElement>;
 }
 
 const FILTERS = [
@@ -40,8 +41,10 @@ const FILTERS = [
 export function MobilePriceFilterBar({
   selectedPriceFilter,
   onPriceFilterChange,
+  targetRef,
 }: MobilePriceFilterBarProps) {
-  const [hidden, setHidden] = useState(false);
+  const [scrollHidden, setScrollHidden] = useState(false);
+  const [inView, setInView] = useState(false);
   const lastY = useRef(0);
   const idleTimer = useRef<number | null>(null);
 
@@ -51,11 +54,11 @@ export function MobilePriceFilterBar({
     const onScroll = () => {
       const y = window.scrollY;
       if (Math.abs(y - lastY.current) > 4) {
-        setHidden(true);
+        setScrollHidden(true);
         lastY.current = y;
       }
       if (idleTimer.current) window.clearTimeout(idleTimer.current);
-      idleTimer.current = window.setTimeout(() => setHidden(false), 180);
+      idleTimer.current = window.setTimeout(() => setScrollHidden(false), 180);
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -64,6 +67,34 @@ export function MobilePriceFilterBar({
       if (idleTimer.current) window.clearTimeout(idleTimer.current);
     };
   }, []);
+
+  // Only show when the target section covers >30% of the viewport height.
+  useEffect(() => {
+    const el = targetRef?.current;
+    if (!el) {
+      setInView(true);
+      return;
+    }
+    const evaluate = () => {
+      const rect = el.getBoundingClientRect();
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      const visible = Math.max(0, Math.min(rect.bottom, vh) - Math.max(rect.top, 0));
+      setInView(visible / vh > 0.3);
+    };
+    evaluate();
+    const thresholds = Array.from({ length: 21 }, (_, i) => i / 20);
+    const io = new IntersectionObserver(evaluate, { threshold: thresholds });
+    io.observe(el);
+    window.addEventListener("scroll", evaluate, { passive: true });
+    window.addEventListener("resize", evaluate);
+    return () => {
+      io.disconnect();
+      window.removeEventListener("scroll", evaluate);
+      window.removeEventListener("resize", evaluate);
+    };
+  }, [targetRef]);
+
+  const hidden = scrollHidden || !inView;
 
   const scrollToId = (id: string) => {
     requestAnimationFrame(() => {
