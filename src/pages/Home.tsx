@@ -449,18 +449,19 @@ export default function Home() {
           />
           
           {lotteryGames.length === 0 ? (
-            <div className="text-center py-12">
-              <Trophy className="w-16 h-16 text-lottery-gold mx-auto mb-4 opacity-50" />
-              <h3 className="text-xl font-semibold mb-2 text-foreground">No Active Games</h3>
-              <p className="text-muted-foreground">
-                Check back soon for exciting new lottery games!
+            <div className="home-empty mx-auto max-w-md text-center py-14 px-6 mt-4 animate-fade-in-up">
+              <div className="mx-auto mb-4 w-14 h-14 rounded-full flex items-center justify-center" style={{ background: 'hsl(var(--em-mid))', border: '1px solid hsl(var(--em-gold)/0.35)' }}>
+                <Trophy className="w-7 h-7" style={{ color: 'hsl(var(--em-gold))' }} />
+              </div>
+              <h3 className="home-section-title text-lg mb-1">No Active Draws</h3>
+              <p className="text-sm" style={{ color: 'hsl(var(--em-cream)/0.7)' }}>
+                New premium draws are on their way. Check back shortly.
               </p>
             </div>
           ) : (
-            <div className="space-y-16">
+            <div className="space-y-10 md:space-y-14 mt-4">
               {Object.entries(groupGamesByPrice(filteredGames))
                 .sort(([priceA], [priceB]) => {
-                  // Sort order: 1000 first, then 500, then others in descending order
                   const getPriority = (price: string) => {
                     if (price === '1000') return 1;
                     if (price === '500') return 2;
@@ -469,34 +470,34 @@ export default function Home() {
                   return getPriority(priceA) - getPriority(priceB);
                 })
                 .map(([price, games]) => {
-                const sectionTheme = getSectionTheme(price);
                 const sectionTitle = price === '100' ? 'Budget Collection' :
                                   price === '500' ? 'Premium Collection' :
                                   price === '1000' ? 'Elite Selection' :
-                                  'Budget Collection';
-                
+                                  'Featured Collection';
+
                 return (
-                  <div key={price} id={`price-section-${price}`} className={`relative p-4 md:p-8 rounded-3xl bg-gradient-to-br ${sectionTheme.gradient} border-2 ${sectionTheme.border} overflow-hidden scroll-mt-[72px] md:scroll-mt-20`}>
-                    {/* Tier & Price Display - Top Center */}
-                    <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20">
-                      <div className="flex rounded-full overflow-hidden shadow-2xl bg-white/10 backdrop-blur-sm border border-white/20 w-64 md:w-80 h-8 md:h-12 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] drop-shadow-lg" style={{boxShadow: '0 10px 25px -5px rgba(0,0,0,0.3), 0 4px 6px -2px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.1)'}}>
-                        {/* Tier Name - 70% */}
-                        <div className={`${sectionTheme.badge} flex-[7] flex items-center justify-center rounded-l-full`}>
-                          <span className="text-white font-bold text-xs md:text-base leading-none">{sectionTitle}</span>
-                        </div>
-                        {/* Price - 30% */}
-                        <div className="bg-white/90 flex-[3] flex items-center justify-center rounded-r-full">
-                          <span className="text-gray-900 font-bold text-xs md:text-base leading-none">₹{price}</span>
-                        </div>
+                  <section
+                    key={price}
+                    id={`price-section-${price}`}
+                    className="relative rounded-[24px] p-4 md:p-8 overflow-hidden scroll-mt-[72px] md:scroll-mt-20 animate-fade-in-up"
+                    style={{
+                      background: 'linear-gradient(180deg, hsl(var(--em-mid)/0.28), hsl(var(--em-deep)/0.6))',
+                      border: '1px solid hsl(var(--em-gold)/0.18)',
+                      boxShadow: '0 10px 32px -18px hsl(0 0% 0% / 0.55)'
+                    }}
+                  >
+                    {/* Section header */}
+                    <div className="flex items-center justify-between gap-3 mb-5 md:mb-8">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span className="home-tier-pill">
+                          <span className="dot" />
+                          {sectionTitle}
+                        </span>
                       </div>
+                      <span className="home-tier-price whitespace-nowrap">₹{price}</span>
                     </div>
 
-                    <div className="absolute inset-0 opacity-5">
-                      <div className="absolute inset-0 bg-gradient-to-br from-black/20 to-transparent" />
-                      <div className="absolute top-4 left-4 text-6xl opacity-30">{sectionTheme.icon}</div>
-                    </div>
-                    
-                    <div className="relative z-10 grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-16 stagger-children">
+                    <div className="relative z-10 grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 stagger-children">
                       {games.map((game) => (
                         <LotteryCard
                           key={game.id}
@@ -515,7 +516,7 @@ export default function Home() {
                         />
                       ))}
                     </div>
-                  </div>
+                  </section>
                 );
               })}
             </div>
@@ -524,17 +525,15 @@ export default function Home() {
       </section>
 
       {/* FAQ Section */}
-      <div className="relative bg-gradient-to-b from-muted/25 via-muted/10 to-transparent">
-        <div aria-hidden className="absolute inset-0 spot-accent opacity-60 pointer-events-none" />
-        <div aria-hidden className="absolute inset-0 pattern-dots opacity-[0.10] pointer-events-none" />
+      <div className="relative home-band-dark">
         <div className="relative z-10"><FAQSection /></div>
       </div>
 
       {/* Video Thumbnail Carousel - Desktop Only */}
-      <div className="hidden md:block relative bg-gradient-to-b from-primary/8 via-accent/6 to-transparent">
-        <div aria-hidden className="absolute inset-0 pattern-diagonal opacity-40 pointer-events-none" />
+      <div className="hidden md:block relative home-band">
         <div className="relative z-10"><VideoThumbnailCarousel /></div>
       </div>
+
 
       {/* Footer - Hidden on mobile */}
       {!isMobile && (
