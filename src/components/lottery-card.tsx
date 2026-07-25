@@ -93,7 +93,7 @@ export function LotteryCard({
 
         {/* Single glass overlay bar: status (left) + price (right) */}
         <div className="absolute top-2.5 left-2.5 right-2.5">
-          <div className="flex items-center justify-between gap-2 rounded-full pl-3 pr-1 py-1 bg-black/45 backdrop-blur-md ring-1 ring-white/10">
+          <div className="flex items-center justify-between gap-2 rounded-full pl-3 pr-1 py-1 bg-black/25 backdrop-blur-sm ring-1 ring-white/10">
             <div className={`flex items-center gap-1.5 text-[11px] font-semibold ${statusMeta.textClass}`}>
               <span className={`w-1.5 h-1.5 rounded-full ${statusMeta.dotClass}`} />
               {statusMeta.label}
