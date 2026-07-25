@@ -3,10 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
-import { ChevronUp, Image, Video, FileText, Clock } from "lucide-react";
-import { format, isWithinInterval, subDays } from "date-fns";
+import { Bell, ChevronUp, Image as ImageIcon, Video, FileText, Sparkles } from "lucide-react";
+import { format, isWithinInterval, subDays, formatDistanceToNow } from "date-fns";
 
 interface Notification {
   id: string;
@@ -15,7 +13,7 @@ interface Notification {
   created_at: string;
   notification_attachments: {
     id: string;
-    media_type: 'image' | 'video' | 'pdf';
+    media_type: "image" | "video" | "pdf";
     url: string;
     preview_url: string | null;
   }[];
@@ -33,185 +31,182 @@ export function NotificationsDrawer({ open, onOpenChange, onNotificationRead }: 
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (open) {
-      fetchNotifications();
-    }
+    if (open) fetchNotifications();
   }, [open]);
 
   const fetchNotifications = async () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('notifications')
-        .select(`
-          *,
-          notification_attachments (*)
-        `)
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
+        .from("notifications")
+        .select(`*, notification_attachments (*)`)
+        .eq("is_active", true)
+        .order("created_at", { ascending: false })
         .limit(20);
-
       if (error) throw error;
       setNotifications(data || []);
     } catch (error) {
-      console.error('Error fetching notifications:', error);
+      console.error("Error fetching notifications:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleNotificationClick = (notificationId: string) => {
-    navigate(`/notifications/${notificationId}`);
+  const handleNotificationClick = (id: string) => {
+    navigate(`/notifications/${id}`);
     onOpenChange(false);
     onNotificationRead?.();
   };
 
-  const isNewNotification = (createdAt: string) => {
+  const isNew = (createdAt: string) => {
     const threeDaysAgo = subDays(new Date(), 3);
-    const notificationDate = new Date(createdAt);
-    return isWithinInterval(notificationDate, { start: threeDaysAgo, end: new Date() });
+    return isWithinInterval(new Date(createdAt), { start: threeDaysAgo, end: new Date() });
   };
 
-  const getMediaIcon = (type: string) => {
-    switch (type) {
-      case 'image': return <Image className="w-4 h-4 text-blue-500" />;
-      case 'video': return <Video className="w-4 h-4 text-purple-500" />;
-      case 'pdf': return <FileText className="w-4 h-4 text-red-500" />;
-      default: return null;
-    }
-  };
-
-  const truncateText = (text: string, maxLength: number) => {
-    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+  const getAttachmentIcon = (type: string) => {
+    if (type === "video") return <Video className="w-5 h-5 text-primary" />;
+    if (type === "pdf") return <FileText className="w-5 h-5 text-primary" />;
+    return <ImageIcon className="w-5 h-5 text-primary" />;
   };
 
   if (!open) return null;
 
+  const unreadCount = notifications.filter((n) => isNew(n.created_at)).length;
+
   return (
     <>
       {/* Backdrop */}
-      <div 
-        className="fixed inset-0 bg-black/50 z-40 backdrop-blur-sm"
+      <div
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 animate-fade-in"
         onClick={() => onOpenChange(false)}
       />
 
-      {/* Drawer */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border shadow-lg animate-in slide-in-from-top-0 duration-300">
-        <div className="max-h-[60vh] flex flex-col">
+      {/* Sheet */}
+      <div className="fixed top-0 left-0 right-0 z-50 pt-safe-top animate-slide-down">
+        <div className="mx-2 mt-2 rounded-3xl border border-primary/20 bg-card/95 backdrop-blur-xl overflow-hidden shadow-[0_20px_60px_-15px_hsl(var(--primary)/0.5)]">
           {/* Header */}
-          <div className="p-4 border-b border-border">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Notifications</h3>
-              <Badge variant="secondary" className="text-xs">
-                {notifications.length} total
-              </Badge>
+          <div className="relative overflow-hidden px-5 py-4 border-b border-border/60">
+            <div aria-hidden className="pointer-events-none absolute -top-10 -right-10 w-32 h-32 rounded-full bg-primary/15 blur-3xl" />
+            <div className="relative flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary/25 to-accent/15 border border-primary/25 flex items-center justify-center">
+                  <Bell className="w-4.5 h-4.5 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold leading-tight">Notifications</h3>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                    {unreadCount > 0 ? `${unreadCount} new · ${notifications.length} total` : `${notifications.length} total`}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Content */}
-          <ScrollArea className="flex-1 px-4">
-            {loading ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-primary"></div>
-              </div>
-            ) : notifications.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <Clock className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p>No notifications yet</p>
-              </div>
-            ) : (
-              <div className="space-y-3 py-4">
-                {notifications.map((notification, index) => (
-                  <div key={notification.id}>
-                    <div
-                      className="flex gap-3 p-3 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
-                      onClick={() => handleNotificationClick(notification.id)}
-                    >
-                      {/* Content */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2 mb-1">
-                          <h4 className="font-medium text-sm line-clamp-1 flex-1">
-                            {notification.title}
-                          </h4>
-                          <div className="flex items-center gap-2 flex-shrink-0">
-                            <span className="text-xs text-muted-foreground">
-                              {format(new Date(notification.created_at), 'MMM dd, HH:mm')}
-                            </span>
-                            {isNewNotification(notification.created_at) && (
-                              <Badge className="text-xs bg-red-500 hover:bg-red-500 text-white">
-                                New
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                        <p className="text-xs text-muted-foreground line-clamp-2">
-                          {truncateText(notification.details, 120)}
-                        </p>
-                      </div>
+          <div className="max-h-[62vh] flex flex-col">
+            <ScrollArea className="flex-1 px-3">
+              {loading ? (
+                <div className="p-3 space-y-3">
+                  {[0, 1, 2].map((i) => (
+                    <div key={i} className="h-20 rounded-2xl bg-muted/60 animate-pulse" />
+                  ))}
+                </div>
+              ) : notifications.length === 0 ? (
+                <div className="text-center py-12 px-6">
+                  <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/10 border border-primary/25 flex items-center justify-center mb-4">
+                    <Bell className="w-8 h-8 text-primary" />
+                  </div>
+                  <h4 className="font-semibold text-sm">You're all caught up</h4>
+                  <p className="text-xs text-muted-foreground mt-1">No new notifications right now.</p>
+                  <Button
+                    onClick={() => {
+                      onOpenChange(false);
+                      navigate("/");
+                    }}
+                    className="mt-4 rounded-2xl h-10 px-5"
+                  >
+                    Browse Lotteries
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-2 py-3">
+                  {notifications.map((n) => {
+                    const fresh = isNew(n.created_at);
+                    const first = n.notification_attachments?.[0];
+                    return (
+                      <button
+                        key={n.id}
+                        onClick={() => handleNotificationClick(n.id)}
+                        className={`relative w-full text-left flex gap-3 p-3 rounded-2xl border transition-all active:scale-[0.98] ${
+                          fresh
+                            ? "border-primary/30 bg-gradient-to-br from-primary/8 to-primary/3 shadow-[0_4px_16px_-8px_hsl(var(--primary)/0.4)]"
+                            : "border-border/60 bg-card/60 hover:bg-muted/40"
+                        }`}
+                      >
+                        {/* Unread dot */}
+                        {fresh && (
+                          <span className="absolute left-1.5 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_hsl(var(--primary))]" />
+                        )}
 
-                      {/* Preview */}
-                      {notification.notification_attachments.length > 0 && (
-                        <div className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-muted">
-                          {notification.notification_attachments[0].media_type === 'image' ? (
+                        {/* Thumbnail / Icon */}
+                        <div className="shrink-0 w-14 h-14 rounded-xl overflow-hidden bg-muted border border-border/50 flex items-center justify-center">
+                          {first?.media_type === "image" && (first.preview_url || first.url) ? (
                             <img
-                              src={notification.notification_attachments[0].preview_url || notification.notification_attachments[0].url}
-                              alt="Preview"
+                              src={first.preview_url || first.url}
+                              alt=""
                               className="w-full h-full object-cover"
+                              loading="lazy"
                             />
-                          ) : notification.notification_attachments[0].media_type === 'video' ? (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <Video className="w-6 h-6 text-muted-foreground" />
-                            </div>
+                          ) : first ? (
+                            getAttachmentIcon(first.media_type)
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <FileText className="w-6 h-6 text-muted-foreground" />
-                            </div>
+                            <Sparkles className="w-5 h-5 text-primary" />
                           )}
                         </div>
-                      )}
-                    </div>
-                    {index < notifications.length - 1 && <Separator />}
-                  </div>
-                ))}
-              </div>
-            )}
-          </ScrollArea>
 
-          {/* Footer */}
-          <div className="px-4 py-2 border-t border-border">
-            <Button
-              variant="ghost"
-              className="w-full flex items-center justify-center gap-2 py-2"
-              onClick={() => onOpenChange(false)}
-            >
-              <ChevronUp className="w-4 h-4" />
-              Collapse
-            </Button>
+                        {/* Body */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2">
+                            <h4 className={`text-sm leading-snug line-clamp-1 ${fresh ? "font-semibold" : "font-medium"}`}>
+                              {n.title}
+                            </h4>
+                            {fresh && (
+                              <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-primary text-primary-foreground">
+                                New
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">
+                            {n.details}
+                          </p>
+                          <p className="text-[10px] text-muted-foreground/80 mt-1.5">
+                            {formatDistanceToNow(new Date(n.created_at), { addSuffix: true })} ·{" "}
+                            {format(new Date(n.created_at), "MMM dd")}
+                          </p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </ScrollArea>
+
+            <div className="px-3 py-2 border-t border-border/60">
+              <Button
+                variant="ghost"
+                className="w-full flex items-center justify-center gap-2 rounded-2xl h-10"
+                onClick={() => onOpenChange(false)}
+              >
+                <ChevronUp className="w-4 h-4" /> Close
+              </Button>
+            </div>
           </div>
         </div>
       </div>
 
-      <style>
-        {`
-        @keyframes slide-in-from-top-0 {
-          from {
-            transform: translateY(-100%);
-          }
-          to {
-            transform: translateY(0);
-          }
-        }
-        .animate-in {
-          animation-fill-mode: both;
-        }
-        .slide-in-from-top-0 {
-          animation-name: slide-in-from-top-0;
-        }
-        .duration-300 {
-          animation-duration: 300ms;
-        }
-        `}
-      </style>
+      <style>{`
+        @keyframes slide-down { from { transform: translateY(-16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .animate-slide-down { animation: slide-down 260ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+      `}</style>
     </>
   );
 }
