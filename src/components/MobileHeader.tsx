@@ -76,7 +76,7 @@ export function MobileHeader() {
       <div className="flex items-center justify-between px-4 py-1.5 h-full relative">
         {/* Left side - Site Logo */}
         <div className="flex items-center gap-2.5 animate-fade-in" onClick={() => navigate('/')} role="button">
-          <img src="https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/FB_Icon_Round%20(1)-modified.png" alt="Fortune Bridge" className="w-9 h-9 rounded-xl transition-transform duration-200 active:scale-95" />
+          <img src="/__l5e/assets-v1/e013b595-501d-44f1-8ddb-13183d360966/fortuna-logo.png" alt="Fortune Bridge" className="w-9 h-9 rounded-xl transition-transform duration-200 active:scale-95" />
           <span className="text-base font-semibold tracking-tight text-foreground hidden min-[360px]:inline">Fortune Bridge</span>
         </div>
 
