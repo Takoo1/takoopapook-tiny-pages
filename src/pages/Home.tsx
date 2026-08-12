@@ -443,13 +443,15 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Mobile floating price filter bar (above bottom nav) */}
+          {/* Mobile floating price filter bar (above bottom nav) — hidden for now */}
           <MobilePriceFilterBar
             selectedPriceFilter={selectedPriceFilter}
             onPriceFilterChange={setSelectedPriceFilter}
             targetRef={gamesSectionRef}
             blockSelector="[data-block-filter-bar='true']"
+            enabled={false}
           />
+
 
 
           
