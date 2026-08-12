@@ -77,7 +77,7 @@ export function MobileHeader() {
         {/* Left side - Site Logo */}
         <div className="flex items-center gap-2.5 animate-fade-in" onClick={() => navigate('/')} role="button">
           <img src="/__l5e/assets-v1/e013b595-501d-44f1-8ddb-13183d360966/fortuna-logo.png" alt="Fortune Bridge" className="w-9 h-9 rounded-xl transition-transform duration-200 active:scale-95" />
-          <span className="text-base font-semibold tracking-tight text-foreground hidden min-[360px]:inline">Fortune Bridge</span>
+          <img src="/__l5e/assets-v1/21420f7f-e55f-4739-8be4-45b24b061c9a/fortunalink-name.png" alt="FortunaLink" className="h-5 object-contain hidden min-[360px]:inline-block" />
         </div>
 
         {/* Right side - Notification and FC Balance/Sign Up */}

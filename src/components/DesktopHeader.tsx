@@ -76,7 +76,7 @@ export function DesktopHeader() {
         {/* Left side - Site Logo and Name */}
         <div className="flex items-center gap-3">
           <img src="/__l5e/assets-v1/e013b595-501d-44f1-8ddb-13183d360966/fortuna-logo.png" alt="Fortune Bridge" className="w-14 h-14 rounded-xl shadow-lg" />
-          <img src="https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/Site_name-removebg-preview.png" alt="Fortune Bridge" className="h-10 object-contain" />
+          <img src="/__l5e/assets-v1/21420f7f-e55f-4739-8be4-45b24b061c9a/fortunalink-name.png" alt="FortunaLink" className="h-7 object-contain" />
         </div>
 
         {/* Right side - FC Balance, Auth, Menu */}
