@@ -65,8 +65,6 @@ export function LotteryCard({
     month: 'short', day: 'numeric', year: 'numeric'
   });
 
-  const unavailable = statusKey === 'sold_out' || statusKey === 'booking_closed' || statusKey === 'winner_declared';
-
   return (
     <Card
       onClick={() => onViewDetails(id)}
