@@ -65,8 +65,6 @@ export function LotteryCard({
     month: 'short', day: 'numeric', year: 'numeric'
   });
 
-  const unavailable = statusKey === 'sold_out' || statusKey === 'booking_closed' || statusKey === 'winner_declared';
-
   return (
     <Card
       onClick={() => onViewDetails(id)}
@@ -108,8 +106,8 @@ export function LotteryCard({
       </div>
 
       {/* Content */}
-      <div className="flex flex-col gap-2 p-4 pt-3">
-        <h3 className="text-[17px] font-bold leading-snug tracking-tight text-foreground line-clamp-2">
+      <div className="flex flex-col gap-2 p-4 pt-3 flex-1">
+        <h3 className="text-[17px] font-bold leading-snug tracking-tight text-foreground line-clamp-2 text-center">
           {title}
         </h3>
 
@@ -119,20 +117,28 @@ export function LotteryCard({
             <span className="truncate">{drawDate}</span>
           </div>
           <span className="truncate">
-            {unavailable ? 'Not Available' : `${availableTickets}/${totalTickets} left`}
+            {statusKey === 'sold_out'
+              ? 'Sold Out'
+              : statusKey === 'live' || statusKey === 'booking_closed' || statusKey === 'winner_declared'
+              ? 'Not Available'
+              : `${availableTickets}/${totalTickets} left`}
           </span>
         </div>
 
         <Button
           size="sm"
-          className="self-center mt-2 h-8 px-4 rounded-full font-semibold text-xs shadow-none group/btn"
+          className="mt-auto h-10 w-full rounded-b-[20px] rounded-t-none font-semibold text-sm tracking-tight text-white bg-gradient-to-b from-amber-600 via-yellow-600 to-amber-700 ring-1 ring-inset ring-amber-300/60 shadow-[0_6px_18px_-6px_rgba(217,119,6,0.45)] active:translate-y-0.5 active:scale-[0.99] transition-all duration-200 group/btn relative overflow-hidden"
           onClick={(e) => {
             e.stopPropagation();
             onViewDetails(id);
           }}
         >
-          View Details
-          <ArrowRight className="w-3.5 h-3.5 ml-1 transition-transform duration-300 group-hover/btn:translate-x-0.5" strokeWidth={2.5} />
+          {/* glossy top sheen */}
+          <span className="pointer-events-none absolute inset-x-4 top-1 h-1/3 rounded-t-xl bg-gradient-to-b from-white/35 to-transparent" />
+          <span className="relative flex items-center justify-center gap-1 drop-shadow-[0_1px_1px_rgba(0,0,0,0.25)]">
+            View Details
+            <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover/btn:translate-x-0.5" strokeWidth={2.5} />
+          </span>
         </Button>
       </div>
     </Card>
