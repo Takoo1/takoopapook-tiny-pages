@@ -8,7 +8,7 @@ import { AuthButton } from "@/components/AuthButton";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Search, Gift, UserPlus, Trophy } from "lucide-react";
+import { Search, Gift, UserPlus, Trophy, Stamp, BadgePercent } from "lucide-react";
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 import { ImageCarousel } from "@/components/ImageCarousel";
 import { VideoThumbnailCarousel } from "@/components/VideoThumbnailCarousel";
