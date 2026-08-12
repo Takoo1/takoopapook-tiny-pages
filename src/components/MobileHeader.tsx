@@ -75,9 +75,9 @@ export function MobileHeader() {
   return <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-border/50 pt-safe-top h-[58px]">
       <div className="flex items-center justify-between px-4 py-1.5 h-full relative">
         {/* Left side - Site Logo */}
-        <div className="flex items-center gap-2.5 animate-fade-in" onClick={() => navigate('/')} role="button">
-          <img src="/__l5e/assets-v1/e013b595-501d-44f1-8ddb-13183d360966/fortuna-logo.png" alt="Fortune Bridge" className="w-9 h-9 rounded-xl transition-transform duration-200 active:scale-95" />
-          <img src="/__l5e/assets-v1/21420f7f-e55f-4739-8be4-45b24b061c9a/fortunalink-name.png" alt="FortunaLink" className="h-5 object-contain hidden min-[360px]:inline-block" />
+        <div className="flex items-center gap-1.5 animate-fade-in shrink-0" onClick={() => navigate('/')} role="button">
+          <img src="/__l5e/assets-v1/e013b595-501d-44f1-8ddb-13183d360966/fortuna-logo.png" alt="Fortune Bridge" className="w-9 h-9 rounded-xl transition-transform duration-200 active:scale-95 shrink-0" />
+          <img src="/__l5e/assets-v1/21420f7f-e55f-4739-8be4-45b24b061c9a/fortunalink-name.png" alt="FortunaLink" className="h-5 object-contain hidden min-[360px]:inline-block max-w-[100px] shrink-0" />
         </div>
 
         {/* Right side - Notification and FC Balance/Sign Up */}
