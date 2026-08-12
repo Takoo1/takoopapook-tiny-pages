@@ -91,18 +91,20 @@ export function LotteryCard({
           </div>
         )}
 
-        {/* Single glass overlay bar: status (left) + price (right) */}
-        <div className="absolute top-2.5 left-2.5 right-2.5">
-          <div className="flex items-center justify-between gap-2 rounded-full pl-3 pr-1 py-1 bg-black/25 backdrop-blur-sm ring-1 ring-white/10">
-            <div className={`flex items-center gap-1.5 text-[11px] font-semibold ${statusMeta.textClass}`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${statusMeta.dotClass}`} />
-              {statusMeta.label}
+        {/* Single glass overlay bar: status (left) + price (right) — hidden for Coming Soon */}
+        {statusKey !== 'coming_soon' && (
+          <div className="absolute top-2.5 left-2.5 right-2.5">
+            <div className="flex items-center justify-between gap-2 rounded-full pl-3 pr-1 py-1 bg-black/25 backdrop-blur-sm ring-1 ring-white/10">
+              <div className={`flex items-center gap-1.5 text-[11px] font-semibold ${statusMeta.textClass}`}>
+                <span className={`w-1.5 h-1.5 rounded-full ${statusMeta.dotClass}`} />
+                {statusMeta.label}
+              </div>
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-lottery-gold text-black">
+                ₹{ticketPrice}
+              </span>
             </div>
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-lottery-gold text-black">
-              ₹{ticketPrice}
-            </span>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Content */}
