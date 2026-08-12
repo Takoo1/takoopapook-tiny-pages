@@ -47,12 +47,16 @@ export function MobilePriceFilterBar({
   onPriceFilterChange,
   targetRef,
   blockSelector,
+  enabled = true,
 }: MobilePriceFilterBarProps) {
   const [scrollHidden, setScrollHidden] = useState(false);
   const [inView, setInView] = useState(false);
   const [blocked, setBlocked] = useState(false);
   const lastY = useRef(0);
   const idleTimer = useRef<number | null>(null);
+
+  if (!enabled) return null;
+
 
 
   useEffect(() => {
