@@ -237,42 +237,43 @@ export default function Home() {
     switch (price) {
       case '100':
         return {
-          gradient: 'from-red-500/20 via-red-400/15 to-red-300/5',
-          border: 'border-red-200 dark:border-red-800/30',
-          title: 'text-red-600 dark:text-red-400',
-          subtitle: 'text-red-500/80 dark:text-red-400/80',
-          badge: 'bg-red-500 text-white',
+          gradient: 'from-primary/10 via-primary/5 to-transparent',
+          border: 'border-border',
+          title: 'text-primary',
+          subtitle: 'text-muted-foreground',
+          badge: 'bg-primary text-primary-foreground',
           icon: '🔥'
         };
       case '500':
         return {
-          gradient: 'from-blue-500/20 via-blue-400/15 to-blue-300/5',
-          border: 'border-blue-200 dark:border-blue-800/30',
-          title: 'text-blue-600 dark:text-blue-400',
-          subtitle: 'text-blue-500/80 dark:text-blue-400/80',
-          badge: 'bg-blue-500 text-white',
+          gradient: 'from-secondary via-secondary/60 to-transparent',
+          border: 'border-border',
+          title: 'text-primary',
+          subtitle: 'text-muted-foreground',
+          badge: 'bg-primary text-primary-foreground',
           icon: '👑'
         };
       case '1000':
         return {
-          gradient: 'from-purple-500/20 via-purple-400/15 to-purple-300/5',
-          border: 'border-purple-200 dark:border-purple-800/30',
-          title: 'text-purple-600 dark:text-purple-400',
-          subtitle: 'text-purple-500/80 dark:text-purple-400/80',
-          badge: 'bg-purple-500 text-white',
+          gradient: 'from-[hsl(var(--lottery-gold)/0.16)] via-[hsl(var(--lottery-gold)/0.08)] to-transparent',
+          border: 'border-border',
+          title: 'text-[hsl(var(--lottery-gold))]',
+          subtitle: 'text-muted-foreground',
+          badge: 'bg-[hsl(var(--lottery-gold))] text-[hsl(var(--navy))]',
           icon: '💎'
         };
       default:
         return {
-          gradient: 'from-green-500/20 via-green-400/15 to-green-300/5',
-          border: 'border-green-200 dark:border-green-800/30',
-          title: 'text-green-600 dark:text-green-400',
-          subtitle: 'text-green-500/80 dark:text-green-400/80',
-          badge: 'bg-green-500 text-white',
+          gradient: 'from-[hsl(var(--success)/0.12)] via-[hsl(var(--success)/0.06)] to-transparent',
+          border: 'border-border',
+          title: 'text-[hsl(var(--success))]',
+          subtitle: 'text-muted-foreground',
+          badge: 'bg-[hsl(var(--success))] text-white',
           icon: '⭐'
         };
     }
   };
+
 
   const groupGamesByPrice = (games: LotteryGame[]) => {
     const grouped: { [key: string]: LotteryGame[] } = {};
