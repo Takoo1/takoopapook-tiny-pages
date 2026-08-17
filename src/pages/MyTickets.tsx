@@ -132,7 +132,7 @@ export default function MyTickets() {
   const ambient = (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
       <div className="absolute -top-24 -right-24 w-[420px] h-[420px] rounded-full blur-3xl opacity-[0.18]"
-        style={{ background: 'radial-gradient(circle, hsl(var(--noir-gold)/0.6), transparent 60%)' }} />
+        style={{ background: 'radial-gradient(circle, hsl(var(--noir-gold)/0.18), transparent 65%)' }} />
     </div>
   );
 
@@ -162,7 +162,7 @@ export default function MyTickets() {
           </div>
           <div className="home-empty mx-auto max-w-md text-center py-14 px-6 animate-fade-in-up">
             <div className="mx-auto mb-4 w-16 h-16 rounded-full flex items-center justify-center"
-              style={{ background: 'hsl(var(--noir-mid))', border: '1px solid hsl(var(--noir-gold)/0.35)' }}>
+              style={{ background: 'hsl(var(--noir-mid))', border: '1px solid hsl(var(--border))' }}>
               <Ticket className="w-8 h-8" style={{ color: 'hsl(var(--noir-gold))' }} />
             </div>
             <h3 className="home-section-title text-lg mb-1">No Tickets Yet</h3>
@@ -197,7 +197,7 @@ export default function MyTickets() {
       className="relative rounded-[24px] p-4 md:p-6 overflow-hidden animate-fade-in-up"
       style={{
         background: 'linear-gradient(180deg, hsl(var(--noir-mid)/0.28), hsl(var(--noir-deep)/0.6))',
-        border: '1px solid hsl(var(--noir-gold)/0.18)',
+        border: '1px solid hsl(var(--border))',
         boxShadow: '0 10px 32px -18px hsl(0 0% 0% / 0.55)'
       }}
     >
@@ -239,7 +239,7 @@ export default function MyTickets() {
               className="relative rounded-[18px] overflow-hidden animate-fade-in-up"
               style={{
                 background: 'hsl(var(--noir-charcoal)/0.6)',
-                border: '1px solid hsl(var(--noir-gold)/0.18)',
+                border: '1px solid hsl(var(--border))',
                 boxShadow: '0 6px 18px -12px hsl(0 0% 0% / 0.55)'
               }}
             >
@@ -268,7 +268,7 @@ export default function MyTickets() {
                         src={ticketPreviews.get(ticket.id)}
                         alt={`Ticket #${ticket.ticket_number}`}
                         className="w-full h-36 object-contain rounded-[12px] animate-fade-in"
-                        style={{ background: 'hsl(var(--noir-deep))', border: '1px solid hsl(var(--noir-gold)/0.15)' }}
+                        style={{ background: 'hsl(var(--noir-deep))', border: '1px solid hsl(var(--border))' }}
                       />
                     </div>
                   ) : generatingPreviews.has(ticket.id) ? (
@@ -333,7 +333,7 @@ export default function MyTickets() {
           className="relative rounded-[24px] p-4 md:p-5 flex items-center gap-4 overflow-hidden animate-fade-in-up"
           style={{
             background: 'linear-gradient(180deg, hsl(var(--noir-mid)/0.55), hsl(var(--noir-deep)/0.75))',
-            border: '1px solid hsl(var(--noir-gold)/0.28)',
+            border: '1px solid hsl(var(--border))',
             boxShadow: '0 12px 36px -18px hsl(0 0% 0% / 0.65)'
           }}
         >
@@ -341,8 +341,8 @@ export default function MyTickets() {
             className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0"
             style={{
               background: 'hsl(var(--noir-charcoal))',
-              border: '1px solid hsl(var(--noir-gold)/0.35)',
-              boxShadow: '0 8px 20px -8px hsl(var(--noir-gold)/0.35)'
+              border: '1px solid hsl(var(--border))',
+              boxShadow: '0 8px 20px -8px hsl(var(--navy)/0.14)'
             }}
           >
             <Ticket className="w-7 h-7" style={{ color: 'hsl(var(--noir-gold))' }} />
