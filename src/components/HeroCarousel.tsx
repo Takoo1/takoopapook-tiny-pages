@@ -188,7 +188,10 @@ export function HeroCarousel() {
                 )}
               </div>
             ) : (
-              <>
+              <div 
+                onClick={scrollToGames}
+                className={`${isMobile ? 'cursor-pointer' : 'cursor-default'} w-full h-full relative group`}
+              >
                 {media.type === 'image' ? (
                   <img
                     src={media.url}
@@ -208,7 +211,7 @@ export function HeroCarousel() {
                     poster={media.thumbnail_url}
                   />
                 )}
-              </>
+              </div>
             )}
           </div>
         ))}
