@@ -312,7 +312,7 @@ export default function LotteryDetail() {
               </div>
               {/* Price badge */}
               <div className="absolute top-3 right-3">
-                <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold shadow-lg bg-lottery-gold text-black">
+                <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold shadow-sm bg-[hsl(var(--lottery-gold))] text-[hsl(var(--navy))]">
                   <Ticket className="w-3 h-3" strokeWidth={2.5} />
                   ₹{game.ticket_price}
                 </span>
@@ -628,7 +628,7 @@ export default function LotteryDetail() {
             </div>
             <Button
               onClick={handleBuyNow}
-              className="flex-1 h-12 rounded-2xl font-semibold bg-lottery-gold hover:bg-lottery-gold/90 text-black shadow-lg"
+              className="flex-1 h-12 rounded-2xl font-semibold bg-[image:var(--gradient-gold)] hover:brightness-[1.03] text-[hsl(var(--navy))] font-bold shadow-[0_6px_18px_-10px_hsl(var(--lottery-gold)/0.6)]"
               size="lg"
             >
               {selectedTickets.length > 0 ? 'Buy Now' : 'Select Tickets'}

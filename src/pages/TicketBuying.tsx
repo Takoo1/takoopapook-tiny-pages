@@ -317,7 +317,7 @@ export default function TicketBuying() {
             </div>
             {userId && suggestedDiscountRs > 0 && !discountApplied && (
               <Button size="sm" onClick={handleApplyDiscount} disabled={applyingDiscount}
-                className="w-full mt-3 rounded-2xl h-11 bg-lottery-gold hover:bg-lottery-gold/90 text-black font-semibold">
+                className="w-full mt-3 rounded-2xl h-11 bg-[image:var(--gradient-gold)] hover:brightness-[1.03] text-[hsl(var(--navy))] font-bold">
                 {applyingDiscount ? 'Applying…' : `Apply ₹${suggestedDiscountRs} FC Discount`}
               </Button>
             )}
@@ -402,7 +402,7 @@ export default function TicketBuying() {
             <Button
               onClick={handleBuyTickets}
               disabled={loading || !canSubmit}
-              className="flex-1 h-12 rounded-2xl font-semibold bg-lottery-gold hover:bg-lottery-gold/90 text-black shadow-lg disabled:opacity-60"
+              className="flex-1 h-12 rounded-2xl font-semibold bg-[image:var(--gradient-gold)] hover:brightness-[1.03] text-[hsl(var(--navy))] font-bold shadow-[0_6px_18px_-10px_hsl(var(--lottery-gold)/0.6)] disabled:opacity-60"
               size="lg"
             >
               {loading ? 'Processing…' : `Pay ₹${finalPayable}`}

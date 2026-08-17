@@ -40,7 +40,7 @@ function resolveStatus(status: LotteryCardProps['status'], availableTickets: num
 const STATUS_META: Record<StatusKey, { label: string; icon: any; dotClass: string; textClass: string }> = {
   live: { label: 'Live', icon: Radio, dotClass: 'bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.8)] animate-pulse', textClass: 'text-white' },
   closing_soon: { label: 'Closing Soon', icon: Hourglass, dotClass: 'bg-[hsl(var(--warning))]', textClass: 'text-white' },
-  coming_soon: { label: 'Coming Soon', icon: Clock, dotClass: 'bg-sky-300', textClass: 'text-white' },
+  coming_soon: { label: 'Coming Soon', icon: Clock, dotClass: 'bg-[hsl(var(--primary-glow))]', textClass: 'text-white' },
   sold_out: { label: 'Sold Out', icon: XCircle, dotClass: 'bg-white/70', textClass: 'text-white' },
   booking_closed: { label: 'Booking Closed', icon: Ban, dotClass: 'bg-[hsl(var(--warning))]', textClass: 'text-white' },
   winner_declared: { label: 'Winner Declared', icon: Trophy, dotClass: 'bg-[hsl(var(--success))]', textClass: 'text-white' },
@@ -92,7 +92,7 @@ export function LotteryCard({
         {/* Single glass overlay bar: status (left) + price (right) — hidden for Coming Soon */}
         {statusKey !== 'coming_soon' && (
           <div className="absolute top-2.5 left-2.5 right-2.5">
-            <div className="flex items-center justify-between gap-2 rounded-full pl-3 pr-1 py-1 bg-black/25 backdrop-blur-sm ring-1 ring-white/10">
+            <div className="flex items-center justify-between gap-2 rounded-full pl-3 pr-1 py-1 bg-[hsl(var(--navy)/0.35)] backdrop-blur-sm ring-1 ring-white/15">
               <div className={`flex items-center gap-1.5 text-[11px] font-semibold ${statusMeta.textClass}`}>
                 <span className={`w-1.5 h-1.5 rounded-full ${statusMeta.dotClass}`} />
                 {statusMeta.label}

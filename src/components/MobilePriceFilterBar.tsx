@@ -15,14 +15,14 @@ const FILTERS = [
   {
     value: "all",
     label: "All",
-    base: "from-amber-600 via-yellow-600 to-amber-700",
-    ring: "ring-amber-300/60",
+    base: "from-[hsl(var(--lottery-gold-light))] to-[hsl(var(--lottery-gold))]",
+    ring: "ring-[hsl(var(--lottery-gold-light))]/60",
     glow: "shadow-[0_-6px_20px_-6px_hsl(43_70%_50%/0.7)]",
   },
   {
     value: "200",
     label: "Rs. 200",
-    base: "from-neutral-700 to-neutral-900",
+    base: "from-[hsl(var(--primary))] to-[hsl(var(--navy))]",
     ring: "ring-neutral-400/60",
     glow: "shadow-[0_-6px_20px_-6px_hsl(0_0%_30%/0.7)]",
   },
@@ -36,8 +36,8 @@ const FILTERS = [
   {
     value: "1000",
     label: "Rs. 1000",
-    base: "from-yellow-600 to-amber-800",
-    ring: "ring-yellow-300/60",
+    base: "from-[hsl(var(--lottery-gold))] to-[hsl(var(--warning))]",
+    ring: "ring-[hsl(var(--lottery-gold-light))]/60",
     glow: "shadow-[0_-6px_20px_-6px_hsl(43_80%_45%/0.7)]",
   },
 ];
