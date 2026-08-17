@@ -19,8 +19,8 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				sans: ['Inter', 'Roboto', 'Open Sans', 'Proxima Nova', 'system-ui', '-apple-system', 'sans-serif'],
-				display: ['Roboto', 'Inter', 'Open Sans', 'system-ui', 'sans-serif'],
+				sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+				display: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
 			},
 			spacing: {
 				'safe-top': 'env(safe-area-inset-top)',
@@ -50,6 +50,11 @@ export default {
 					DEFAULT: 'hsl(var(--secondary))',
 					foreground: 'hsl(var(--secondary-foreground))'
 				},
+				warning: {
+					DEFAULT: 'hsl(var(--warning))',
+					foreground: 'hsl(0 0% 100%)'
+				},
+				navy: 'hsl(var(--navy))',
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
 					foreground: 'hsl(var(--destructive-foreground))'

@@ -39,11 +39,11 @@ function resolveStatus(status: LotteryCardProps['status'], availableTickets: num
 
 const STATUS_META: Record<StatusKey, { label: string; icon: any; dotClass: string; textClass: string }> = {
   live: { label: 'Live', icon: Radio, dotClass: 'bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.8)] animate-pulse', textClass: 'text-white' },
-  closing_soon: { label: 'Closing Soon', icon: Hourglass, dotClass: 'bg-amber-400', textClass: 'text-amber-200' },
-  coming_soon: { label: 'Coming Soon', icon: Clock, dotClass: 'bg-sky-400', textClass: 'text-sky-200' },
-  sold_out: { label: 'Sold Out', icon: XCircle, dotClass: 'bg-muted-foreground', textClass: 'text-muted-foreground' },
-  booking_closed: { label: 'Booking Closed', icon: Ban, dotClass: 'bg-orange-400', textClass: 'text-orange-200' },
-  winner_declared: { label: 'Winner Declared', icon: Trophy, dotClass: 'bg-emerald-400', textClass: 'text-emerald-200' },
+  closing_soon: { label: 'Closing Soon', icon: Hourglass, dotClass: 'bg-[hsl(var(--warning))]', textClass: 'text-white' },
+  coming_soon: { label: 'Coming Soon', icon: Clock, dotClass: 'bg-sky-300', textClass: 'text-white' },
+  sold_out: { label: 'Sold Out', icon: XCircle, dotClass: 'bg-white/70', textClass: 'text-white' },
+  booking_closed: { label: 'Booking Closed', icon: Ban, dotClass: 'bg-[hsl(var(--warning))]', textClass: 'text-white' },
+  winner_declared: { label: 'Winner Declared', icon: Trophy, dotClass: 'bg-[hsl(var(--success))]', textClass: 'text-white' },
 };
 
 export function LotteryCard({
@@ -68,7 +68,7 @@ export function LotteryCard({
   return (
     <Card
       onClick={() => onViewDetails(id)}
-      className="group relative overflow-hidden cursor-pointer rounded-[20px] border border-border/50 bg-card flex flex-col transition-all duration-300 ease-out shadow-[0_1px_2px_rgba(0,0,0,0.06),0_6px_18px_-10px_rgba(0,0,0,0.35)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.08),0_16px_32px_-14px_rgba(0,0,0,0.45)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] animate-fade-in"
+      className="group relative overflow-hidden cursor-pointer rounded-[20px] border border-border bg-card flex flex-col transition-all duration-300 ease-out shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-card)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] animate-fade-in"
     >
       {/* Hero image — edge-to-edge, top-rounded */}
       <div className="relative w-full aspect-[16/10] overflow-hidden rounded-t-[20px] bg-muted">
@@ -97,7 +97,7 @@ export function LotteryCard({
                 <span className={`w-1.5 h-1.5 rounded-full ${statusMeta.dotClass}`} />
                 {statusMeta.label}
               </div>
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-lottery-gold text-black">
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[hsl(var(--lottery-gold))] text-[hsl(var(--navy))]">
                 ₹{ticketPrice}
               </span>
             </div>
@@ -107,7 +107,7 @@ export function LotteryCard({
 
       {/* Content */}
       <div className="flex flex-col gap-2 px-4 pt-3 pb-3 flex-1">
-        <h3 className="text-[17px] font-bold leading-snug tracking-tight text-foreground line-clamp-2 text-center">
+        <h3 className="text-[17px] font-bold leading-snug tracking-tight text-[hsl(var(--navy))] line-clamp-2 text-center">
           {title}
         </h3>
 
@@ -129,14 +129,14 @@ export function LotteryCard({
 
       <Button
         size="sm"
-        className="h-11 w-full shrink-0 rounded-none rounded-b-[19px] border-0 font-semibold text-sm tracking-tight text-white bg-gradient-to-b from-amber-600 via-yellow-600 to-amber-700 ring-1 ring-inset ring-amber-300/60 shadow-[0_6px_18px_-6px_rgba(217,119,6,0.45)] active:translate-y-0.5 active:scale-[0.99] transition-all duration-200 group/btn relative overflow-hidden"
+        className="h-11 w-full shrink-0 rounded-none rounded-b-[19px] border-0 font-semibold text-sm tracking-tight text-primary-foreground bg-[image:var(--gradient-primary)] ring-0 shadow-[0_6px_18px_-10px_hsl(var(--primary)/0.6)] active:translate-y-0.5 active:scale-[0.99] transition-all duration-200 group/btn relative overflow-hidden"
         onClick={(e) => {
           e.stopPropagation();
           onViewDetails(id);
         }}
       >
         {/* glossy top sheen */}
-        <span className="pointer-events-none absolute inset-x-4 top-1 h-1/3 rounded-t-xl bg-gradient-to-b from-white/35 to-transparent" />
+        <span className="pointer-events-none absolute inset-x-4 top-1 h-1/3 rounded-t-xl bg-gradient-to-b from-white/20 to-transparent" />
         <span className="relative flex items-center justify-center gap-1 drop-shadow-[0_1px_1px_rgba(0,0,0,0.25)]">
           View Details
           <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover/btn:translate-x-0.5" strokeWidth={2.5} />

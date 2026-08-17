@@ -72,7 +72,7 @@ export function MobileBottomNav() {
     <>
       <nav
         aria-label="Primary"
-        className="fixed bottom-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-xl border-t border-border/60"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl border-t border-border shadow-[0_-2px_12px_-6px_hsl(var(--foreground)/0.12)]"
       >
         <div className="pb-safe">
           <div className="flex items-stretch justify-between px-2 pt-1.5 pb-1 max-w-md mx-auto">
@@ -97,7 +97,7 @@ export function MobileBottomNav() {
                     className={cn(
                       "flex items-center justify-center h-8 w-14 rounded-full transition-all duration-300",
                       isActive
-                        ? "bg-primary/12"
+                        ? "bg-secondary"
                         : "bg-transparent group-hover:bg-muted/60"
                     )}
                   >

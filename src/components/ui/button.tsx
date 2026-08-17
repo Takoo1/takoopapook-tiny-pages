@@ -15,15 +15,18 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground shadow-[0_1px_2px_hsl(var(--foreground)/0.08),0_4px_12px_-4px_hsl(var(--destructive)/0.4)] hover:brightness-105",
         outline:
-          "border border-border bg-background/60 backdrop-blur-sm text-foreground hover:bg-muted/60 hover:border-primary/40",
+          "border border-primary/30 bg-card text-primary hover:bg-secondary hover:border-primary/50",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-muted/60 hover:text-foreground",
+        ghost: "hover:bg-secondary/70 hover:text-primary text-primary",
         link: "text-primary underline-offset-4 hover:underline rounded-none active:scale-100",
+        gold:
+          "bg-[image:var(--gradient-gold)] text-[hsl(var(--navy))] hover:brightness-[1.03] shadow-[0_2px_4px_hsl(var(--foreground)/0.06),0_8px_20px_-8px_hsl(var(--lottery-gold)/0.55)] font-bold",
         lottery:
-          "bg-gradient-to-r from-lottery-gold to-lottery-gold-light text-primary-foreground hover:brightness-105 shadow-[var(--shadow-lottery)] font-semibold",
+          "bg-[image:var(--gradient-gold)] text-[hsl(var(--navy))] hover:brightness-[1.03] shadow-[var(--shadow-glow)] font-bold",
         "lottery-outline":
-          "border border-lottery-gold text-lottery-gold hover:bg-lottery-gold hover:text-primary-foreground bg-transparent",
+          "border border-lottery-gold text-[hsl(var(--lottery-gold))] hover:bg-[hsl(var(--lottery-gold)/0.12)] bg-transparent",
+
       },
       size: {
         default: "h-11 px-5 py-2.5",
