@@ -25,7 +25,7 @@ export function MobileLayout({ children }: MobileLayoutProps) {
           className="pointer-events-none fixed inset-0 z-0"
           style={{
             background:
-              'radial-gradient(60% 40% at 50% 0%, hsl(var(--primary) / 0.06), transparent 70%), radial-gradient(50% 40% at 100% 100%, hsl(var(--accent) / 0.05), transparent 70%)',
+              'radial-gradient(70% 40% at 50% 0%, hsl(var(--primary) / 0.05), transparent 70%), radial-gradient(50% 40% at 100% 100%, hsl(var(--lottery-gold) / 0.05), transparent 70%)',
           }}
         />
       )}

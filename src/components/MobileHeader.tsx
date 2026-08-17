@@ -72,7 +72,7 @@ export function MobileHeader() {
       });
     }, 100);
   };
-  return <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-border/50 pt-safe-top h-[58px]">
+  return <header className="fixed top-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl border-b border-border pt-safe-top h-[58px]">
       <div className="flex items-center justify-between px-4 py-1.5 h-full relative">
         {/* Left side - Site Logo */}
         <div className="flex items-center gap-1.5 animate-fade-in shrink-0" onClick={() => navigate('/')} role="button">
@@ -87,16 +87,16 @@ export function MobileHeader() {
 
           {user ? (
         <>
-              <Button variant="ghost" onClick={handleWalletClick} className="flex items-center gap-1.5 h-9 px-3 bg-primary/10 hover:bg-primary/15 rounded-full border border-primary/25 transition-all duration-200 active:scale-95">
+              <Button variant="ghost" onClick={handleWalletClick} className="flex items-center gap-1.5 h-9 px-3 bg-[hsl(var(--lottery-gold)/0.12)] hover:bg-[hsl(var(--lottery-gold)/0.18)] rounded-full border border-[hsl(var(--lottery-gold)/0.35)] transition-all duration-200 active:scale-95">
                 <img src={fcCoin} alt="FC" className="w-4 h-4" />
-                <span className="text-sm font-bold text-primary">
+                <span className="text-sm font-bold text-[hsl(var(--lottery-gold))]">
                   {fcBalance.toLocaleString()}
                 </span>
               </Button>
 
-              <Button variant="ghost" onClick={handleReferralClick} className="flex items-center gap-1 h-9 px-2.5 bg-muted/60 hover:bg-muted rounded-full border border-border/60 transition-all duration-200 active:scale-95">
-                <Gift className="w-3.5 h-3.5 text-foreground/80" />
-                <span className="text-xs font-semibold text-foreground/90">
+              <Button variant="ghost" onClick={handleReferralClick} className="flex items-center gap-1 h-9 px-2.5 bg-secondary hover:bg-secondary/80 rounded-full border border-primary/15 transition-all duration-200 active:scale-95">
+                <Gift className="w-3.5 h-3.5 text-primary" />
+                <span className="text-xs font-semibold text-primary">
                   Refer
                 </span>
               </Button>
