@@ -16,6 +16,7 @@ interface HeroMedia {
 
 export function HeroCarousel() {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [heroMedia, setHeroMedia] = useState<HeroMedia[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
