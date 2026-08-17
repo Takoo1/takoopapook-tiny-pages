@@ -164,7 +164,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', 'Roboto', 'Open Sans', 'Proxima Nova', system-ui, -apple-system, sans-serif;
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
     font-feature-settings: 'cv02','cv03','cv04','cv11','ss01';
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -180,7 +180,7 @@
   h5 { @apply text-base font-semibold tracking-tight; }
   h6 { @apply text-sm font-semibold tracking-tight uppercase text-muted-foreground; }
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Inter', 'Roboto', 'Open Sans', system-ui, sans-serif;
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
   }
   p { line-height: 1.6; }
   small, .caption { @apply text-xs text-muted-foreground; }
