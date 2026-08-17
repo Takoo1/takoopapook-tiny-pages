@@ -128,6 +128,14 @@ export function HeroCarousel() {
     }
   };
 
+  const scrollToGames = () => {
+    if (!isMobile) return;
+    const gamesSection = document.getElementById('games');
+    if (gamesSection) {
+      gamesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   if (loading) {
     return (
       <div className="absolute inset-0 bg-muted/20 flex items-center justify-center">
