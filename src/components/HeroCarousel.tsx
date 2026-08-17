@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import heroFallback from "@/assets/hero-fortune-bridge.jpg";
 
 interface HeroMedia {
@@ -16,6 +16,7 @@ interface HeroMedia {
 
 export function HeroCarousel() {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [heroMedia, setHeroMedia] = useState<HeroMedia[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -127,6 +128,14 @@ export function HeroCarousel() {
     }
   };
 
+  const scrollToGames = () => {
+    if (!isMobile) return;
+    const gamesSection = document.getElementById('games');
+    if (gamesSection) {
+      gamesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   if (loading) {
     return (
       <div className="absolute inset-0 bg-muted/20 flex items-center justify-center">
@@ -179,7 +188,10 @@ export function HeroCarousel() {
                 )}
               </div>
             ) : (
-              <>
+              <div 
+                onClick={scrollToGames}
+                className={`${isMobile ? 'cursor-pointer' : 'cursor-default'} w-full h-full relative group`}
+              >
                 {media.type === 'image' ? (
                   <img
                     src={media.url}
@@ -199,7 +211,7 @@ export function HeroCarousel() {
                     poster={media.thumbnail_url}
                   />
                 )}
-              </>
+              </div>
             )}
           </div>
         ))}
