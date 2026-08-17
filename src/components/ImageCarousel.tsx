@@ -11,17 +11,21 @@ export function ImageCarousel() {
   const [images, setImages] = useState<MediaImage[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [dragOffset, setDragOffset] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartX = useState<{ x: number | null }>({ x: null })[0];
   const isMobile = useIsMobile();
   useEffect(() => {
     fetchImages();
   }, []);
   useEffect(() => {
-    if (images.length === 0) return;
+    if (images.length === 0 || isDragging) return;
     const interval = setInterval(() => {
       setCurrentIndex(prevIndex => prevIndex === images.length - 1 ? 0 : prevIndex + 1);
     }, 7000);
     return () => clearInterval(interval);
-  }, [images.length]);
+  }, [images.length, isDragging]);
+
   const fetchImages = async () => {
     try {
       // First try to fetch from media_images table
