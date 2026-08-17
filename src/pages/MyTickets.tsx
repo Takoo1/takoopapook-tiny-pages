@@ -169,7 +169,7 @@ export default function MyTickets() {
             <p className="text-sm mb-5" style={{ color: 'hsl(var(--noir-cream)/0.7)' }}>
               Browse premium draws and grab your first ticket to fortune.
             </p>
-            <button onClick={() => navigate('/')} className="home-gold-btn">
+            <button onClick={() => navigate('/')} className="home-navy-btn">
               Browse Lotteries
             </button>
           </div>
