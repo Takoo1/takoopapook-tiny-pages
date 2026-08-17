@@ -282,7 +282,7 @@ export default function LotteryDetail() {
         </div>
       )}
 
-      <div className="max-w-4xl mx-auto px-4 pt-4 pb-32 space-y-5">
+      <div className="max-w-4xl mx-auto px-4 pt-4 pb-24 md:pb-32 space-y-5">
         {/* HERO — ticket image */}
         <Card className="overflow-hidden rounded-[24px] border border-border/60 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_20px_50px_-20px_rgba(0,0,0,0.25)] p-0">
           <div className="relative">
@@ -616,20 +616,19 @@ export default function LotteryDetail() {
 
       {/* Sticky Buy Bar — Mobile Only */}
       {isMobile && game.status === 'online' && (
-        <div className="fixed bottom-16 left-0 right-0 z-30 px-4 pb-3 pt-2">
-          <div className="rounded-2xl bg-background/90 backdrop-blur-xl border border-border/60 shadow-[0_-8px_30px_-8px_rgba(0,0,0,0.25)] p-3 flex items-center gap-3">
-            <div className="min-w-0 flex-1">
-              <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">
+        <div className="fixed bottom-16 left-0 right-0 z-30 px-3 pb-2 pt-1.5">
+          <div className="rounded-xl bg-background/90 backdrop-blur-xl border border-border/60 shadow-[0_-6px_20px_-10px_rgba(0,0,0,0.25)] px-3 py-2 flex items-center gap-2.5">
+            <div className="min-w-0 flex-1 leading-none">
+              <div className="text-[9px] uppercase tracking-wider font-semibold text-muted-foreground">
                 {selectedTickets.length > 0 ? `${selectedTickets.length} selected` : 'No tickets'}
               </div>
-              <div className="text-lg font-bold text-gold-shimmer leading-tight tabular-nums">
+              <div className="text-sm font-bold text-gold-shimmer leading-tight tabular-nums mt-0.5">
                 ₹{selectedTickets.length * game.ticket_price}
               </div>
             </div>
             <Button
               onClick={handleBuyNow}
-              className="flex-1 h-12 rounded-2xl font-semibold bg-[image:var(--gradient-gold)] hover:brightness-[1.03] text-[hsl(var(--navy))] font-bold shadow-[0_6px_18px_-10px_hsl(var(--lottery-gold)/0.6)]"
-              size="lg"
+              className="flex-1 h-9 px-3 text-sm rounded-xl bg-[image:var(--gradient-gold)] hover:brightness-[1.03] text-[hsl(var(--navy))] font-bold shadow-[0_4px_14px_-10px_hsl(var(--lottery-gold)/0.6)]"
             >
               {selectedTickets.length > 0 ? 'Buy Now' : 'Select Tickets'}
             </Button>

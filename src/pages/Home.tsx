@@ -353,7 +353,7 @@ export default function Home() {
       )}
 
       {/* Hero Section */}
-      <section className="relative w-full home-band" style={{ aspectRatio: '16/9' }}>
+      <section className="relative w-full home-band md:hidden" style={{ aspectRatio: '16/9' }}>
         <div className="relative z-10 h-full"><HeroCarousel /></div>
       </section>
 

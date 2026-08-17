@@ -48,7 +48,11 @@ export function AuthButton() {
       async (event, session) => {
         setUser(session?.user ?? null);
         setLoading(false);
-        
+
+        if (event === 'SIGNED_OUT') {
+          sessionStorage.removeItem('terms_login_checked');
+        }
+
         // Create profile when user signs up
         if (event === 'SIGNED_IN' && session?.user) {
           // Remove setTimeout to ensure profile creation happens immediately
@@ -56,18 +60,24 @@ export function AuthButton() {
             loadFcData(session.user.id);
           });
 
-          // Check terms acceptance for newly signed-in users
-          setTimeout(async () => {
-            const hasAcceptedTerms = await checkAcceptance('user_login');
-            if (!hasAcceptedTerms) {
-              showTermsPopup(
-                'user_login',
-                [1, 3, 10], // Show sections 1, 3, and 10
-                () => {}, // No additional action needed after acceptance
-                "Welcome! Please Review Our Terms"
-              );
-            }
-          }, 1000); // Small delay to let UI settle
+          // Only check once per browser session (SIGNED_IN also fires on refresh)
+          const alreadyChecked = sessionStorage.getItem('terms_login_checked') === session.user.id;
+          if (!alreadyChecked) {
+            sessionStorage.setItem('terms_login_checked', session.user.id);
+
+            // Check terms acceptance for newly signed-in users
+            setTimeout(async () => {
+              const hasAcceptedTerms = await checkAcceptance('user_login');
+              if (!hasAcceptedTerms) {
+                showTermsPopup(
+                  'user_login',
+                  [1, 3, 10], // Show sections 1, 3, and 10
+                  () => {}, // No additional action needed after acceptance
+                  "Welcome! Please Review Our Terms"
+                );
+              }
+            }, 1000); // Small delay to let UI settle
+          }
         }
       }
     );

@@ -12,20 +12,21 @@ export const useTermsAcceptance = () => {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (user) {
-        // Check database for logged-in users
+        // Check database for logged-in users (tolerate duplicate rows)
         const { data, error } = await supabase
           .from('user_terms_acceptance')
           .select('id')
           .eq('user_id', user.id)
           .eq('acceptance_type', acceptanceType)
-          .maybeSingle();
+          .order('created_at', { ascending: false })
+          .limit(1);
 
         if (error) {
           console.error('Error checking terms acceptance:', error);
           return false;
         }
 
-        return !!data;
+        return !!(data && data.length > 0);
       } else {
         // Check localStorage for anonymous users
         const stored = localStorage.getItem(`terms_accepted_${acceptanceType}`);
@@ -57,6 +58,16 @@ export const useTermsAcceptance = () => {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (user) {
+        // Avoid inserting duplicate acceptance rows
+        const { data: existing } = await supabase
+          .from('user_terms_acceptance')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('acceptance_type', acceptanceType)
+          .limit(1);
+
+        if (existing && existing.length > 0) return true;
+
         // Save to database for logged-in users
         const { error } = await supabase
           .from('user_terms_acceptance')
