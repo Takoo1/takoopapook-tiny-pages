@@ -101,7 +101,7 @@ export function MobileHeader() {
                 </span>
               </Button>
             </>) : (
-        <Button size="sm" onClick={handleSignUpPrompt} className="relative overflow-hidden bg-primary hover:bg-primary/90 text-primary-foreground font-semibold h-9 px-4 text-xs rounded-full transition-all duration-200 active:scale-95">
+        <Button size="sm" onClick={handleSignUpPrompt} className="relative overflow-hidden btn-gold-3d font-bold h-9 px-3.5 text-xs rounded-full transition-all duration-200 active:scale-95 shrink-0">
               <Gift className="w-3.5 h-3.5 mr-1.5" />
               <span>Get 50 FC Free</span>
             </Button>)}
