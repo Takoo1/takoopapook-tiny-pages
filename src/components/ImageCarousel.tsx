@@ -90,7 +90,7 @@ export function ImageCarousel() {
   if (loading || images.length === 0) {
     return null;
   }
-  return <section className="py-8 bg-gradient-to-r from-primary/5 to-accent/5">
+  return <section className="pt-4 pb-8 bg-gradient-to-r from-primary/5 to-accent/5">
       <div className="mx-auto px-2 md:px-4">
         {isMobile ?
       // Mobile Layout: Heading above carousel
