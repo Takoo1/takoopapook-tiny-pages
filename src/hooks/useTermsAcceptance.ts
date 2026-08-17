@@ -58,6 +58,16 @@ export const useTermsAcceptance = () => {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (user) {
+        // Avoid inserting duplicate acceptance rows
+        const { data: existing } = await supabase
+          .from('user_terms_acceptance')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('acceptance_type', acceptanceType)
+          .limit(1);
+
+        if (existing && existing.length > 0) return true;
+
         // Save to database for logged-in users
         const { error } = await supabase
           .from('user_terms_acceptance')

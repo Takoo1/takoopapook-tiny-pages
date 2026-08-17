@@ -82,16 +82,25 @@ export default function TermsPopupModal({
       const { data: { user } } = await supabase.auth.getUser();
       
       if (user) {
-        // Save acceptance to database for logged-in users
-        const { error } = await supabase
+        // Save acceptance to database for logged-in users (skip if already recorded)
+        const { data: existing } = await supabase
           .from('user_terms_acceptance')
-          .insert({
-            user_id: user.id,
-            acceptance_type: acceptanceType,
-            terms_version: '1.0'
-          });
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('acceptance_type', acceptanceType)
+          .limit(1);
 
-        if (error) throw error;
+        if (!existing || existing.length === 0) {
+          const { error } = await supabase
+            .from('user_terms_acceptance')
+            .insert({
+              user_id: user.id,
+              acceptance_type: acceptanceType,
+              terms_version: '1.0'
+            });
+
+          if (error) throw error;
+        }
       } else {
         // Save to localStorage for anonymous users
         const acceptanceData = {
