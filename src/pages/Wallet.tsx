@@ -142,11 +142,11 @@ export default function Wallet() {
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div
           className="absolute -top-24 -right-24 w-[420px] h-[420px] rounded-full blur-3xl opacity-[0.18]"
-          style={{ background: 'radial-gradient(circle, hsl(var(--noir-gold)/0.6), transparent 60%)' }}
+          style={{ background: 'radial-gradient(circle, hsl(var(--noir-gold)/0.18), transparent 65%)' }}
         />
         <div
           className="absolute top-[40%] -left-24 w-[360px] h-[360px] rounded-full blur-3xl opacity-[0.10]"
-          style={{ background: 'radial-gradient(circle, hsl(var(--noir-gold)/0.5), transparent 60%)' }}
+          style={{ background: 'radial-gradient(circle, hsl(var(--noir-gold)/0.15), transparent 65%)' }}
         />
       </div>
 
@@ -175,7 +175,7 @@ export default function Wallet() {
             className="relative rounded-[24px] p-5 md:p-7 overflow-hidden animate-fade-in-up"
             style={{
               background: 'linear-gradient(180deg, hsl(var(--noir-mid)/0.55), hsl(var(--noir-deep)/0.75))',
-              border: '1px solid hsl(var(--noir-gold)/0.28)',
+              border: '1px solid hsl(var(--border))',
               boxShadow: '0 12px 36px -18px hsl(0 0% 0% / 0.65)'
             }}
           >
@@ -188,8 +188,8 @@ export default function Wallet() {
                 className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
                 style={{
                   background: 'hsl(var(--noir-charcoal))',
-                  border: '1px solid hsl(var(--noir-gold)/0.35)',
-                  boxShadow: '0 8px 20px -8px hsl(var(--noir-gold)/0.35)'
+                  border: '1px solid hsl(var(--border))',
+                  boxShadow: '0 8px 20px -8px hsl(var(--navy)/0.14)'
                 }}
               >
                 <img src={fcCoin} alt="FC" className="w-11 h-11" />
@@ -226,7 +226,7 @@ export default function Wallet() {
           className="relative rounded-[24px] p-4 md:p-7 overflow-hidden animate-fade-in-up"
           style={{
             background: 'linear-gradient(180deg, hsl(var(--noir-mid)/0.28), hsl(var(--noir-deep)/0.6))',
-            border: '1px solid hsl(var(--noir-gold)/0.18)',
+            border: '1px solid hsl(var(--border))',
             boxShadow: '0 10px 32px -18px hsl(0 0% 0% / 0.55)'
           }}
         >
@@ -257,9 +257,9 @@ export default function Wallet() {
                       : 'hsl(var(--noir-charcoal)/0.55)',
                     border: pkg.popular
                       ? '1px solid hsl(var(--noir-gold)/0.55)'
-                      : '1px solid hsl(var(--noir-gold)/0.15)',
+                      : '1px solid hsl(var(--border))',
                     boxShadow: pkg.popular
-                      ? '0 10px 28px -12px hsl(var(--noir-gold)/0.35)'
+                      ? '0 10px 28px -12px hsl(var(--navy)/0.14)'
                       : '0 6px 18px -12px hsl(0 0% 0% / 0.5)'
                   }}
                 >
@@ -328,7 +328,7 @@ export default function Wallet() {
           className="relative rounded-[24px] p-4 md:p-7 overflow-hidden animate-fade-in-up scroll-mt-[72px]"
           style={{
             background: 'linear-gradient(180deg, hsl(var(--noir-mid)/0.28), hsl(var(--noir-deep)/0.6))',
-            border: '1px solid hsl(var(--noir-gold)/0.18)',
+            border: '1px solid hsl(var(--border))',
             boxShadow: '0 10px 32px -18px hsl(0 0% 0% / 0.55)'
           }}
         >
@@ -380,7 +380,7 @@ export default function Wallet() {
                     className="flex items-center gap-3 p-3 rounded-[14px]"
                     style={{
                       background: 'hsl(var(--noir-charcoal)/0.45)',
-                      border: '1px solid hsl(var(--noir-gold)/0.12)'
+                      border: '1px solid hsl(var(--border))'
                     }}
                   >
                     <div

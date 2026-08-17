@@ -161,7 +161,7 @@ export default function Contact() {
               </p>
               <Button 
                 onClick={handleWhatsApp}
-                className="w-full bg-green-500 hover:bg-green-600 text-white"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
                 size="sm"
               >
                 <svg className="w-3 h-3 md:w-4 md:h-4 mr-2 fill-current" viewBox="0 0 24 24">

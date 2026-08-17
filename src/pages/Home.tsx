@@ -309,12 +309,12 @@ export default function Home() {
     <div className="home-noir min-h-screen relative font-['Manrope']">
       {/* Ambient gold spot */}
       <div aria-hidden className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-        <div className="absolute -top-24 -right-24 w-[420px] h-[420px] rounded-full blur-3xl opacity-[0.18]" style={{ background: 'radial-gradient(circle, hsl(var(--noir-gold)/0.6), transparent 60%)' }} />
+        <div className="absolute -top-24 -right-24 w-[420px] h-[420px] rounded-full blur-3xl opacity-[0.18]" style={{ background: 'radial-gradient(circle, hsl(var(--noir-gold)/0.18), transparent 65%)' }} />
         <div className="absolute bottom-0 -left-32 w-[380px] h-[380px] rounded-full blur-3xl opacity-[0.12]" style={{ background: 'radial-gradient(circle, hsl(var(--noir-mid)/0.9), transparent 60%)' }} />
       </div>
       <div className="relative z-10">
       {showReferralBanner && (
-        <div className="fixed top-16 left-0 right-0 z-50 backdrop-blur-md" style={{ background: 'linear-gradient(90deg, hsl(var(--noir-mid)/0.85), hsl(var(--noir-deep)/0.85))', borderBottom: '1px solid hsl(var(--noir-gold)/0.35)' }}>
+        <div className="fixed top-16 left-0 right-0 z-50 backdrop-blur-md" style={{ background: 'linear-gradient(90deg, hsl(var(--noir-mid)/0.85), hsl(var(--noir-deep)/0.85))', borderBottom: '1px solid hsl(var(--border))' }}>
           <div className="max-w-4xl mx-auto p-4">
             <Alert className="border-0 bg-transparent">
               <Gift className="h-4 w-4" style={{ color: 'hsl(var(--noir-gold))' }} />
@@ -458,7 +458,7 @@ export default function Home() {
           
           {lotteryGames.length === 0 ? (
             <div className="home-empty mx-auto max-w-md text-center py-14 px-6 mt-4 animate-fade-in-up">
-              <div className="mx-auto mb-4 w-14 h-14 rounded-full flex items-center justify-center" style={{ background: 'hsl(var(--noir-mid))', border: '1px solid hsl(var(--noir-gold)/0.35)' }}>
+              <div className="mx-auto mb-4 w-14 h-14 rounded-full flex items-center justify-center" style={{ background: 'hsl(var(--noir-mid))', border: '1px solid hsl(var(--border))' }}>
                 <Trophy className="w-7 h-7" style={{ color: 'hsl(var(--noir-gold))' }} />
               </div>
               <h3 className="home-section-title text-lg mb-1">No Active Draws</h3>
@@ -490,7 +490,7 @@ export default function Home() {
                     className="relative rounded-[24px] p-4 md:p-8 overflow-hidden scroll-mt-[72px] md:scroll-mt-20 animate-fade-in-up"
                     style={{
                       background: 'linear-gradient(180deg, hsl(var(--noir-mid)/0.28), hsl(var(--noir-deep)/0.6))',
-                      border: '1px solid hsl(var(--noir-gold)/0.18)',
+                      border: '1px solid hsl(var(--border))',
                       boxShadow: '0 10px 32px -18px hsl(0 0% 0% / 0.55)'
                     }}
                   >

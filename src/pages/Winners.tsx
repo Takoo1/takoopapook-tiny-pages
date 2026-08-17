@@ -123,7 +123,7 @@ export default function Winners() {
       style={{
         background: 'hsl(var(--noir-gold)/0.14)',
         color: 'hsl(var(--noir-gold))',
-        border: '1px solid hsl(var(--noir-gold)/0.45)',
+        border: '1px solid hsl(var(--border))',
       }}
     >
       <span className="w-1.5 h-1.5 rounded-full" style={{ background: 'hsl(var(--noir-gold))' }} />
@@ -135,11 +135,11 @@ export default function Winners() {
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
       <div
         className="absolute -top-24 -right-24 w-[420px] h-[420px] rounded-full blur-3xl opacity-[0.18]"
-        style={{ background: 'radial-gradient(circle, hsl(var(--noir-gold)/0.6), transparent 60%)' }}
+        style={{ background: 'radial-gradient(circle, hsl(var(--noir-gold)/0.18), transparent 65%)' }}
       />
       <div
         className="absolute top-1/2 -left-24 w-[360px] h-[360px] rounded-full blur-3xl opacity-[0.12]"
-        style={{ background: 'radial-gradient(circle, hsl(var(--noir-gold)/0.5), transparent 60%)' }}
+        style={{ background: 'radial-gradient(circle, hsl(var(--noir-gold)/0.15), transparent 65%)' }}
       />
     </div>
   );
@@ -171,7 +171,7 @@ export default function Winners() {
           <div className="home-empty mx-auto max-w-md text-center py-14 px-6 animate-fade-in-up">
             <div
               className="mx-auto mb-4 w-16 h-16 rounded-full flex items-center justify-center"
-              style={{ background: 'hsl(var(--noir-mid))', border: '1px solid hsl(var(--noir-gold)/0.35)' }}
+              style={{ background: 'hsl(var(--noir-mid))', border: '1px solid hsl(var(--border))' }}
             >
               <Trophy className="w-8 h-8" style={{ color: 'hsl(var(--noir-gold))' }} />
             </div>
@@ -199,7 +199,7 @@ export default function Winners() {
         className="relative rounded-[24px] p-4 md:p-6 overflow-hidden animate-fade-in-up"
         style={{
           background: 'linear-gradient(180deg, hsl(var(--noir-mid)/0.28), hsl(var(--noir-deep)/0.6))',
-          border: '1px solid hsl(var(--noir-gold)/0.18)',
+          border: '1px solid hsl(var(--border))',
           boxShadow: '0 10px 32px -18px hsl(0 0% 0% / 0.55)',
           animationDelay: `${index * 60}ms`,
         }}
@@ -257,7 +257,7 @@ export default function Winners() {
                   className="flex items-center gap-3 rounded-[16px] px-3 py-2.5"
                   style={{
                     background: 'hsl(var(--noir-charcoal)/0.6)',
-                    border: '1px solid hsl(var(--noir-gold)/0.15)',
+                    border: '1px solid hsl(var(--border))',
                   }}
                 >
                   <img
@@ -265,7 +265,7 @@ export default function Winners() {
                     alt={w.name}
                     onClick={() => handleProfileClick(w)}
                     className="w-10 h-10 rounded-full object-cover cursor-pointer flex-shrink-0"
-                    style={{ border: '1px solid hsl(var(--noir-gold)/0.35)' }}
+                    style={{ border: '1px solid hsl(var(--border))' }}
                   />
                   <div className="min-w-0 flex-1">
                     <div
@@ -308,9 +308,9 @@ export default function Winners() {
           : 'hsl(var(--noir-charcoal)/0.6)',
         border: isFirst
           ? '1px solid hsl(var(--noir-gold)/0.4)'
-          : '1px solid hsl(var(--noir-gold)/0.18)',
+          : '1px solid hsl(var(--border))',
         boxShadow: isFirst
-          ? '0 8px 22px -14px hsl(var(--noir-gold)/0.5)'
+          ? '0 8px 22px -14px hsl(var(--navy)/0.14)'
           : '0 6px 18px -12px hsl(0 0% 0% / 0.55)',
       }}
     >
@@ -325,14 +325,14 @@ export default function Winners() {
           style={{
             border: isFirst
               ? '2px solid hsl(var(--noir-gold))'
-              : '1px solid hsl(var(--noir-gold)/0.35)',
+              : '1px solid hsl(var(--border))',
           }}
         />
         <div
           className="absolute -bottom-1 -right-1 rounded-full p-1 flex items-center justify-center"
           style={{
             background: 'hsl(var(--noir-deep))',
-            border: '1px solid hsl(var(--noir-gold)/0.5)',
+            border: '1px solid hsl(var(--border))',
             color: 'hsl(var(--noir-gold))',
           }}
         >
@@ -388,12 +388,12 @@ export default function Winners() {
               background:
                 'linear-gradient(135deg, hsl(var(--noir-gold)/0.16), hsl(var(--noir-mid)/0.6) 60%, hsl(var(--noir-deep)/0.8))',
               border: '1px solid hsl(var(--noir-gold)/0.4)',
-              boxShadow: '0 16px 42px -20px hsl(var(--noir-gold)/0.45)',
+              boxShadow: '0 16px 42px -20px hsl(var(--navy)/0.14)',
             }}
           >
             <div
               className="absolute -top-16 -right-16 w-56 h-56 rounded-full blur-3xl opacity-40 pointer-events-none"
-              style={{ background: 'radial-gradient(circle, hsl(var(--noir-gold)/0.6), transparent 60%)' }}
+              style={{ background: 'radial-gradient(circle, hsl(var(--noir-gold)/0.18), transparent 65%)' }}
             />
             <div className="relative flex items-center justify-between mb-4">
               <div className="home-eyebrow flex items-center gap-1.5">
@@ -412,7 +412,7 @@ export default function Winners() {
                   className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover cursor-pointer"
                   style={{
                     border: '2px solid hsl(var(--noir-gold))',
-                    boxShadow: '0 10px 28px -12px hsl(var(--noir-gold)/0.55)',
+                    boxShadow: '0 10px 28px -12px hsl(var(--navy)/0.14)',
                   }}
                 />
                 <div

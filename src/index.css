@@ -417,6 +417,15 @@
     transition: transform 150ms ease;
   }
   .home-noir .home-gold-btn:active { transform: scale(0.97); }
+  .home-noir .home-navy-btn {
+    background: linear-gradient(180deg, hsl(var(--brand-blue)), hsl(var(--brand-navy)));
+    color: #fff; font-weight: 700; border-radius: 14px;
+    padding: 0.65rem 1.15rem;
+    box-shadow: 0 6px 16px -10px hsl(var(--brand-navy) / 0.7);
+    transition: transform 150ms ease, filter 150ms ease;
+  }
+  .home-navy-btn:hover { filter: brightness(1.08); }
+  .home-navy-btn:active { transform: scale(0.97); }
   .home-noir .home-chip-row {
     border-top: 1px solid hsl(var(--border));
     border-bottom: 1px solid hsl(var(--border));
