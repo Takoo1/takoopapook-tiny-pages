@@ -87,20 +87,21 @@ export function MobileHeader() {
 
           {user ? (
         <>
-              <Button variant="ghost" onClick={handleWalletClick} className="flex items-center gap-1.5 h-9 px-3 bg-[hsl(var(--lottery-gold)/0.12)] hover:bg-[hsl(var(--lottery-gold)/0.18)] rounded-full border border-[hsl(var(--lottery-gold)/0.35)] transition-all duration-200 active:scale-95">
-                <img src={fcCoin} alt="FC" className="w-4 h-4" />
-                <span className="text-sm font-bold text-[hsl(var(--lottery-gold))]">
+              <Button variant="ghost" onClick={handleWalletClick} className="relative overflow-hidden chip-gold-3d flex items-center gap-1.5 h-9 px-3 rounded-full transition-all duration-200 active:scale-95 hover:bg-transparent">
+                <img src={fcCoin} alt="FC" className="w-4 h-4 relative z-10" />
+                <span className="text-sm font-bold relative z-10">
                   {fcBalance.toLocaleString()}
                 </span>
               </Button>
 
-              <Button variant="ghost" onClick={handleReferralClick} className="flex items-center gap-1 h-9 px-2.5 bg-secondary hover:bg-secondary/80 rounded-full border border-primary/15 transition-all duration-200 active:scale-95">
-                <Gift className="w-3.5 h-3.5 text-primary" />
-                <span className="text-xs font-semibold text-primary">
+              <Button variant="ghost" onClick={handleReferralClick} className="relative overflow-hidden chip-blue-3d flex items-center gap-1 h-9 px-2.5 rounded-full transition-all duration-200 active:scale-95 hover:bg-transparent">
+                <Gift className="w-3.5 h-3.5 relative z-10" />
+                <span className="text-xs font-semibold relative z-10">
                   Refer
                 </span>
               </Button>
             </>) : (
+
         <Button size="sm" onClick={handleSignUpPrompt} className="relative overflow-hidden btn-gold-3d font-bold h-9 px-3.5 text-xs rounded-full transition-all duration-200 active:scale-95 shrink-0">
               <Gift className="w-3.5 h-3.5 mr-1.5" />
               <span>Get 50 FC Free</span>

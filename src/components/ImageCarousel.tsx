@@ -1,4 +1,6 @@
+import type React from "react";
 import { useState, useEffect } from "react";
+
 import { supabase } from "@/integrations/supabase/client";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -11,17 +13,21 @@ export function ImageCarousel() {
   const [images, setImages] = useState<MediaImage[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [dragOffset, setDragOffset] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartX = useState<{ x: number | null }>({ x: null })[0];
   const isMobile = useIsMobile();
   useEffect(() => {
     fetchImages();
   }, []);
   useEffect(() => {
-    if (images.length === 0) return;
+    if (images.length === 0 || isDragging) return;
     const interval = setInterval(() => {
       setCurrentIndex(prevIndex => prevIndex === images.length - 1 ? 0 : prevIndex + 1);
     }, 7000);
     return () => clearInterval(interval);
-  }, [images.length]);
+  }, [images.length, isDragging]);
+
   const fetchImages = async () => {
     try {
       // First try to fetch from media_images table
@@ -87,9 +93,46 @@ export function ImageCarousel() {
   const prevSlide = () => {
     setCurrentIndex(prevIndex => prevIndex === 0 ? images.length - 1 : prevIndex - 1);
   };
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (images.length <= 1) return;
+    dragStartX.x = e.clientX;
+    setIsDragging(true);
+    setDragOffset(0);
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+  };
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (dragStartX.x === null) return;
+    setDragOffset(e.clientX - dragStartX.x);
+  };
+  const endDrag = () => {
+    if (dragStartX.x === null) return;
+    const offset = dragOffset;
+    dragStartX.x = null;
+    setIsDragging(false);
+    setDragOffset(0);
+    if (offset <= -40) nextSlide();
+    else if (offset >= 40) prevSlide();
+  };
   if (loading || images.length === 0) {
     return null;
   }
+  const trackProps = {
+    onPointerDown,
+    onPointerMove,
+    onPointerUp: endDrag,
+    onPointerCancel: endDrag,
+    onPointerLeave: endDrag
+  };
+  const trackStyle: React.CSSProperties = {
+    transform: `translateX(calc(-${currentIndex * 100}% + ${dragOffset}px))`,
+    touchAction: 'pan-y'
+  };
+  const trackClass = `flex ${isDragging ? '' : 'transition-transform duration-500 ease-in-out'} cursor-grab active:cursor-grabbing select-none`;
+  const slides = images.map(image => <div key={image.id} className="w-full flex-shrink-0">
+      <div className="aspect-video relative">
+        <img src={image.public_url} alt="Promotional content" className="w-full h-full object-cover pointer-events-none" draggable={false} />
+      </div>
+    </div>);
   return <section className="pt-4 pb-8 bg-gradient-to-r from-primary/5 to-accent/5">
       <div className="mx-auto px-2 md:px-4">
         {isMobile ?
@@ -99,16 +142,9 @@ export function ImageCarousel() {
                 Why Choose <br/> <img src="/__l5e/assets-v1/21420f7f-e55f-4739-8be4-45b24b061c9a/fortunalink-name.png" alt="Fortune Bridge" className="inline-block h-9 max-w-fit object-contain" />
               </h2>
             <div className="relative overflow-hidden rounded-2xl shadow-card">
-              <div className="flex transition-transform duration-500 ease-in-out" style={{
-            transform: `translateX(-${currentIndex * 100}%)`
-          }}>
-                {images.map(image => <div key={image.id} className="w-full flex-shrink-0">
-                    <div className="aspect-video relative">
-                      <img src={image.public_url} alt="Promotional content" className="w-full h-full object-cover" />
-                    </div>
-                  </div>)}
+              <div className={trackClass} style={trackStyle} {...trackProps}>
+                {slides}
               </div>
-
             </div>
           </div> :
       // Desktop Layout: Two columns
@@ -119,18 +155,12 @@ export function ImageCarousel() {
               </h2>
             </div>
             <div className="relative overflow-hidden rounded-2xl shadow-card">
-              <div className="flex transition-transform duration-500 ease-in-out" style={{
-            transform: `translateX(-${currentIndex * 100}%)`
-          }}>
-                {images.map(image => <div key={image.id} className="w-full flex-shrink-0">
-                    <div className="aspect-video relative">
-                      <img src={image.public_url} alt="Promotional content" className="w-full h-full object-cover" />
-                    </div>
-                  </div>)}
+              <div className={trackClass} style={trackStyle} {...trackProps}>
+                {slides}
               </div>
-
             </div>
           </div>}
       </div>
     </section>;
+
 }

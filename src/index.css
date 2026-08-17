@@ -450,6 +450,43 @@
   .btn-gold-3d:hover { filter: brightness(1.06); }
   .btn-gold-3d:active { transform: scale(0.96); box-shadow: 0 2px 6px -3px hsl(var(--lottery-gold) / 0.5), inset 0 1px 1px hsl(0 0% 100% / 0.35); }
 
+  /* 3D glossy header chips */
+  .chip-gold-3d {
+    background: linear-gradient(180deg, hsl(var(--lottery-gold-light)), hsl(var(--lottery-gold)));
+    color: hsl(var(--navy)) !important;
+    border: 1px solid hsl(var(--lottery-gold) / 0.55);
+    box-shadow:
+      inset 0 1px 1px hsl(0 0% 100% / 0.5),
+      0 4px 10px -5px hsl(var(--lottery-gold) / 0.65);
+  }
+  .chip-blue-3d {
+    background: linear-gradient(180deg, hsl(var(--brand-blue)), hsl(var(--brand-navy)));
+    color: #fff !important;
+    border: 1px solid hsl(var(--brand-navy) / 0.5);
+    box-shadow:
+      inset 0 1px 1px hsl(0 0% 100% / 0.28),
+      0 4px 10px -5px hsl(var(--brand-navy) / 0.7);
+  }
+  .chip-gold-3d::before,
+  .chip-blue-3d::before {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 8%;
+    right: 8%;
+    height: 42%;
+    border-radius: 9999px 9999px 0 0;
+    background: linear-gradient(180deg, hsl(0 0% 100% / 0.5), transparent);
+    pointer-events: none;
+  }
+  .chip-blue-3d::before { background: linear-gradient(180deg, hsl(0 0% 100% / 0.28), transparent); }
+  .chip-gold-3d:hover, .chip-blue-3d:hover { filter: brightness(1.07); }
+  .chip-gold-3d:active, .chip-blue-3d:active { transform: scale(0.96); }
+  .chip-gold-3d span, .chip-gold-3d svg { color: hsl(var(--navy)); }
+  .chip-blue-3d span, .chip-blue-3d svg { color: #fff; }
+
+
+
   /* 3D raised trust chips — floating on page background, no boxy container */
   .home-noir .home-chip-row {
     background: transparent;
