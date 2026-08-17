@@ -364,6 +364,14 @@
     --brand-gold: 44 61% 53%;
     --brand-gold-soft: 44 83% 65%;
 
+    /* Legacy aliases remapped to the light brand system */
+    --noir-deep: 214 43% 98%;      /* page background */
+    --noir-mid: 0 0% 100%;         /* card surface */
+    --noir-charcoal: 206 53% 95%;  /* light blue surface */
+    --noir-gold: 44 61% 53%;
+    --noir-gold-soft: 44 83% 65%;
+    --noir-cream: 217 44% 14%;     /* primary text */
+
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
   }

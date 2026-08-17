@@ -268,7 +268,7 @@ export default function Wallet() {
                       className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide whitespace-nowrap"
                       style={{
                         background: 'linear-gradient(180deg, hsl(var(--noir-gold-soft)), hsl(var(--noir-gold)))',
-                        color: 'hsl(var(--noir-deep))'
+                        color: 'hsl(var(--navy))'
                       }}
                     >
                       BEST VALUE
