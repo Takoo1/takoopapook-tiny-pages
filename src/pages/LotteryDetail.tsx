@@ -353,6 +353,23 @@ export default function LotteryDetail() {
           </div>
         </Card>
 
+        {/* IMAGE LIGHTBOX */}
+        <Dialog open={imageLightboxOpen} onOpenChange={setImageLightboxOpen}>
+          <DialogContent className="max-w-3xl p-0 bg-background/95 border-border/60 rounded-[24px] overflow-hidden">
+            <DialogHeader className="sr-only">
+              <DialogTitle>{game.title} ticket image</DialogTitle>
+            </DialogHeader>
+            {game.ticket_image_url && (
+              <img
+                src={game.ticket_image_url}
+                alt={`${game.title} lottery ticket preview`}
+                className="w-full h-auto max-h-[80vh] object-contain"
+              />
+            )}
+          </DialogContent>
+        </Dialog>
+
+
         {/* IDENTITY CARD — title, headline, organiser */}
         <Card className="rounded-[20px] p-5 border border-border/60">
           <div className="flex gap-3 items-start">
