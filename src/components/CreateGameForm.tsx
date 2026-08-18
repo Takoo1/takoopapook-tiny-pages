@@ -103,9 +103,11 @@ export function CreateGameForm({ isOpen, onClose, onSuccess, editingGame }: Crea
   const [organiserLogoPreview, setOrganiserLogoPreview] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState<{ticket: number, logo: number}>({ticket: 0, logo: 0});
   const [selectedPriceOption, setSelectedPriceOption] = useState<'200' | '500' | '1000' | 'custom'>('200');
+  const [series, setSeries] = useState<Series[]>([{ id: 's1', name: 'Series A' }]);
   const [books, setBooks] = useState<Book[]>([
-    { id: '1', name: 'Book A', firstTicket: 1, lastTicket: 100, isOnline: true }
+    { id: '1', seriesId: 's1', name: 'Book A', firstTicket: 1, lastTicket: 100, isOnline: true }
   ]);
+
   const [mainPrizes, setMainPrizes] = useState<Prize[]>([
     { id: '1', title: '1st Prize', amount: '', description: '' },
     { id: '2', title: '2nd Prize', amount: '', description: '' }
