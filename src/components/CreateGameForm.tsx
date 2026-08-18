@@ -467,16 +467,34 @@ export function CreateGameForm({ isOpen, onClose, onSuccess, editingGame }: Crea
           .eq('id', game.id);
 
         // Create books and generate tickets
+        // Create series first, then books linked to them
+        const seriesIdMap: Record<string, string> = {};
+        for (const [index, s] of series.entries()) {
+          const { data: seriesRow, error: seriesError } = await supabase
+            .from('lottery_series')
+            .insert({
+              lottery_game_id: game.id,
+              series_name: s.name || `Series ${index + 1}`,
+              display_order: index
+            })
+            .select()
+            .single();
+          if (seriesError) throw seriesError;
+          seriesIdMap[s.id] = seriesRow.id;
+        }
+
         for (const book of books) {
           const { data: bookData, error: bookError } = await supabase
             .from('lottery_books')
             .insert({
               lottery_game_id: game.id,
+              series_id: seriesIdMap[book.seriesId] ?? null,
               book_name: book.name,
               first_ticket_number: book.firstTicket,
               last_ticket_number: book.lastTicket,
               is_online_available: book.isOnline
             })
+
             .select()
             .single();
 
