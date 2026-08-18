@@ -741,7 +741,9 @@ export function CreateGameForm({ isOpen, onClose, onSuccess, editingGame }: Crea
                         onChange={(e) => {
                           const file = e.target.files?.[0];
                           if (file) handleImageUpload(file, 'logo');
+                          e.target.value = '';
                         }}
+
                         className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-lottery-gold file:text-primary-foreground hover:file:bg-lottery-gold/90"
                       />
                     ) : (
