@@ -452,63 +452,78 @@ export default function LotteryDetail() {
           <div className="space-y-3">
             {prizes.filter(p => p.prize_type === 'main').length > 0 && (
               <Card className="rounded-[20px] overflow-hidden">
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <div className="w-8 h-8 rounded-lg bg-lottery-gold/15 flex items-center justify-center">
-                      <Gift className="w-4 h-4 text-lottery-gold" />
-                    </div>
-                    Main Prizes
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="space-y-2">
-                    {prizes.filter(p => p.prize_type === 'main').map((prize) => (
-                      <div key={prize.id} className="flex justify-between items-center gap-3 p-3 rounded-xl bg-muted/40 border border-border/40">
-                        <div className="min-w-0">
-                          <div className="font-semibold text-sm text-foreground truncate">{prize.title}</div>
-                          {prize.description && (
-                            <div className="text-xs text-muted-foreground truncate">{prize.description}</div>
-                          )}
+                <Collapsible open={prizesOpen} onOpenChange={setPrizesOpen}>
+                  <CollapsibleTrigger className="w-full">
+                    <CardHeader className="py-3">
+                      <CardTitle className="flex items-center gap-2 text-base">
+                        <div className="w-8 h-8 rounded-lg bg-lottery-gold/15 flex items-center justify-center">
+                          <Gift className="w-4 h-4 text-lottery-gold" />
                         </div>
-                        <div className="text-lottery-gold font-bold text-sm tabular-nums flex-shrink-0">
-                          ₹{prize.amount?.toLocaleString('en-IN')}
-                        </div>
+                        <span className="flex-1 text-left">Main Prizes</span>
+                        <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${prizesOpen ? 'rotate-180' : ''}`} />
+                      </CardTitle>
+                    </CardHeader>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <CardContent className="pt-0">
+                      <div className="space-y-2">
+                        {prizes.filter(p => p.prize_type === 'main').map((prize) => (
+                          <div key={prize.id} className="flex justify-between items-center gap-3 p-3 rounded-xl bg-muted/40 border border-border/40">
+                            <div className="min-w-0">
+                              <div className="font-semibold text-sm text-foreground truncate">{prize.title}</div>
+                              {prize.description && (
+                                <div className="text-xs text-muted-foreground truncate">{prize.description}</div>
+                              )}
+                            </div>
+                            <div className="text-lottery-gold font-bold text-sm tabular-nums flex-shrink-0">
+                              ₹{prize.amount?.toLocaleString('en-IN')}
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
+                    </CardContent>
+                  </CollapsibleContent>
+                </Collapsible>
               </Card>
             )}
 
             {prizes.filter(p => p.prize_type === 'incentive').length > 0 && (
               <Card className="rounded-[20px] overflow-hidden">
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-500/15 flex items-center justify-center">
-                      <Sparkles className="w-4 h-4 text-emerald-500" />
-                    </div>
-                    Incentive Prizes
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="space-y-2">
-                    {prizes.filter(p => p.prize_type === 'incentive').map((prize) => (
-                      <div key={prize.id} className="flex justify-between items-center gap-3 p-3 rounded-xl bg-muted/40 border border-border/40">
-                        <div className="min-w-0">
-                          <div className="font-semibold text-sm truncate">{prize.title}</div>
-                          {prize.description && (
-                            <div className="text-xs text-muted-foreground truncate">{prize.description}</div>
-                          )}
+                <Collapsible open={incentivesOpen} onOpenChange={setIncentivesOpen}>
+                  <CollapsibleTrigger className="w-full">
+                    <CardHeader className="py-3">
+                      <CardTitle className="flex items-center gap-2 text-base">
+                        <div className="w-8 h-8 rounded-lg bg-emerald-500/15 flex items-center justify-center">
+                          <Sparkles className="w-4 h-4 text-emerald-500" />
                         </div>
-                        <div className="text-lottery-gold font-bold text-sm tabular-nums flex-shrink-0">
-                          ₹{prize.amount?.toLocaleString('en-IN')}
-                        </div>
+                        <span className="flex-1 text-left">Incentive Prizes</span>
+                        <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${incentivesOpen ? 'rotate-180' : ''}`} />
+                      </CardTitle>
+                    </CardHeader>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <CardContent className="pt-0">
+                      <div className="space-y-2">
+                        {prizes.filter(p => p.prize_type === 'incentive').map((prize) => (
+                          <div key={prize.id} className="flex justify-between items-center gap-3 p-3 rounded-xl bg-muted/40 border border-border/40">
+                            <div className="min-w-0">
+                              <div className="font-semibold text-sm truncate">{prize.title}</div>
+                              {prize.description && (
+                                <div className="text-xs text-muted-foreground truncate">{prize.description}</div>
+                              )}
+                            </div>
+                            <div className="text-lottery-gold font-bold text-sm tabular-nums flex-shrink-0">
+                              ₹{prize.amount?.toLocaleString('en-IN')}
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
+                    </CardContent>
+                  </CollapsibleContent>
+                </Collapsible>
               </Card>
             )}
+
           </div>
         )}
 
