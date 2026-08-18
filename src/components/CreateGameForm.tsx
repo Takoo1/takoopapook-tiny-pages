@@ -164,31 +164,31 @@ export function CreateGameForm({ isOpen, onClose, onSuccess, editingGame }: Crea
     }
 
 
+    // Create preview immediately so dependent editors (serial number) render reliably
+    const previewUrl = URL.createObjectURL(file);
+    if (type === 'ticket') {
+      if (ticketImagePreview) URL.revokeObjectURL(ticketImagePreview);
+      setTicketImage(file);
+      setTicketImagePreview(previewUrl);
+    } else {
+      if (organiserLogoPreview) URL.revokeObjectURL(organiserLogoPreview);
+      setOrganiserLogo(file);
+      setOrganiserLogoPreview(previewUrl);
+    }
+
     // Simulate upload progress
     setUploadProgress(prev => ({ ...prev, [type]: 0 }));
     const progressInterval = setInterval(() => {
       setUploadProgress(prev => {
-        const newProgress = Math.min(prev[type] + 10, 100);
-        if (newProgress === 100) {
-          clearInterval(progressInterval);
-          // Create preview URL
-          const previewUrl = URL.createObjectURL(file);
-          if (type === 'ticket') {
-            setTicketImagePreview(previewUrl);
-          } else {
-            setOrganiserLogoPreview(previewUrl);
-          }
-        }
+        const newProgress = Math.min(prev[type] + 20, 100);
+        if (newProgress === 100) clearInterval(progressInterval);
         return { ...prev, [type]: newProgress };
       });
     }, 100);
 
-    if (type === 'ticket') {
-      setTicketImage(file);
-    } else {
-      setOrganiserLogo(file);
-    }
+    return true;
   };
+
 
   const removeImage = (type: 'ticket' | 'logo') => {
     if (type === 'ticket') {
