@@ -226,14 +226,43 @@ export function CreateGameForm({ isOpen, onClose, onSuccess, editingGame }: Crea
     }
   };
 
-  const addBook = () => {
-    const lastBook = books[books.length - 1];
-    const newFirstTicket = lastBook ? lastBook.lastTicket + 1 : 1;
+  const nextTicketStart = () =>
+    books.length ? Math.max(...books.map(b => b.lastTicket)) + 1 : 1;
+
+  const addSeries = () => {
+    const id = `s${Date.now()}`;
+    const name = `Series ${String.fromCharCode(65 + series.length)}`;
+    setSeries([...series, { id, name }]);
+    const start = nextTicketStart();
+    setBooks([...books, {
+      id: `${Date.now()}`,
+      seriesId: id,
+      name: 'Book A',
+      firstTicket: start,
+      lastTicket: start + 99,
+      isOnline: true
+    }]);
+  };
+
+  const removeSeries = (seriesId: string) => {
+    if (series.length <= 1) return;
+    setSeries(series.filter(s => s.id !== seriesId));
+    setBooks(books.filter(b => b.seriesId !== seriesId));
+  };
+
+  const updateSeries = (seriesId: string, name: string) => {
+    setSeries(series.map(s => (s.id === seriesId ? { ...s, name } : s)));
+  };
+
+  const addBook = (seriesId: string) => {
+    const start = nextTicketStart();
+    const countInSeries = books.filter(b => b.seriesId === seriesId).length;
     setBooks([...books, {
       id: Date.now().toString(),
-      name: `Book ${String.fromCharCode(65 + books.length)}`,
-      firstTicket: newFirstTicket,
-      lastTicket: newFirstTicket + 99,
+      seriesId,
+      name: `Book ${String.fromCharCode(65 + countInSeries)}`,
+      firstTicket: start,
+      lastTicket: start + 99,
       isOnline: true
     }]);
   };
@@ -245,6 +274,7 @@ export function CreateGameForm({ isOpen, onClose, onSuccess, editingGame }: Crea
   };
 
   const updateBook = (id: string, field: keyof Book, value: any) => {
+
     setBooks(books.map(book => 
       book.id === id ? { ...book, [field]: value } : book
     ));
