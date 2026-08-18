@@ -102,6 +102,9 @@ export default function LotteryDetail() {
   const [loading, setLoading] = useState(true);
   const [selectedTickets, setSelectedTickets] = useState<{ id: string; number: number }[]>([]);
   const [currentBookIndex, setCurrentBookIndex] = useState(0);
+  const [seriesList, setSeriesList] = useState<LotterySeries[]>([]);
+  const [currentSeriesId, setCurrentSeriesId] = useState<string | null>(null);
+
   const [onlineBookCount, setOnlineBookCount] = useState(0);
   const [offlineBookCount, setOfflineBookCount] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState<string>('');
