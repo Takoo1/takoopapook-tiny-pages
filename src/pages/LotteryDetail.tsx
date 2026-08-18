@@ -102,6 +102,10 @@ export default function LotteryDetail() {
   const [loading, setLoading] = useState(true);
   const [selectedTickets, setSelectedTickets] = useState<{ id: string; number: number }[]>([]);
   const [currentBookIndex, setCurrentBookIndex] = useState(0);
+  const [imageLightboxOpen, setImageLightboxOpen] = useState(false);
+  const [prizesOpen, setPrizesOpen] = useState(false);
+  const [incentivesOpen, setIncentivesOpen] = useState(false);
+
   const [seriesList, setSeriesList] = useState<LotterySeries[]>([]);
   const [currentSeriesId, setCurrentSeriesId] = useState<string | null>(null);
 
