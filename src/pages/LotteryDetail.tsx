@@ -548,7 +548,26 @@ export default function LotteryDetail() {
               )}
             </div>
 
-            {allBooks.length > 0 ? (
+            {seriesList.length > 1 && (
+              <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
+                {seriesList.map((s) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => selectSeries(s.id)}
+                    className={`shrink-0 px-4 h-9 rounded-2xl text-sm font-semibold border transition-colors ${
+                      currentSeriesId === s.id
+                        ? 'bg-primary text-primary-foreground border-primary'
+                        : 'bg-card text-muted-foreground border-border'
+                    }`}
+                  >
+                    {s.series_name}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {visibleBooks.length > 0 ? (
               <Card className="rounded-[20px] overflow-hidden">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base flex items-center justify-between gap-2">
@@ -557,17 +576,18 @@ export default function LotteryDetail() {
                       <span className="truncate">{currentBook?.book_name || "No Book Selected"}</span>
                     </span>
                     <div className="flex items-center gap-1 flex-shrink-0">
-                      <Button variant="outline" size="icon" className="h-8 w-8 rounded-full" onClick={prevBook} disabled={allBooks.length <= 1}>
+                      <Button variant="outline" size="icon" className="h-8 w-8 rounded-full" onClick={prevBook} disabled={visibleBooks.length <= 1}>
                         <ChevronLeft className="w-4 h-4" />
                       </Button>
                       <span className="text-xs text-muted-foreground px-2 tabular-nums">
-                        {currentBookIndex + 1}/{allBooks.length}
+                        {safeBookIndex + 1}/{visibleBooks.length}
                       </span>
-                      <Button variant="outline" size="icon" className="h-8 w-8 rounded-full" onClick={nextBook} disabled={allBooks.length <= 1}>
+                      <Button variant="outline" size="icon" className="h-8 w-8 rounded-full" onClick={nextBook} disabled={visibleBooks.length <= 1}>
                         <ChevronRight className="w-4 h-4" />
                       </Button>
                     </div>
                   </CardTitle>
+
                   {currentBook && (
                     <p className="text-xs text-muted-foreground">
                       Tickets: {currentBook.first_ticket_number}–{currentBook.last_ticket_number}
