@@ -167,6 +167,13 @@ export default function LotteryDetail() {
       setOnlineBookCount(onlineBooks.length);
       setOfflineBookCount(offlineBooks.length);
 
+      const { data: seriesData } = await supabase
+        .from('lottery_series').select('*').eq('lottery_game_id', gameId).order('display_order');
+      const allSeries = (seriesData || []) as LotterySeries[];
+      setSeriesList(allSeries);
+      setCurrentSeriesId(prev => prev ?? (allSeries[0]?.id ?? null));
+
+
       const { data: ticketsData, error: ticketsError } = await supabase
         .from('lottery_tickets').select('id, ticket_number, status, book_id')
         .eq('lottery_game_id', gameId).order('ticket_number');
