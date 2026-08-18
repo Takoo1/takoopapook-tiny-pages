@@ -8,11 +8,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   ArrowLeft, Calendar, Trophy, Ticket, Clock, BookOpen,
-  ChevronLeft, ChevronRight, Gift, FileText, Users, Building,
+  ChevronLeft, ChevronRight, ChevronDown, Gift, FileText, Users, Building,
   Radio, Hourglass, Ban, CheckCircle2, ShieldCheck, Sparkles
 } from "lucide-react";
+
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { formatDateWithTimezone } from "@/lib/dateUtils";
