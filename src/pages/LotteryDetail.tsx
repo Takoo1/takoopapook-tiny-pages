@@ -242,12 +242,18 @@ export default function LotteryDetail() {
     );
   }
 
-  const currentBook = allBooks[currentBookIndex];
+  const visibleBooks = seriesList.length > 0 && currentSeriesId
+    ? allBooks.filter(b => b.series_id === currentSeriesId)
+    : allBooks;
+  const safeBookIndex = visibleBooks.length ? Math.min(currentBookIndex, visibleBooks.length - 1) : 0;
+  const currentBook = visibleBooks[safeBookIndex];
   const currentBookTickets = currentBook && currentBook.is_online_available
     ? tickets.filter(t => t.book_id === currentBook.id) : [];
 
-  const nextBook = () => { setCurrentBookIndex(p => (p + 1) % allBooks.length); setSelectedTickets([]); };
-  const prevBook = () => { setCurrentBookIndex(p => (p - 1 + allBooks.length) % allBooks.length); setSelectedTickets([]); };
+  const nextBook = () => { setCurrentBookIndex(p => visibleBooks.length ? (p + 1) % visibleBooks.length : 0); setSelectedTickets([]); };
+  const prevBook = () => { setCurrentBookIndex(p => visibleBooks.length ? (p - 1 + visibleBooks.length) % visibleBooks.length : 0); setSelectedTickets([]); };
+  const selectSeries = (id: string) => { setCurrentSeriesId(id); setCurrentBookIndex(0); setSelectedTickets([]); };
+
 
   const formatDate = (dateString: string) => formatDateWithTimezone(dateString, game?.organizer_timezone, false);
   const topPrize = prizes.filter(p => p.prize_type === 'main').sort((a, b) => (b.amount || 0) - (a.amount || 0))[0];
