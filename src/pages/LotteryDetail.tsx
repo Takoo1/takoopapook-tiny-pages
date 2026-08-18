@@ -631,14 +631,15 @@ export default function LotteryDetail() {
                     </div>
                   )}
                 </CardContent>
-                {allBooks.length > 1 && (
+                {visibleBooks.length > 1 && (
                   <div className="flex items-center justify-between gap-3 px-5 py-3 border-t border-border/60 bg-muted/20">
                     <Button variant="outline" size="sm" onClick={prevBook} className="rounded-xl">
                       <ChevronLeft className="w-4 h-4 mr-1" /> Previous
                     </Button>
                     <span className="text-xs font-medium text-muted-foreground tabular-nums">
-                      Book {currentBookIndex + 1} of {allBooks.length}
+                      Book {safeBookIndex + 1} of {visibleBooks.length}
                     </span>
+
                     <Button variant="outline" size="sm" onClick={nextBook} className="rounded-xl">
                       Next <ChevronRight className="w-4 h-4 ml-1" />
                     </Button>
