@@ -46,7 +46,15 @@ interface LotteryBook {
   first_ticket_number: number;
   last_ticket_number: number;
   is_online_available: boolean;
+  series_id?: string | null;
 }
+
+interface LotterySeries {
+  id: string;
+  series_name: string;
+  display_order: number;
+}
+
 
 interface LotteryPrize {
   id: string;
