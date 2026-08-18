@@ -8,11 +8,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   ArrowLeft, Calendar, Trophy, Ticket, Clock, BookOpen,
-  ChevronLeft, ChevronRight, Gift, FileText, Users, Building,
+  ChevronLeft, ChevronRight, ChevronDown, Gift, FileText, Users, Building,
   Radio, Hourglass, Ban, CheckCircle2, ShieldCheck, Sparkles
 } from "lucide-react";
+
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { formatDateWithTimezone } from "@/lib/dateUtils";
@@ -46,7 +48,15 @@ interface LotteryBook {
   first_ticket_number: number;
   last_ticket_number: number;
   is_online_available: boolean;
+  series_id?: string | null;
 }
+
+interface LotterySeries {
+  id: string;
+  series_name: string;
+  display_order: number;
+}
+
 
 interface LotteryPrize {
   id: string;
@@ -94,6 +104,13 @@ export default function LotteryDetail() {
   const [loading, setLoading] = useState(true);
   const [selectedTickets, setSelectedTickets] = useState<{ id: string; number: number }[]>([]);
   const [currentBookIndex, setCurrentBookIndex] = useState(0);
+  const [imageLightboxOpen, setImageLightboxOpen] = useState(false);
+  const [prizesOpen, setPrizesOpen] = useState(false);
+  const [incentivesOpen, setIncentivesOpen] = useState(false);
+
+  const [seriesList, setSeriesList] = useState<LotterySeries[]>([]);
+  const [currentSeriesId, setCurrentSeriesId] = useState<string | null>(null);
+
   const [onlineBookCount, setOnlineBookCount] = useState(0);
   const [offlineBookCount, setOfflineBookCount] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState<string>('');
@@ -155,6 +172,13 @@ export default function LotteryDetail() {
       setBooks(onlineBooks as LotteryBook[]);
       setOnlineBookCount(onlineBooks.length);
       setOfflineBookCount(offlineBooks.length);
+
+      const { data: seriesData } = await supabase
+        .from('lottery_series').select('*').eq('lottery_game_id', gameId).order('display_order');
+      const allSeries = (seriesData || []) as LotterySeries[];
+      setSeriesList(allSeries);
+      setCurrentSeriesId(prev => prev ?? (allSeries[0]?.id ?? null));
+
 
       const { data: ticketsData, error: ticketsError } = await supabase
         .from('lottery_tickets').select('id, ticket_number, status, book_id')
@@ -224,12 +248,18 @@ export default function LotteryDetail() {
     );
   }
 
-  const currentBook = allBooks[currentBookIndex];
+  const visibleBooks = seriesList.length > 0 && currentSeriesId
+    ? allBooks.filter(b => b.series_id === currentSeriesId)
+    : allBooks;
+  const safeBookIndex = visibleBooks.length ? Math.min(currentBookIndex, visibleBooks.length - 1) : 0;
+  const currentBook = visibleBooks[safeBookIndex];
   const currentBookTickets = currentBook && currentBook.is_online_available
     ? tickets.filter(t => t.book_id === currentBook.id) : [];
 
-  const nextBook = () => { setCurrentBookIndex(p => (p + 1) % allBooks.length); setSelectedTickets([]); };
-  const prevBook = () => { setCurrentBookIndex(p => (p - 1 + allBooks.length) % allBooks.length); setSelectedTickets([]); };
+  const nextBook = () => { setCurrentBookIndex(p => visibleBooks.length ? (p + 1) % visibleBooks.length : 0); setSelectedTickets([]); };
+  const prevBook = () => { setCurrentBookIndex(p => visibleBooks.length ? (p - 1 + visibleBooks.length) % visibleBooks.length : 0); setSelectedTickets([]); };
+  const selectSeries = (id: string) => { setCurrentSeriesId(id); setCurrentBookIndex(0); setSelectedTickets([]); };
+
 
   const formatDate = (dateString: string) => formatDateWithTimezone(dateString, game?.organizer_timezone, false);
   const topPrize = prizes.filter(p => p.prize_type === 'main').sort((a, b) => (b.amount || 0) - (a.amount || 0))[0];
@@ -285,8 +315,12 @@ export default function LotteryDetail() {
       <div className="max-w-4xl mx-auto px-4 pt-4 pb-24 md:pb-32 space-y-5">
         {/* HERO — ticket image */}
         <Card className="overflow-hidden rounded-[24px] border border-border/60 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_20px_50px_-20px_rgba(0,0,0,0.25)] p-0">
-          <div className="relative">
+          <div
+            className={`relative ${game.ticket_image_url ? 'cursor-zoom-in' : ''}`}
+            onClick={() => game.ticket_image_url && setImageLightboxOpen(true)}
+          >
             <AspectRatio ratio={16 / 9}>
+
               {game.ticket_image_url ? (
                 <>
                   {!imgLoaded && <Skeleton className="absolute inset-0" />}
@@ -320,6 +354,23 @@ export default function LotteryDetail() {
             </AspectRatio>
           </div>
         </Card>
+
+        {/* IMAGE LIGHTBOX */}
+        <Dialog open={imageLightboxOpen} onOpenChange={setImageLightboxOpen}>
+          <DialogContent className="max-w-3xl p-0 bg-background/95 border-border/60 rounded-[24px] overflow-hidden">
+            <DialogHeader className="sr-only">
+              <DialogTitle>{game.title} ticket image</DialogTitle>
+            </DialogHeader>
+            {game.ticket_image_url && (
+              <img
+                src={game.ticket_image_url}
+                alt={`${game.title} lottery ticket preview`}
+                className="w-full h-auto max-h-[80vh] object-contain"
+              />
+            )}
+          </DialogContent>
+        </Dialog>
+
 
         {/* IDENTITY CARD — title, headline, organiser */}
         <Card className="rounded-[20px] p-5 border border-border/60">
@@ -403,63 +454,78 @@ export default function LotteryDetail() {
           <div className="space-y-3">
             {prizes.filter(p => p.prize_type === 'main').length > 0 && (
               <Card className="rounded-[20px] overflow-hidden">
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <div className="w-8 h-8 rounded-lg bg-lottery-gold/15 flex items-center justify-center">
-                      <Gift className="w-4 h-4 text-lottery-gold" />
-                    </div>
-                    Main Prizes
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="space-y-2">
-                    {prizes.filter(p => p.prize_type === 'main').map((prize) => (
-                      <div key={prize.id} className="flex justify-between items-center gap-3 p-3 rounded-xl bg-muted/40 border border-border/40">
-                        <div className="min-w-0">
-                          <div className="font-semibold text-sm text-foreground truncate">{prize.title}</div>
-                          {prize.description && (
-                            <div className="text-xs text-muted-foreground truncate">{prize.description}</div>
-                          )}
+                <Collapsible open={prizesOpen} onOpenChange={setPrizesOpen}>
+                  <CollapsibleTrigger className="w-full">
+                    <CardHeader className="py-3">
+                      <CardTitle className="flex items-center gap-2 text-base">
+                        <div className="w-8 h-8 rounded-lg bg-lottery-gold/15 flex items-center justify-center">
+                          <Gift className="w-4 h-4 text-lottery-gold" />
                         </div>
-                        <div className="text-lottery-gold font-bold text-sm tabular-nums flex-shrink-0">
-                          ₹{prize.amount?.toLocaleString('en-IN')}
-                        </div>
+                        <span className="flex-1 text-left">Main Prizes</span>
+                        <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${prizesOpen ? 'rotate-180' : ''}`} />
+                      </CardTitle>
+                    </CardHeader>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <CardContent className="pt-0">
+                      <div className="space-y-2">
+                        {prizes.filter(p => p.prize_type === 'main').map((prize) => (
+                          <div key={prize.id} className="flex justify-between items-center gap-3 p-3 rounded-xl bg-muted/40 border border-border/40">
+                            <div className="min-w-0">
+                              <div className="font-semibold text-sm text-foreground truncate">{prize.title}</div>
+                              {prize.description && (
+                                <div className="text-xs text-muted-foreground truncate">{prize.description}</div>
+                              )}
+                            </div>
+                            <div className="text-lottery-gold font-bold text-sm tabular-nums flex-shrink-0">
+                              ₹{prize.amount?.toLocaleString('en-IN')}
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
+                    </CardContent>
+                  </CollapsibleContent>
+                </Collapsible>
               </Card>
             )}
 
             {prizes.filter(p => p.prize_type === 'incentive').length > 0 && (
               <Card className="rounded-[20px] overflow-hidden">
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-500/15 flex items-center justify-center">
-                      <Sparkles className="w-4 h-4 text-emerald-500" />
-                    </div>
-                    Incentive Prizes
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="space-y-2">
-                    {prizes.filter(p => p.prize_type === 'incentive').map((prize) => (
-                      <div key={prize.id} className="flex justify-between items-center gap-3 p-3 rounded-xl bg-muted/40 border border-border/40">
-                        <div className="min-w-0">
-                          <div className="font-semibold text-sm truncate">{prize.title}</div>
-                          {prize.description && (
-                            <div className="text-xs text-muted-foreground truncate">{prize.description}</div>
-                          )}
+                <Collapsible open={incentivesOpen} onOpenChange={setIncentivesOpen}>
+                  <CollapsibleTrigger className="w-full">
+                    <CardHeader className="py-3">
+                      <CardTitle className="flex items-center gap-2 text-base">
+                        <div className="w-8 h-8 rounded-lg bg-emerald-500/15 flex items-center justify-center">
+                          <Sparkles className="w-4 h-4 text-emerald-500" />
                         </div>
-                        <div className="text-lottery-gold font-bold text-sm tabular-nums flex-shrink-0">
-                          ₹{prize.amount?.toLocaleString('en-IN')}
-                        </div>
+                        <span className="flex-1 text-left">Incentive Prizes</span>
+                        <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${incentivesOpen ? 'rotate-180' : ''}`} />
+                      </CardTitle>
+                    </CardHeader>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <CardContent className="pt-0">
+                      <div className="space-y-2">
+                        {prizes.filter(p => p.prize_type === 'incentive').map((prize) => (
+                          <div key={prize.id} className="flex justify-between items-center gap-3 p-3 rounded-xl bg-muted/40 border border-border/40">
+                            <div className="min-w-0">
+                              <div className="font-semibold text-sm truncate">{prize.title}</div>
+                              {prize.description && (
+                                <div className="text-xs text-muted-foreground truncate">{prize.description}</div>
+                              )}
+                            </div>
+                            <div className="text-lottery-gold font-bold text-sm tabular-nums flex-shrink-0">
+                              ₹{prize.amount?.toLocaleString('en-IN')}
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
+                    </CardContent>
+                  </CollapsibleContent>
+                </Collapsible>
               </Card>
             )}
+
           </div>
         )}
 
@@ -524,7 +590,26 @@ export default function LotteryDetail() {
               )}
             </div>
 
-            {allBooks.length > 0 ? (
+            {seriesList.length > 1 && (
+              <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
+                {seriesList.map((s) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => selectSeries(s.id)}
+                    className={`shrink-0 px-4 h-9 rounded-2xl text-sm font-semibold border transition-colors ${
+                      currentSeriesId === s.id
+                        ? 'bg-primary text-primary-foreground border-primary'
+                        : 'bg-card text-muted-foreground border-border'
+                    }`}
+                  >
+                    {s.series_name}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {visibleBooks.length > 0 ? (
               <Card className="rounded-[20px] overflow-hidden">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base flex items-center justify-between gap-2">
@@ -533,17 +618,18 @@ export default function LotteryDetail() {
                       <span className="truncate">{currentBook?.book_name || "No Book Selected"}</span>
                     </span>
                     <div className="flex items-center gap-1 flex-shrink-0">
-                      <Button variant="outline" size="icon" className="h-8 w-8 rounded-full" onClick={prevBook} disabled={allBooks.length <= 1}>
+                      <Button variant="outline" size="icon" className="h-8 w-8 rounded-full" onClick={prevBook} disabled={visibleBooks.length <= 1}>
                         <ChevronLeft className="w-4 h-4" />
                       </Button>
                       <span className="text-xs text-muted-foreground px-2 tabular-nums">
-                        {currentBookIndex + 1}/{allBooks.length}
+                        {safeBookIndex + 1}/{visibleBooks.length}
                       </span>
-                      <Button variant="outline" size="icon" className="h-8 w-8 rounded-full" onClick={nextBook} disabled={allBooks.length <= 1}>
+                      <Button variant="outline" size="icon" className="h-8 w-8 rounded-full" onClick={nextBook} disabled={visibleBooks.length <= 1}>
                         <ChevronRight className="w-4 h-4" />
                       </Button>
                     </div>
                   </CardTitle>
+
                   {currentBook && (
                     <p className="text-xs text-muted-foreground">
                       Tickets: {currentBook.first_ticket_number}–{currentBook.last_ticket_number}
@@ -587,14 +673,15 @@ export default function LotteryDetail() {
                     </div>
                   )}
                 </CardContent>
-                {allBooks.length > 1 && (
+                {visibleBooks.length > 1 && (
                   <div className="flex items-center justify-between gap-3 px-5 py-3 border-t border-border/60 bg-muted/20">
                     <Button variant="outline" size="sm" onClick={prevBook} className="rounded-xl">
                       <ChevronLeft className="w-4 h-4 mr-1" /> Previous
                     </Button>
                     <span className="text-xs font-medium text-muted-foreground tabular-nums">
-                      Book {currentBookIndex + 1} of {allBooks.length}
+                      Book {safeBookIndex + 1} of {visibleBooks.length}
                     </span>
+
                     <Button variant="outline" size="sm" onClick={nextBook} className="rounded-xl">
                       Next <ChevronRight className="w-4 h-4 ml-1" />
                     </Button>

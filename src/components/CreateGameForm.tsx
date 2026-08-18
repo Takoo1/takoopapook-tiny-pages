@@ -43,13 +43,20 @@ const generateGameCode = (): string => {
   return result;
 };
 
+interface Series {
+  id: string;
+  name: string;
+}
+
 interface Book {
   id: string;
+  seriesId: string;
   name: string;
   firstTicket: number;
   lastTicket: number;
   isOnline: boolean;
 }
+
 
 interface Prize {
   id: string;
@@ -96,9 +103,11 @@ export function CreateGameForm({ isOpen, onClose, onSuccess, editingGame }: Crea
   const [organiserLogoPreview, setOrganiserLogoPreview] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState<{ticket: number, logo: number}>({ticket: 0, logo: 0});
   const [selectedPriceOption, setSelectedPriceOption] = useState<'200' | '500' | '1000' | 'custom'>('200');
+  const [series, setSeries] = useState<Series[]>([{ id: 's1', name: 'Series A' }]);
   const [books, setBooks] = useState<Book[]>([
-    { id: '1', name: 'Book A', firstTicket: 1, lastTicket: 100, isOnline: true }
+    { id: '1', seriesId: 's1', name: 'Book A', firstTicket: 1, lastTicket: 100, isOnline: true }
   ]);
+
   const [mainPrizes, setMainPrizes] = useState<Prize[]>([
     { id: '1', title: '1st Prize', amount: '', description: '' },
     { id: '2', title: '2nd Prize', amount: '', description: '' }
@@ -151,41 +160,44 @@ export function CreateGameForm({ isOpen, onClose, onSuccess, editingGame }: Crea
     }
   }, [editingGame]);
 
-  const handleImageUpload = (file: File, type: 'ticket' | 'logo') => {
+  const handleImageUpload = (file: File, type: 'ticket' | 'logo'): boolean => {
     if (file.size > 2 * 1024 * 1024) {
       toast({
         title: "File too large",
         description: "Please select an image less than 2MB",
         variant: "destructive",
       });
-      return;
+      // Reset any partial state for this slot so the picker stays usable
+      setUploadProgress(prev => ({ ...prev, [type]: 0 }));
+      return false;
+    }
+
+
+    // Create preview immediately so dependent editors (serial number) render reliably
+    const previewUrl = URL.createObjectURL(file);
+    if (type === 'ticket') {
+      if (ticketImagePreview) URL.revokeObjectURL(ticketImagePreview);
+      setTicketImage(file);
+      setTicketImagePreview(previewUrl);
+    } else {
+      if (organiserLogoPreview) URL.revokeObjectURL(organiserLogoPreview);
+      setOrganiserLogo(file);
+      setOrganiserLogoPreview(previewUrl);
     }
 
     // Simulate upload progress
     setUploadProgress(prev => ({ ...prev, [type]: 0 }));
     const progressInterval = setInterval(() => {
       setUploadProgress(prev => {
-        const newProgress = Math.min(prev[type] + 10, 100);
-        if (newProgress === 100) {
-          clearInterval(progressInterval);
-          // Create preview URL
-          const previewUrl = URL.createObjectURL(file);
-          if (type === 'ticket') {
-            setTicketImagePreview(previewUrl);
-          } else {
-            setOrganiserLogoPreview(previewUrl);
-          }
-        }
+        const newProgress = Math.min(prev[type] + 20, 100);
+        if (newProgress === 100) clearInterval(progressInterval);
         return { ...prev, [type]: newProgress };
       });
     }, 100);
 
-    if (type === 'ticket') {
-      setTicketImage(file);
-    } else {
-      setOrganiserLogo(file);
-    }
+    return true;
   };
+
 
   const removeImage = (type: 'ticket' | 'logo') => {
     if (type === 'ticket') {
@@ -214,14 +226,43 @@ export function CreateGameForm({ isOpen, onClose, onSuccess, editingGame }: Crea
     }
   };
 
-  const addBook = () => {
-    const lastBook = books[books.length - 1];
-    const newFirstTicket = lastBook ? lastBook.lastTicket + 1 : 1;
+  const nextTicketStart = () =>
+    books.length ? Math.max(...books.map(b => b.lastTicket)) + 1 : 1;
+
+  const addSeries = () => {
+    const id = `s${Date.now()}`;
+    const name = `Series ${String.fromCharCode(65 + series.length)}`;
+    setSeries([...series, { id, name }]);
+    const start = nextTicketStart();
+    setBooks([...books, {
+      id: `${Date.now()}`,
+      seriesId: id,
+      name: 'Book A',
+      firstTicket: start,
+      lastTicket: start + 99,
+      isOnline: true
+    }]);
+  };
+
+  const removeSeries = (seriesId: string) => {
+    if (series.length <= 1) return;
+    setSeries(series.filter(s => s.id !== seriesId));
+    setBooks(books.filter(b => b.seriesId !== seriesId));
+  };
+
+  const updateSeries = (seriesId: string, name: string) => {
+    setSeries(series.map(s => (s.id === seriesId ? { ...s, name } : s)));
+  };
+
+  const addBook = (seriesId: string) => {
+    const start = nextTicketStart();
+    const countInSeries = books.filter(b => b.seriesId === seriesId).length;
     setBooks([...books, {
       id: Date.now().toString(),
-      name: `Book ${String.fromCharCode(65 + books.length)}`,
-      firstTicket: newFirstTicket,
-      lastTicket: newFirstTicket + 99,
+      seriesId,
+      name: `Book ${String.fromCharCode(65 + countInSeries)}`,
+      firstTicket: start,
+      lastTicket: start + 99,
       isOnline: true
     }]);
   };
@@ -233,6 +274,7 @@ export function CreateGameForm({ isOpen, onClose, onSuccess, editingGame }: Crea
   };
 
   const updateBook = (id: string, field: keyof Book, value: any) => {
+
     setBooks(books.map(book => 
       book.id === id ? { ...book, [field]: value } : book
     ));
@@ -425,16 +467,34 @@ export function CreateGameForm({ isOpen, onClose, onSuccess, editingGame }: Crea
           .eq('id', game.id);
 
         // Create books and generate tickets
+        // Create series first, then books linked to them
+        const seriesIdMap: Record<string, string> = {};
+        for (const [index, s] of series.entries()) {
+          const { data: seriesRow, error: seriesError } = await supabase
+            .from('lottery_series')
+            .insert({
+              lottery_game_id: game.id,
+              series_name: s.name || `Series ${index + 1}`,
+              display_order: index
+            })
+            .select()
+            .single();
+          if (seriesError) throw seriesError;
+          seriesIdMap[s.id] = seriesRow.id;
+        }
+
         for (const book of books) {
           const { data: bookData, error: bookError } = await supabase
             .from('lottery_books')
             .insert({
               lottery_game_id: game.id,
+              series_id: seriesIdMap[book.seriesId] ?? null,
               book_name: book.name,
               first_ticket_number: book.firstTicket,
               last_ticket_number: book.lastTicket,
               is_online_available: book.isOnline
             })
+
             .select()
             .single();
 
@@ -683,7 +743,9 @@ export function CreateGameForm({ isOpen, onClose, onSuccess, editingGame }: Crea
                         onChange={(e) => {
                           const file = e.target.files?.[0];
                           if (file) handleImageUpload(file, 'ticket');
+                          e.target.value = '';
                         }}
+
                         className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-lottery-gold file:text-primary-foreground hover:file:bg-lottery-gold/90"
                       />
                     ) : (
@@ -736,7 +798,9 @@ export function CreateGameForm({ isOpen, onClose, onSuccess, editingGame }: Crea
                         onChange={(e) => {
                           const file = e.target.files?.[0];
                           if (file) handleImageUpload(file, 'logo');
+                          e.target.value = '';
                         }}
+
                         className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-lottery-gold file:text-primary-foreground hover:file:bg-lottery-gold/90"
                       />
                     ) : (
@@ -793,77 +857,118 @@ export function CreateGameForm({ isOpen, onClose, onSuccess, editingGame }: Crea
             <Card>
               <CardHeader>
                 <div className="flex justify-between items-center">
-                  <CardTitle className="text-lg">Books & Ticket Range</CardTitle>
+                  <CardTitle className="text-lg">Series, Books & Ticket Range</CardTitle>
                   <div className="text-sm text-muted-foreground">
                     Total Tickets: {totalTickets}
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-4">
-                {books.map((book, index) => (
-                  <div key={book.id} className="p-4 border rounded-lg">
-                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-                      <div>
-                        <Label>Book Name</Label>
-                        <Input
-                          value={book.name}
-                          onChange={(e) => updateBook(book.id, 'name', e.target.value)}
-                        />
-                      </div>
-                      <div>
-                        <Label>First Ticket</Label>
-                        <Input
-                          type="number"
-                          value={book.firstTicket}
-                          onChange={(e) => updateBook(book.id, 'firstTicket', parseInt(e.target.value))}
-                        />
-                      </div>
-                      <div>
-                        <Label>Last Ticket</Label>
-                        <Input
-                          type="number"
-                          value={book.lastTicket}
-                          onChange={(e) => updateBook(book.id, 'lastTicket', parseInt(e.target.value))}
-                        />
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Switch
-                          checked={book.isOnline}
-                          onCheckedChange={(checked) => updateBook(book.id, 'isOnline', checked)}
-                        />
-                        <Label className="text-sm">
-                          {book.isOnline ? 'Online' : 'Offline'}
-                        </Label>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={addBook}
-                        >
-                          <Plus className="w-4 h-4" />
-                        </Button>
-                        {books.length > 1 && (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => removeBook(book.id)}
-                          >
-                            <Trash2 className="w-4 h-4" />
+              <CardContent className="space-y-5">
+                {series.map((s) => {
+                  const seriesBooks = books.filter(b => b.seriesId === s.id);
+                  const seriesTotal = seriesBooks.reduce((sum, b) => sum + (b.lastTicket - b.firstTicket + 1), 0);
+                  return (
+                    <div key={s.id} className="rounded-2xl border border-border/60 bg-muted/20 p-4 space-y-3">
+                      <div className="flex flex-wrap items-end gap-3">
+                        <div className="flex-1 min-w-[180px]">
+                          <Label>Series Name</Label>
+                          <Input
+                            value={s.name}
+                            onChange={(e) => updateSeries(s.id, e.target.value)}
+                            placeholder="e.g. Series A"
+                          />
+                        </div>
+                        <div className="text-xs text-muted-foreground pb-3">
+                          {seriesBooks.length} book(s) · {seriesTotal} tickets
+                        </div>
+                        <div className="flex gap-2 pb-1">
+                          <Button type="button" variant="outline" size="sm" onClick={() => addBook(s.id)}>
+                            <Plus className="w-4 h-4 mr-1" /> Book
                           </Button>
-                        )}
+                          {series.length > 1 && (
+                            <Button type="button" variant="outline" size="sm" onClick={() => removeSeries(s.id)}>
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
                       </div>
+
+                      {seriesBooks.map((book) => (
+                        <div key={book.id} className="p-4 border rounded-lg bg-background">
+                          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                            <div>
+                              <Label>Book Name</Label>
+                              <Input
+                                value={book.name}
+                                onChange={(e) => updateBook(book.id, 'name', e.target.value)}
+                              />
+                            </div>
+                            <div>
+                              <Label>First Ticket</Label>
+                              <Input
+                                type="number"
+                                value={book.firstTicket}
+                                onChange={(e) => updateBook(book.id, 'firstTicket', parseInt(e.target.value))}
+                              />
+                            </div>
+                            <div>
+                              <Label>Last Ticket</Label>
+                              <Input
+                                type="number"
+                                value={book.lastTicket}
+                                onChange={(e) => updateBook(book.id, 'lastTicket', parseInt(e.target.value))}
+                              />
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Switch
+                                checked={book.isOnline}
+                                onCheckedChange={(checked) => updateBook(book.id, 'isOnline', checked)}
+                              />
+                              <Label className="text-sm">
+                                {book.isOnline ? 'Online' : 'Offline'}
+                              </Label>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => addBook(s.id)}
+                              >
+                                <Plus className="w-4 h-4" />
+                              </Button>
+                              {books.length > 1 && (
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => removeBook(book.id)}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-2">
+                            Tickets: {book.lastTicket - book.firstTicket + 1} | 
+                            Mode: {book.isOnline ? 'Available online' : 'Offline only'}
+                          </div>
+                        </div>
+                      ))}
+
+                      {seriesBooks.length === 0 && (
+                        <p className="text-sm text-muted-foreground">No books in this series yet.</p>
+                      )}
                     </div>
-                    <div className="text-xs text-muted-foreground mt-2">
-                      Tickets: {book.lastTicket - book.firstTicket + 1} | 
-                      Mode: {book.isOnline ? 'Available online' : 'Offline only'}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
+
+                <Button type="button" variant="outline" onClick={addSeries}>
+                  <Plus className="w-4 h-4 mr-2" /> Add Series
+                </Button>
               </CardContent>
             </Card>
+
           )}
 
           {/* Main Prizes - Hide complex data editing in edit mode */}
