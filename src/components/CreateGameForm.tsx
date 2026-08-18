@@ -839,77 +839,118 @@ export function CreateGameForm({ isOpen, onClose, onSuccess, editingGame }: Crea
             <Card>
               <CardHeader>
                 <div className="flex justify-between items-center">
-                  <CardTitle className="text-lg">Books & Ticket Range</CardTitle>
+                  <CardTitle className="text-lg">Series, Books & Ticket Range</CardTitle>
                   <div className="text-sm text-muted-foreground">
                     Total Tickets: {totalTickets}
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-4">
-                {books.map((book, index) => (
-                  <div key={book.id} className="p-4 border rounded-lg">
-                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-                      <div>
-                        <Label>Book Name</Label>
-                        <Input
-                          value={book.name}
-                          onChange={(e) => updateBook(book.id, 'name', e.target.value)}
-                        />
-                      </div>
-                      <div>
-                        <Label>First Ticket</Label>
-                        <Input
-                          type="number"
-                          value={book.firstTicket}
-                          onChange={(e) => updateBook(book.id, 'firstTicket', parseInt(e.target.value))}
-                        />
-                      </div>
-                      <div>
-                        <Label>Last Ticket</Label>
-                        <Input
-                          type="number"
-                          value={book.lastTicket}
-                          onChange={(e) => updateBook(book.id, 'lastTicket', parseInt(e.target.value))}
-                        />
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Switch
-                          checked={book.isOnline}
-                          onCheckedChange={(checked) => updateBook(book.id, 'isOnline', checked)}
-                        />
-                        <Label className="text-sm">
-                          {book.isOnline ? 'Online' : 'Offline'}
-                        </Label>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={addBook}
-                        >
-                          <Plus className="w-4 h-4" />
-                        </Button>
-                        {books.length > 1 && (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => removeBook(book.id)}
-                          >
-                            <Trash2 className="w-4 h-4" />
+              <CardContent className="space-y-5">
+                {series.map((s) => {
+                  const seriesBooks = books.filter(b => b.seriesId === s.id);
+                  const seriesTotal = seriesBooks.reduce((sum, b) => sum + (b.lastTicket - b.firstTicket + 1), 0);
+                  return (
+                    <div key={s.id} className="rounded-2xl border border-border/60 bg-muted/20 p-4 space-y-3">
+                      <div className="flex flex-wrap items-end gap-3">
+                        <div className="flex-1 min-w-[180px]">
+                          <Label>Series Name</Label>
+                          <Input
+                            value={s.name}
+                            onChange={(e) => updateSeries(s.id, e.target.value)}
+                            placeholder="e.g. Series A"
+                          />
+                        </div>
+                        <div className="text-xs text-muted-foreground pb-3">
+                          {seriesBooks.length} book(s) · {seriesTotal} tickets
+                        </div>
+                        <div className="flex gap-2 pb-1">
+                          <Button type="button" variant="outline" size="sm" onClick={() => addBook(s.id)}>
+                            <Plus className="w-4 h-4 mr-1" /> Book
                           </Button>
-                        )}
+                          {series.length > 1 && (
+                            <Button type="button" variant="outline" size="sm" onClick={() => removeSeries(s.id)}>
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
                       </div>
+
+                      {seriesBooks.map((book) => (
+                        <div key={book.id} className="p-4 border rounded-lg bg-background">
+                          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                            <div>
+                              <Label>Book Name</Label>
+                              <Input
+                                value={book.name}
+                                onChange={(e) => updateBook(book.id, 'name', e.target.value)}
+                              />
+                            </div>
+                            <div>
+                              <Label>First Ticket</Label>
+                              <Input
+                                type="number"
+                                value={book.firstTicket}
+                                onChange={(e) => updateBook(book.id, 'firstTicket', parseInt(e.target.value))}
+                              />
+                            </div>
+                            <div>
+                              <Label>Last Ticket</Label>
+                              <Input
+                                type="number"
+                                value={book.lastTicket}
+                                onChange={(e) => updateBook(book.id, 'lastTicket', parseInt(e.target.value))}
+                              />
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Switch
+                                checked={book.isOnline}
+                                onCheckedChange={(checked) => updateBook(book.id, 'isOnline', checked)}
+                              />
+                              <Label className="text-sm">
+                                {book.isOnline ? 'Online' : 'Offline'}
+                              </Label>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => addBook(s.id)}
+                              >
+                                <Plus className="w-4 h-4" />
+                              </Button>
+                              {books.length > 1 && (
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => removeBook(book.id)}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-2">
+                            Tickets: {book.lastTicket - book.firstTicket + 1} | 
+                            Mode: {book.isOnline ? 'Available online' : 'Offline only'}
+                          </div>
+                        </div>
+                      ))}
+
+                      {seriesBooks.length === 0 && (
+                        <p className="text-sm text-muted-foreground">No books in this series yet.</p>
+                      )}
                     </div>
-                    <div className="text-xs text-muted-foreground mt-2">
-                      Tickets: {book.lastTicket - book.firstTicket + 1} | 
-                      Mode: {book.isOnline ? 'Available online' : 'Offline only'}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
+
+                <Button type="button" variant="outline" onClick={addSeries}>
+                  <Plus className="w-4 h-4 mr-2" /> Add Series
+                </Button>
               </CardContent>
             </Card>
+
           )}
 
           {/* Main Prizes - Hide complex data editing in edit mode */}
