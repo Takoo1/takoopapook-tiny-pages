@@ -259,6 +259,7 @@ export type Database = {
           is_online_available: boolean
           last_ticket_number: number
           lottery_game_id: string
+          series_id: string | null
           updated_at: string
         }
         Insert: {
@@ -269,6 +270,7 @@ export type Database = {
           is_online_available?: boolean
           last_ticket_number: number
           lottery_game_id: string
+          series_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -279,6 +281,7 @@ export type Database = {
           is_online_available?: boolean
           last_ticket_number?: number
           lottery_game_id?: string
+          series_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -287,6 +290,13 @@ export type Database = {
             columns: ["lottery_game_id"]
             isOneToOne: false
             referencedRelation: "lottery_games"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lottery_books_series_id_fkey"
+            columns: ["series_id"]
+            isOneToOne: false
+            referencedRelation: "lottery_series"
             referencedColumns: ["id"]
           },
         ]
@@ -447,6 +457,41 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "lottery_prizes_lottery_game_id_fkey"
+            columns: ["lottery_game_id"]
+            isOneToOne: false
+            referencedRelation: "lottery_games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lottery_series: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          lottery_game_id: string
+          series_name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          lottery_game_id: string
+          series_name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          lottery_game_id?: string
+          series_name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lottery_series_lottery_game_id_fkey"
             columns: ["lottery_game_id"]
             isOneToOne: false
             referencedRelation: "lottery_games"
