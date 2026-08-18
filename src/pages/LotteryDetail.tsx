@@ -309,8 +309,12 @@ export default function LotteryDetail() {
       <div className="max-w-4xl mx-auto px-4 pt-4 pb-24 md:pb-32 space-y-5">
         {/* HERO — ticket image */}
         <Card className="overflow-hidden rounded-[24px] border border-border/60 shadow-[0_2px_4px_rgba(0,0,0,0.04),0_20px_50px_-20px_rgba(0,0,0,0.25)] p-0">
-          <div className="relative">
+          <div
+            className={`relative ${game.ticket_image_url ? 'cursor-zoom-in' : ''}`}
+            onClick={() => game.ticket_image_url && setImageLightboxOpen(true)}
+          >
             <AspectRatio ratio={16 / 9}>
+
               {game.ticket_image_url ? (
                 <>
                   {!imgLoaded && <Skeleton className="absolute inset-0" />}
