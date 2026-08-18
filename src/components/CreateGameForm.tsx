@@ -151,15 +151,18 @@ export function CreateGameForm({ isOpen, onClose, onSuccess, editingGame }: Crea
     }
   }, [editingGame]);
 
-  const handleImageUpload = (file: File, type: 'ticket' | 'logo') => {
+  const handleImageUpload = (file: File, type: 'ticket' | 'logo'): boolean => {
     if (file.size > 2 * 1024 * 1024) {
       toast({
         title: "File too large",
         description: "Please select an image less than 2MB",
         variant: "destructive",
       });
-      return;
+      // Reset any partial state for this slot so the picker stays usable
+      setUploadProgress(prev => ({ ...prev, [type]: 0 }));
+      return false;
     }
+
 
     // Simulate upload progress
     setUploadProgress(prev => ({ ...prev, [type]: 0 }));
