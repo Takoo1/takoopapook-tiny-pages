@@ -43,13 +43,20 @@ const generateGameCode = (): string => {
   return result;
 };
 
+interface Series {
+  id: string;
+  name: string;
+}
+
 interface Book {
   id: string;
+  seriesId: string;
   name: string;
   firstTicket: number;
   lastTicket: number;
   isOnline: boolean;
 }
+
 
 interface Prize {
   id: string;
