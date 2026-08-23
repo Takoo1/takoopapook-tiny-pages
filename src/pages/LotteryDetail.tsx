@@ -256,9 +256,9 @@ export default function LotteryDetail() {
   const currentBookTickets = currentBook && currentBook.is_online_available
     ? tickets.filter(t => t.book_id === currentBook.id) : [];
 
-  const nextBook = () => { setCurrentBookIndex(p => visibleBooks.length ? (p + 1) % visibleBooks.length : 0); setSelectedTickets([]); };
-  const prevBook = () => { setCurrentBookIndex(p => visibleBooks.length ? (p - 1 + visibleBooks.length) % visibleBooks.length : 0); setSelectedTickets([]); };
-  const selectSeries = (id: string) => { setCurrentSeriesId(id); setCurrentBookIndex(0); setSelectedTickets([]); };
+  const nextBook = () => { setCurrentBookIndex(p => visibleBooks.length ? (p + 1) % visibleBooks.length : 0); };
+  const prevBook = () => { setCurrentBookIndex(p => visibleBooks.length ? (p - 1 + visibleBooks.length) % visibleBooks.length : 0); };
+  const selectSeries = (id: string) => { setCurrentSeriesId(id); setCurrentBookIndex(0); };
 
 
   const formatDate = (dateString: string) => formatDateWithTimezone(dateString, game?.organizer_timezone, false);
@@ -590,7 +590,7 @@ export default function LotteryDetail() {
               )}
             </div>
 
-            {seriesList.length > 1 && (
+            {seriesList.length > 0 && (
               <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
                 {seriesList.map((s) => (
                   <button

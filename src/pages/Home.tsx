@@ -379,10 +379,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Image Carousel Section */}
-      <div className="relative home-band-dark">
-        <div className="relative z-10"><ImageCarousel /></div>
-      </div>
 
       <section ref={gamesSectionRef} id="games" className="relative py-8 md:py-20 px-3 md:px-6 home-band scroll-mt-16 md:scroll-mt-0 overflow-hidden">
         <div className="relative z-10 max-w-6xl mx-auto">
@@ -545,6 +541,11 @@ export default function Home() {
           )}
         </div>
       </section>
+
+      {/* Image Carousel Section */}
+      <div className="relative home-band-dark">
+        <div className="relative z-10"><ImageCarousel /></div>
+      </div>
 
       {/* FAQ Section */}
       <div className="relative home-band-dark">

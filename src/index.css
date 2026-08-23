@@ -542,5 +542,24 @@
     font-weight: 700;
     box-shadow: 0 6px 16px -8px hsl(var(--lottery-gold) / 0.6);
   }
-}
 
+  /* Ticket number chips: two states only */
+  .ticket-chip-default {
+    background: linear-gradient(180deg, hsl(205 100% 96%), hsl(205 90% 88%));
+    color: hsl(211 70% 30%);
+    border: 1px solid hsl(205 70% 78%);
+    box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.9), 0 2px 6px -3px hsl(211 60% 40% / 0.45);
+  }
+  .dark .ticket-chip-default {
+    background: linear-gradient(180deg, hsl(207 45% 30%), hsl(209 50% 22%));
+    color: hsl(205 90% 88%);
+    border-color: hsl(207 40% 40%);
+    box-shadow: inset 0 1px 0 hsl(205 80% 70% / 0.25), 0 2px 6px -3px hsl(0 0% 0% / 0.6);
+  }
+  .ticket-chip-selected {
+    background: var(--gradient-gold);
+    color: hsl(209 61% 16%);
+    border: 1px solid hsl(var(--lottery-gold));
+    box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.55), 0 6px 14px -6px hsl(var(--lottery-gold) / 0.7);
+  }
+}
