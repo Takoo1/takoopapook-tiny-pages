@@ -590,7 +590,7 @@ export default function LotteryDetail() {
               )}
             </div>
 
-            {seriesList.length > 1 && (
+            {seriesList.length > 0 && (
               <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
                 {seriesList.map((s) => (
                   <button
