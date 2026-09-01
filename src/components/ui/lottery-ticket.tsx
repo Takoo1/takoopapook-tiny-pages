@@ -21,14 +21,16 @@ export function LotteryTicket({ ticketNumber, status, onClick, className, forceC
   return (
     <div
       className={cn(
-        "w-10 h-10 md:w-14 md:h-14 rounded-full flex items-center justify-center text-[10px] md:text-xs font-bold transition-transform duration-150",
+        "w-10 h-10 md:w-14 md:h-14 rounded-full flex flex-col items-center justify-center gap-0.5 font-bold leading-none transition-transform duration-150",
+        status === 'sold_online' ? 'text-[9px] md:text-[11px]' : 'text-[10px] md:text-xs',
         getStatusColor(),
         isClickable && "cursor-pointer active:scale-95",
         className
       )}
       onClick={isClickable ? onClick : undefined}
     >
-      {ticketNumber}
+      <span>{ticketNumber}</span>
+      {status === 'sold_online' && <span className="text-[7px] md:text-[8px] font-semibold uppercase tracking-wide opacity-80">Sold</span>}
     </div>
   );
 }
