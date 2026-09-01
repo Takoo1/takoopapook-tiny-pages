@@ -590,24 +590,37 @@ export default function LotteryDetail() {
               )}
             </div>
 
-            {seriesList.length > 0 && (
-              <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
-                {seriesList.map((s) => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    onClick={() => selectSeries(s.id)}
-                    className={`shrink-0 px-4 h-9 rounded-2xl text-sm font-semibold border transition-colors ${
-                      currentSeriesId === s.id
-                        ? 'bg-primary text-primary-foreground border-primary'
-                        : 'bg-card text-muted-foreground border-border'
-                    }`}
-                  >
-                    {s.series_name}
-                  </button>
-                ))}
-              </div>
-            )}
+            {seriesList.length > 1 && (() => {
+              const currentSeriesIndex = Math.max(0, seriesList.findIndex((series) => series.id === currentSeriesId));
+              const currentSeries = seriesList[currentSeriesIndex];
+              const previousSeries = seriesList[currentSeriesIndex - 1];
+              const nextSeries = seriesList[currentSeriesIndex + 1];
+              const followingSeries = seriesList[currentSeriesIndex + 2];
+              const selectSeriesAt = (index: number) => {
+                const series = seriesList[index];
+                if (series) selectSeries(series.id);
+              };
+
+              return (
+                <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1" aria-label="Series Navigation">
+                  <Button type="button" variant="outline" size="sm" disabled={!previousSeries} onClick={() => selectSeriesAt(currentSeriesIndex - 1)} className="h-9 shrink-0 rounded-xl px-2.5 text-[11px]">
+                    <ChevronLeft className="h-3.5 w-3.5" />
+                    <span className="max-w-[84px] truncate">{previousSeries?.series_name || 'Previous'}</span>
+                  </Button>
+                  <Button type="button" variant="default" size="sm" onClick={() => selectSeriesAt(currentSeriesIndex)} className="h-9 min-w-[88px] shrink-0 rounded-xl px-2.5 text-[11px]">
+                    <span className="max-w-[96px] truncate">{currentSeries?.series_name || 'Series'}</span>
+                  </Button>
+                  <Button type="button" variant="outline" size="sm" disabled={!nextSeries} onClick={() => selectSeriesAt(currentSeriesIndex + 1)} className="h-9 shrink-0 rounded-xl px-2.5 text-[11px]">
+                    <span className="max-w-[84px] truncate">{nextSeries?.series_name || 'Next'}</span>
+                    <ChevronRight className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button type="button" variant="outline" size="sm" disabled={!followingSeries} onClick={() => selectSeriesAt(currentSeriesIndex + 2)} aria-label="Next series" className="h-9 shrink-0 rounded-xl px-2.5 text-[11px]">
+                    <ChevronRight className="h-3.5 w-3.5" />
+                    <ChevronRight className="-ml-2 h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              );
+            })()}
 
             {visibleBooks.length > 0 ? (
               <Card className="rounded-[20px] overflow-hidden">
