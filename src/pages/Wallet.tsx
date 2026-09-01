@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, Copy, Gift, Wallet as WalletIcon, Sparkles, Check, Share2, ShieldCheck, UserPlus } from "lucide-react";
+import { ArrowLeft, Copy, Gift, Wallet as WalletIcon, Sparkles, Check, Share2, ShieldCheck, UserPlus, LogIn, Coins, Ticket, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -35,7 +35,7 @@ export default function Wallet() {
     const loadData = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) {
-        navigate('/');
+        setInitialLoading(false);
         return;
       }
       setUser(session.user);
@@ -49,11 +49,19 @@ export default function Wallet() {
     loadData();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session?.user) navigate('/');
+      setUser(session?.user ?? null);
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  useEffect(() => {
+    if (window.location.hash !== '#what-is-fc') return;
+    const frame = window.requestAnimationFrame(() => {
+      document.getElementById('what-is-fc')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [initialLoading]);
 
   const loadFcBalance = async (userId: string) => {
     try {
@@ -167,6 +175,33 @@ export default function Wallet() {
           </div>
         </div>
 
+        <section id="what-is-fc" className="scroll-mt-[72px] rounded-[24px] border border-primary/15 bg-card p-4 md:p-6 shadow-[0_8px_24px_-16px_hsl(var(--navy)/0.25)] animate-fade-in-up">
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[hsl(var(--brand-gold-pale))] text-[hsl(var(--lottery-gold))]"><Coins className="h-5 w-5" /></div>
+            <div className="min-w-0">
+              <div className="home-eyebrow">Fortune Coins</div>
+              <h2 className="home-section-title text-xl md:text-2xl">What is FC?</h2>
+              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">Fortune Coins are rewards you can use to reduce the cost of eligible lottery tickets and coupons.</p>
+            </div>
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-2.5 md:grid-cols-4">
+            {[
+              { icon: Coins, title: 'What is FC', text: 'A reward balance for your Fortuna Link account.' },
+              { icon: Ticket, title: 'How to Use FC', text: 'Redeem FC at checkout on eligible tickets.' },
+              { icon: TrendingUp, title: 'Benefits', text: '3 FC gives ₹1 off, helping every balance go further.' },
+              { icon: Gift, title: 'How to Earn FC', text: 'Earn through eligible purchases and referrals.' },
+            ].map(({ icon: Icon, title, text }) => (
+              <div key={title} className="rounded-2xl border border-border/70 bg-secondary/45 p-3">
+                <Icon className="h-4 w-4 text-primary" />
+                <h3 className="mt-2 text-xs font-bold text-foreground">{title}</h3>
+                <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">{text}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {user ? (
+          <>
         {/* Balance Summary Card */}
         {initialLoading ? (
           <Skeleton className="h-40 rounded-[24px]" />
@@ -406,6 +441,15 @@ export default function Wallet() {
             </>
           )}
         </section>
+          </>
+        ) : (
+          <section className="rounded-[24px] border border-border bg-card p-5 text-center shadow-[0_8px_24px_-16px_hsl(var(--navy)/0.2)]">
+            <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-secondary text-primary"><LogIn className="h-5 w-5" /></div>
+            <h2 className="mt-3 text-base font-bold text-foreground">Sign in to access your wallet</h2>
+            <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">Sign in to view your balance, purchase FC, and manage referrals.</p>
+            <Button variant="default" className="mt-4" onClick={() => (document.querySelector('[data-auth-trigger]') as HTMLElement | null)?.click()}>Sign in</Button>
+          </section>
+        )}
       </div>
     </div>
   );

@@ -249,86 +249,6 @@ export default function TicketBuying() {
           </div>
         </Card>
 
-        {/* Order Summary Card */}
-        <Card className="rounded-[20px] p-5 border border-border/60">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Order Summary</h2>
-            <span className="inline-flex items-center gap-1 text-xs font-semibold text-foreground bg-muted/60 px-2.5 py-1 rounded-full">
-              <Ticket className="w-3 h-3" /> {selectedTickets.length}
-            </span>
-          </div>
-
-          {/* Selected numbers */}
-          <div className="rounded-xl bg-muted/40 border border-border/40 p-3 mb-3">
-            <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground mb-1.5">Ticket Numbers</div>
-            <div className="flex flex-wrap gap-1.5">
-              {selectedTickets.map(t => (
-                <span key={t.id} className="inline-flex items-center px-2.5 py-1 rounded-lg bg-background border border-border/60 text-xs font-semibold tabular-nums">
-                  #{t.number}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Price breakdown */}
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between text-muted-foreground">
-              <span>Subtotal ({selectedTickets.length} × ₹{ticketPrice})</span>
-              <span className="tabular-nums text-foreground font-medium">₹{totalPriceRs}</span>
-            </div>
-            {discountApplied && suggestedDiscountRs > 0 && (
-              <div className="flex justify-between text-emerald-500">
-                <span>FC Discount ({suggestedFcToUse} FC)</span>
-                <span className="tabular-nums font-medium">− ₹{suggestedDiscountRs}</span>
-              </div>
-            )}
-            <div className="h-px bg-border/60 my-2" />
-            <div className="flex justify-between items-baseline">
-              <span className="text-sm font-semibold text-foreground">Total Payable</span>
-              <span className="text-2xl font-extrabold text-gold-shimmer tabular-nums">₹{finalPayable}</span>
-            </div>
-          </div>
-        </Card>
-
-        {/* FC Discount Card */}
-        {(userId || fcBalance === null) && (
-          <Card className="rounded-[20px] p-5 border border-border/60 bg-gradient-to-br from-lottery-gold/6 to-transparent">
-            <div className="flex items-start gap-3">
-              <img src={fcCoin} alt="Fortune Coin" className="w-9 h-9 flex-shrink-0" />
-              <div className="min-w-0 flex-1">
-                <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Fortune Coins</div>
-                {!userId && (
-                  <p className="text-sm text-foreground mt-0.5">Sign in to earn and redeem Fortune Coins.</p>
-                )}
-                {userId && fcBalance === null && (
-                  <Skeleton className="h-4 w-40 mt-1" />
-                )}
-                {userId && fcBalance !== null && fcBalance < 50 && (
-                  <p className="text-sm text-foreground mt-0.5">
-                    Balance: <span className="font-bold">{fcBalance} FC</span> · Need ≥ 50 FC for a discount.
-                  </p>
-                )}
-                {userId && fcBalance !== null && fcBalance >= 50 && (
-                  <p className="text-sm text-foreground mt-0.5">
-                    Balance: <span className="font-bold">{fcBalance} FC</span>. Use <span className="font-bold">{suggestedFcToUse}</span> for ₹{suggestedDiscountRs} instant discount.
-                  </p>
-                )}
-              </div>
-            </div>
-            {userId && suggestedDiscountRs > 0 && !discountApplied && (
-              <Button size="sm" onClick={handleApplyDiscount} disabled={applyingDiscount}
-                className="w-full mt-3 rounded-2xl h-11 bg-[image:var(--gradient-gold)] hover:brightness-[1.03] text-[hsl(var(--navy))] font-bold">
-                {applyingDiscount ? 'Applying…' : `Apply ₹${suggestedDiscountRs} FC Discount`}
-              </Button>
-            )}
-            {discountApplied && (
-              <div className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-500 bg-emerald-500/10 px-3 py-1.5 rounded-full">
-                <Sparkles className="w-3 h-3" /> Discount applied
-              </div>
-            )}
-          </Card>
-        )}
-
         {/* Buyer Details Card */}
         <Card className="rounded-[20px] p-5 border border-border/60">
           <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-4">Buyer Details</h2>
@@ -368,6 +288,34 @@ export default function TicketBuying() {
           </div>
         </Card>
 
+        {/* FC Discount Card */}
+        {(userId || fcBalance === null) && (
+          <Card className="rounded-[20px] p-5 border border-border/60 bg-gradient-to-br from-lottery-gold/6 to-transparent">
+            <div className="flex items-start gap-3">
+              <img src={fcCoin} alt="Fortune Coin" className="w-9 h-9 flex-shrink-0" />
+              <div className="min-w-0 flex-1">
+                <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Fortune Coins</div>
+                {!userId && <p className="text-sm text-foreground mt-0.5">Sign in to earn and redeem Fortune Coins.</p>}
+                {userId && fcBalance === null && <Skeleton className="h-4 w-40 mt-1" />}
+                {userId && fcBalance !== null && fcBalance < 50 && (
+                  <p className="text-sm text-foreground mt-0.5">Balance: <span className="font-bold">{fcBalance} FC</span> · Need ≥ 50 FC for a discount.</p>
+                )}
+                {userId && fcBalance !== null && fcBalance >= 50 && (
+                  <p className="text-sm text-foreground mt-0.5">Balance: <span className="font-bold">{fcBalance} FC</span>. Use <span className="font-bold">{suggestedFcToUse}</span> for ₹{suggestedDiscountRs} instant discount.</p>
+                )}
+              </div>
+            </div>
+            <Button type="button" variant="outline" size="sm" onClick={() => navigate('/wallet#what-is-fc')} className="w-full mt-3 rounded-2xl h-10">What is FC</Button>
+            {userId && suggestedDiscountRs > 0 && !discountApplied && (
+              <Button size="sm" onClick={handleApplyDiscount} disabled={applyingDiscount}
+                className="w-full mt-2 rounded-2xl h-11 bg-[image:var(--gradient-gold)] hover:brightness-[1.03] text-[hsl(var(--navy))] font-bold">
+                {applyingDiscount ? 'Applying…' : `Apply ₹${suggestedDiscountRs} FC Discount`}
+              </Button>
+            )}
+            {discountApplied && <div className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-500 bg-emerald-500/10 px-3 py-1.5 rounded-full"><Sparkles className="w-3 h-3" /> Discount applied</div>}
+          </Card>
+        )}
+
         {/* FC Reward Chip */}
         {totalFcReward > 0 && (
           <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/8 p-4 flex items-center gap-3">
@@ -379,6 +327,30 @@ export default function TicketBuying() {
             </p>
           </div>
         )}
+
+        {/* Order Summary Card */}
+        <Card className="rounded-[20px] p-5 border border-border/60">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Order Summary</h2>
+            <span className="inline-flex items-center gap-1 text-xs font-semibold text-foreground bg-muted/60 px-2.5 py-1 rounded-full">
+              <Ticket className="w-3 h-3" /> {selectedTickets.length}
+            </span>
+          </div>
+          <div className="rounded-xl bg-muted/40 border border-border/40 p-3 mb-3">
+            <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground mb-1.5">Ticket Numbers</div>
+            <div className="flex flex-wrap gap-1.5">
+              {selectedTickets.map(t => (
+                <span key={t.id} className="inline-flex items-center px-2.5 py-1 rounded-lg bg-background border border-border/60 text-xs font-semibold tabular-nums">#{t.number}</span>
+              ))}
+            </div>
+          </div>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between text-muted-foreground"><span>Subtotal ({selectedTickets.length} × ₹{ticketPrice})</span><span className="tabular-nums text-foreground font-medium">₹{totalPriceRs}</span></div>
+            {discountApplied && suggestedDiscountRs > 0 && <div className="flex justify-between text-emerald-500"><span>FC Discount ({suggestedFcToUse} FC)</span><span className="tabular-nums font-medium">− ₹{suggestedDiscountRs}</span></div>}
+            <div className="h-px bg-border/60 my-2" />
+            <div className="flex justify-between items-baseline"><span className="text-sm font-semibold text-foreground">Total Payable</span><span className="text-2xl font-extrabold text-gold-shimmer tabular-nums">₹{finalPayable}</span></div>
+          </div>
+        </Card>
 
         {/* Trust footer */}
         <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground pt-2">
