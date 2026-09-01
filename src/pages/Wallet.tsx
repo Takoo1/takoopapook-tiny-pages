@@ -49,7 +49,7 @@ export default function Wallet() {
     loadData();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session?.user) navigate('/');
+      setUser(session?.user ?? null);
     });
 
     return () => subscription.unsubscribe();
