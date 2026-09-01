@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, Copy, Gift, Wallet as WalletIcon, Sparkles, Check, Share2, ShieldCheck, UserPlus } from "lucide-react";
+import { ArrowLeft, Copy, Gift, Wallet as WalletIcon, Sparkles, Check, Share2, ShieldCheck, UserPlus, LogIn, Coins, Ticket, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -35,7 +35,7 @@ export default function Wallet() {
     const loadData = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) {
-        navigate('/');
+        setInitialLoading(false);
         return;
       }
       setUser(session.user);
@@ -54,6 +54,14 @@ export default function Wallet() {
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  useEffect(() => {
+    if (window.location.hash !== '#what-is-fc') return;
+    const frame = window.requestAnimationFrame(() => {
+      document.getElementById('what-is-fc')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [initialLoading]);
 
   const loadFcBalance = async (userId: string) => {
     try {
