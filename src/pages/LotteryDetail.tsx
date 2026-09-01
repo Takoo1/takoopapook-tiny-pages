@@ -272,22 +272,22 @@ export default function LotteryDetail() {
       case 'booking_stopped':
         return (
           <Card className="border-orange-500/20 bg-gradient-to-br from-orange-500/5 to-transparent overflow-hidden">
-            <CardContent className="text-center py-8">
-              <div className="w-14 h-14 mx-auto rounded-2xl bg-orange-500/15 flex items-center justify-center mb-4">
-                <Hourglass className="w-7 h-7 text-orange-500" />
+            <CardContent className="text-center py-5">
+              <div className="w-11 h-11 mx-auto rounded-2xl bg-orange-500/15 flex items-center justify-center mb-3">
+                <Hourglass className="w-5 h-5 text-orange-500" />
               </div>
               <h3 className="font-semibold text-foreground mb-1">Booking Closed</h3>
               <p className="text-muted-foreground text-sm mb-4">Approx. time remaining for the draw</p>
-              <div className="text-3xl font-bold tracking-tight text-gold-shimmer tabular-nums">{timeRemaining}</div>
+              <div className="text-2xl font-bold tracking-tight text-gold-shimmer tabular-nums">{timeRemaining}</div>
             </CardContent>
           </Card>
         );
       case 'live':
         return (
           <Card className="border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 to-transparent overflow-hidden">
-            <CardContent className="text-center py-8">
-              <div className="w-14 h-14 mx-auto rounded-2xl bg-emerald-500/15 flex items-center justify-center mb-4 animate-pulse">
-                <Radio className="w-7 h-7 text-emerald-500" />
+            <CardContent className="text-center py-5">
+              <div className="w-11 h-11 mx-auto rounded-2xl bg-emerald-500/15 flex items-center justify-center mb-3 animate-pulse">
+                <Radio className="w-5 h-5 text-emerald-500" />
               </div>
               <h3 className="font-semibold text-foreground mb-1">Draw is Live</h3>
               <p className="text-muted-foreground text-sm">Winners are being announced now</p>
@@ -373,7 +373,7 @@ export default function LotteryDetail() {
 
 
         {/* IDENTITY CARD — title, headline, organiser */}
-        <Card className="rounded-[20px] p-5 border border-border/60">
+        <Card className="rounded-[20px] p-4 md:p-5 border border-border/60">
           <div className="flex gap-3 items-start">
             <div className="flex-shrink-0">
               {game.organiser_logo_url ? (
@@ -400,13 +400,13 @@ export default function LotteryDetail() {
 
           {/* Prize spotlight */}
           {topPrize && (
-            <div className="mt-4 rounded-2xl p-4 bg-gradient-to-br from-lottery-gold/15 to-transparent border border-lottery-gold/25 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-lottery-gold/20 flex items-center justify-center flex-shrink-0">
-                <Trophy className="w-5 h-5 text-lottery-gold" />
+            <div className="mt-3 rounded-2xl p-3 bg-gradient-to-br from-lottery-gold/15 to-transparent border border-lottery-gold/25 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-lottery-gold/20 flex items-center justify-center flex-shrink-0">
+                <Trophy className="w-4 h-4 text-lottery-gold" />
               </div>
               <div className="min-w-0">
                 <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground">Top Prize</div>
-                <div className="text-2xl font-extrabold text-gold-shimmer leading-tight">
+                <div className="text-xl font-extrabold text-gold-shimmer leading-tight">
                   ₹{topPrize.amount?.toLocaleString('en-IN')}
                 </div>
               </div>
@@ -414,7 +414,7 @@ export default function LotteryDetail() {
           )}
 
           {/* Meta grid */}
-          <div className="mt-4 grid grid-cols-2 gap-2.5">
+          <div className="mt-3 grid grid-cols-2 gap-2">
             <div className="info-tile tile-blue">
               <div className="info-label">
                 <Calendar className="w-3 h-3" /> Draw Date
@@ -451,15 +451,15 @@ export default function LotteryDetail() {
 
         {/* PRIZES */}
         {prizes.length > 0 && (
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {prizes.filter(p => p.prize_type === 'main').length > 0 && (
               <Card className="rounded-[20px] overflow-hidden">
                 <Collapsible open={prizesOpen} onOpenChange={setPrizesOpen}>
                   <CollapsibleTrigger className="w-full">
-                    <CardHeader className="py-3">
-                      <CardTitle className="flex items-center gap-2 text-base">
-                        <div className="w-8 h-8 rounded-lg bg-lottery-gold/15 flex items-center justify-center">
-                          <Gift className="w-4 h-4 text-lottery-gold" />
+                    <CardHeader className="py-2.5">
+                      <CardTitle className="flex items-center gap-2 text-sm">
+                        <div className="w-7 h-7 rounded-lg bg-lottery-gold/15 flex items-center justify-center">
+                          <Gift className="w-3.5 h-3.5 text-lottery-gold" />
                         </div>
                         <span className="flex-1 text-left">Main Prizes</span>
                         <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${prizesOpen ? 'rotate-180' : ''}`} />
@@ -493,10 +493,10 @@ export default function LotteryDetail() {
               <Card className="rounded-[20px] overflow-hidden">
                 <Collapsible open={incentivesOpen} onOpenChange={setIncentivesOpen}>
                   <CollapsibleTrigger className="w-full">
-                    <CardHeader className="py-3">
-                      <CardTitle className="flex items-center gap-2 text-base">
-                        <div className="w-8 h-8 rounded-lg bg-emerald-500/15 flex items-center justify-center">
-                          <Sparkles className="w-4 h-4 text-emerald-500" />
+                    <CardHeader className="py-2.5">
+                      <CardTitle className="flex items-center gap-2 text-sm">
+                        <div className="w-7 h-7 rounded-lg bg-emerald-500/15 flex items-center justify-center">
+                          <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
                         </div>
                         <span className="flex-1 text-left">Incentive Prizes</span>
                         <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${incentivesOpen ? 'rotate-180' : ''}`} />
@@ -532,7 +532,7 @@ export default function LotteryDetail() {
         {/* Terms button */}
         <Dialog>
           <DialogTrigger asChild>
-            <Button variant="outline" className="w-full justify-start gap-2 rounded-2xl h-12">
+            <Button variant="outline" className="w-full justify-start gap-2 rounded-2xl h-10 text-sm">
               <ShieldCheck className="w-4 h-4 text-lottery-gold" />
               Terms, Rules & Organiser Info
             </Button>
