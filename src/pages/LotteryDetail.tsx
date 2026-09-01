@@ -415,31 +415,31 @@ export default function LotteryDetail() {
 
           {/* Meta grid */}
           <div className="mt-4 grid grid-cols-2 gap-2.5">
-            <div className="rounded-xl bg-muted/40 p-3 border border-border/40">
-              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-semibold text-muted-foreground mb-1">
+            <div className="info-tile tile-blue">
+              <div className="info-label">
                 <Calendar className="w-3 h-3" /> Draw Date
               </div>
-              <div className="text-sm font-semibold text-foreground truncate">{formatDate(game.game_date)}</div>
+              <div className="info-value truncate">{formatDate(game.game_date)}</div>
             </div>
             {game.stop_booking_time && (
-              <div className="rounded-xl bg-muted/40 p-3 border border-border/40">
-                <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-semibold text-muted-foreground mb-1">
+              <div className="info-tile tile-champagne">
+                <div className="info-label">
                   <Clock className="w-3 h-3" /> Booking Closes
                 </div>
-                <div className="text-sm font-semibold text-foreground truncate">{formatDate(game.stop_booking_time)}</div>
+                <div className="info-value truncate">{formatDate(game.stop_booking_time)}</div>
               </div>
             )}
-            <div className="rounded-xl bg-muted/40 p-3 border border-border/40">
-              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-semibold text-muted-foreground mb-1">
+            <div className="info-tile tile-gold">
+              <div className="info-label">
                 <Ticket className="w-3 h-3" /> Ticket Price
               </div>
-              <div className="text-sm font-semibold text-foreground">₹{game.ticket_price}</div>
+              <div className="info-value">₹{game.ticket_price}</div>
             </div>
-            <div className="rounded-xl bg-muted/40 p-3 border border-border/40">
-              <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-semibold text-muted-foreground mb-1">
+            <div className="info-tile tile-teal">
+              <div className="info-label">
                 <BookOpen className="w-3 h-3" /> Books
               </div>
-              <div className="text-sm font-semibold text-foreground truncate">
+              <div className="info-value truncate">
                 {onlineBookCount} online · {offlineBookCount} offline
               </div>
             </div>

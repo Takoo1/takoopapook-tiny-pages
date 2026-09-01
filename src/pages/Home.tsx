@@ -478,6 +478,9 @@ export default function Home() {
                                   price === '500' ? 'Premium Collection' :
                                   price === '1000' ? 'Elite Selection' :
                                   'Featured Collection';
+                const pillClass = price === '1000' ? 'pill-gold' :
+                                  price === '500' ? 'pill-navy' :
+                                  price === '100' ? 'pill-navy' : 'pill-teal';
 
                 return (
                   <section
@@ -493,7 +496,7 @@ export default function Home() {
                     {/* Section header */}
                     <div className="flex items-center justify-between gap-3 mb-5 md:mb-8">
                       <div className="flex items-center gap-3 min-w-0">
-                        <span className="home-tier-pill">
+                        <span className={`home-tier-pill ${pillClass}`}>
                           <span className="dot" />
                           {sectionTitle}
                         </span>
