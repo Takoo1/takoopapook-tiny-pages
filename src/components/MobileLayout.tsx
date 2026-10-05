@@ -4,6 +4,8 @@ import { MobileHeader } from "./MobileHeader";
 import { DesktopHeader } from "./DesktopHeader";
 import { cn } from "@/lib/utils";
 import { useLocation } from "react-router-dom";
+import { PassesHeader } from "./PassesHeader";
+import { PassesNavigation } from "./PassesNavigation";
 
 interface MobileLayoutProps {
   children: React.ReactNode;
@@ -12,14 +14,15 @@ interface MobileLayoutProps {
 export function MobileLayout({ children }: MobileLayoutProps) {
   const isMobile = useIsMobile();
   const location = useLocation();
+  const isPasses = location.pathname === '/passes' || location.pathname.startsWith('/passes/');
   
   // Hide header on mobile for videos page
   const hideHeader = isMobile && location.pathname === '/videos';
 
   return (
-    <div className="home-noir min-h-screen flex flex-col bg-background relative overflow-x-hidden">
+    <div className={cn("home-noir min-h-screen flex flex-col bg-background relative overflow-x-hidden", isPasses && "passes-mode")}>
       {/* Soft ambient tint (very subtle) */}
-      {isMobile && (
+      {isMobile && !isPasses && (
         <div
           aria-hidden
           className="pointer-events-none fixed inset-0 z-0"
@@ -31,14 +34,15 @@ export function MobileLayout({ children }: MobileLayoutProps) {
       )}
 
       {/* Conditional Header - Mobile or Desktop */}
-      {!hideHeader && (isMobile ? <MobileHeader /> : <DesktopHeader />)}
+      {isPasses ? <PassesHeader mobile={isMobile} /> : !hideHeader && (isMobile ? <MobileHeader /> : <DesktopHeader />)}
 
       {/* Main content with header padding */}
       <main
         key={location.pathname}
         className={cn(
           "flex-1 relative z-10 animate-fade-in",
-          !hideHeader && isMobile ? "pt-[58px] pb-[76px]" :
+           isPasses && isMobile ? "pt-[100px] pb-[76px]" :
+           !hideHeader && isMobile ? "pt-[100px] pb-[76px]" :
           !hideHeader ? "pt-0" :
           isMobile ? "pb-[76px]" : "pt-0"
         )}
@@ -47,7 +51,7 @@ export function MobileLayout({ children }: MobileLayoutProps) {
       </main>
 
       {/* Bottom navigation - only show on mobile */}
-      {isMobile && <MobileBottomNav />}
+      {isMobile && (isPasses ? <PassesNavigation /> : <MobileBottomNav />)}
     </div>
   );
 }

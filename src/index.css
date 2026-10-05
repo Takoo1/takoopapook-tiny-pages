@@ -568,6 +568,49 @@
   .chip-gold-3d span, .chip-gold-3d svg { color: hsl(var(--navy)); }
   .chip-blue-3d span, .chip-blue-3d svg { color: #fff; }
 
+  .mode-button.mode-current { outline: 2px solid hsl(var(--foreground) / 0.28); outline-offset: 2px; }
+  .passes-mode {
+    --passes-cover-foreground: 0 0% 100%;
+    --background: 199 40% 97%;
+    --foreground: 209 50% 15%;
+    --card: 0 0% 100%;
+    --primary: 207 76% 35%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 197 53% 92%;
+    --secondary-foreground: 209 50% 15%;
+    --muted: 197 32% 94%;
+    --muted-foreground: 208 15% 42%;
+    --accent: 190 45% 89%;
+    --border: 200 25% 85%;
+    --ring: 207 76% 35%;
+    --brand-blue: 205 66% 40%;
+    --brand-navy: 209 61% 22%;
+  }
+  .dark .passes-mode {
+    --background: 209 34% 10%;
+    --foreground: 195 28% 95%;
+    --card: 209 32% 15%;
+    --primary: 196 78% 68%;
+    --primary-foreground: 209 50% 12%;
+    --secondary: 204 29% 22%;
+    --secondary-foreground: 195 28% 95%;
+    --muted: 209 28% 19%;
+    --muted-foreground: 198 19% 72%;
+    --accent: 204 29% 23%;
+    --border: 205 23% 28%;
+    --ring: 196 78% 68%;
+    --brand-blue: 205 58% 52%;
+    --brand-navy: 209 48% 22%;
+  }
+  .passes-page { background: hsl(var(--background)); }
+  .passes-header-label { font-size: 10px; font-weight: 800; color: hsl(var(--primary)); letter-spacing: 0.08em; }
+  .passes-kicker { font-size: 11px; font-weight: 800; color: hsl(var(--primary)); letter-spacing: 0.08em; }
+  .passes-cover-shade { background: linear-gradient(0deg, hsl(var(--brand-navy) / 0.92), hsl(var(--brand-navy) / 0.1) 75%, transparent); }
+  .passes-cover-kicker { font-size: 11px; font-weight: 800; letter-spacing: 0.08em; color: hsl(var(--passes-cover-foreground)); }
+  .passes-destination { transition: transform 180ms ease, box-shadow 180ms ease; }
+  .passes-destination:hover { transform: translateY(-2px); box-shadow: var(--shadow-card); }
+  @media (prefers-reduced-motion: reduce) { .passes-destination { transition: none; } }
+
 
 
   /* 3D raised trust chips — floating on page background, no boxy container */
