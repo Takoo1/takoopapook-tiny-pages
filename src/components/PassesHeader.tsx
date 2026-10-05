@@ -18,9 +18,8 @@ export function PassesHeader({ mobile }: { mobile: boolean }) {
         </Button>
         <div className="flex items-center gap-1"><span className="passes-header-label hidden min-[360px]:inline">PASS EXPERIENCE</span><NotificationBell /></div>
       </div>
-      <div className="flex h-[48px] items-center justify-between gap-2 px-4">
+      <div className="flex h-[48px] items-center gap-2 px-4">
         <ModeSwitch mode="passes" />
-        <span className="text-xs font-semibold text-muted-foreground">Explore more</span>
       </div>
     </header>
   ) : (

@@ -65,7 +65,10 @@ const App = () => (
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/passes" element={<Passes />} />
-                  <Route path="/passes/:section" element={<Passes />} />
+                  <Route path="/passes/events" element={<Passes />} />
+                  <Route path="/passes/news" element={<Passes />} />
+                  <Route path="/passes/videos" element={<Passes />} />
+                  <Route path="/passes/tourism" element={<Passes />} />
                   <Route path="/lottery/:gameId" element={<LotteryDetail />} />
                   <Route path="/lottery/:gameId/buy" element={<TicketBuying />} />
                   <Route path="/admin" element={<Admin />} />

@@ -48,8 +48,8 @@ export default function Passes() {
       <div className="passes-cover-shade absolute inset-0" />
       <div className="relative mx-auto flex min-h-[280px] max-w-6xl flex-col justify-end px-5 pb-8 pt-16 md:min-h-[370px] md:px-8 md:pb-12">
         <span className="passes-cover-kicker">FORTUNA LINK / PASSES</span>
-        <h1 className="mt-3 max-w-lg text-3xl font-bold leading-tight text-primary-foreground md:text-5xl">Be there for more.</h1>
-        <p className="mt-3 max-w-md text-sm leading-relaxed text-primary-foreground/90 md:text-base">Explore events, destinations, stories and more.</p>
+        <h1 className="mt-3 max-w-lg text-3xl font-bold leading-tight text-[hsl(var(--passes-cover-foreground))] md:text-5xl">Be there for more.</h1>
+        <p className="mt-3 max-w-md text-sm leading-relaxed text-[hsl(var(--passes-cover-foreground)/0.9)] md:text-base">Explore events, destinations, stories and more.</p>
       </div>
     </section>
     <section className="mx-auto max-w-6xl px-5 py-8 md:px-8 md:py-12">
