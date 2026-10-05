@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowRight, CalendarDays, Compass, MapPinned, Newspaper, Play, Ticket, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import passesImage from "@/assets/hero-banner.jpg";
+const passesImage = "/__l5e/assets-v1/3761ea66-463a-43f2-aa46-08a99fe25deb/passes-architecture.jpg";
 
 const categories: Record<string, { title: string; eyebrow: string; description: string; empty: string; icon: LucideIcon }> = {
   events: { title: "Events", eyebrow: "EVENT PASSES", description: "Find your next moment worth being there for.", empty: "There are no events to book right now. New event passes will appear here when available.", icon: CalendarDays },
@@ -44,7 +44,7 @@ export default function Passes() {
   ];
   return <div className="passes-page min-h-screen">
     <section className="passes-cover relative overflow-hidden">
-      <img src={passesImage} alt="A bridge lit at dusk" className="absolute inset-0 h-full w-full object-cover" />
+      <img src={passesImage} alt="Taj Mahal and its reflecting pool" className="absolute inset-0 h-full w-full object-cover" />
       <div className="passes-cover-shade absolute inset-0" />
       <div className="relative mx-auto flex min-h-[280px] max-w-6xl flex-col justify-end px-5 pb-8 pt-16 md:min-h-[370px] md:px-8 md:pb-12">
         <span className="passes-cover-kicker">FORTUNA LINK / PASSES</span>

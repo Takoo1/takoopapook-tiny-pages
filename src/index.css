@@ -604,7 +604,7 @@
   .passes-page { background: hsl(var(--background)); }
   .passes-header-label { font-size: 10px; font-weight: 800; color: hsl(var(--primary)); letter-spacing: 0.08em; }
   .passes-kicker { font-size: 11px; font-weight: 800; color: hsl(var(--primary)); letter-spacing: 0.08em; }
-  .passes-cover-shade { background: linear-gradient(0deg, hsl(var(--navy) / 0.9), hsl(var(--navy) / 0.2) 70%, transparent); }
+  .passes-cover-shade { background: linear-gradient(0deg, hsl(var(--brand-navy) / 0.92), hsl(var(--brand-navy) / 0.1) 75%, transparent); }
   .passes-cover-kicker { font-size: 11px; font-weight: 800; letter-spacing: 0.08em; color: hsl(var(--primary-foreground)); }
   .passes-destination { transition: transform 180ms ease, box-shadow 180ms ease; }
   .passes-destination:hover { transform: translateY(-2px); box-shadow: var(--shadow-card); }
