@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { NotificationBell } from "@/components/NotificationBell";
+import { ModeSwitch } from "@/components/ModeSwitch";
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 const fcCoin = "https://bramvnherjbaiakwfvwb.supabase.co/storage/v1/object/public/lottery-images/FC%20coin.png";
 export function MobileHeader() {
@@ -72,16 +73,16 @@ export function MobileHeader() {
       });
     }, 100);
   };
-  return <header className="fixed top-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl border-b border-border pt-safe-top h-[58px]">
-      <div className="flex items-center justify-between px-4 py-1.5 h-full relative">
+  return <header className="fixed top-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl border-b border-border pt-safe-top h-[100px]">
+      <div className="flex items-center justify-between gap-1 px-4 h-[51px] relative">
         {/* Left side - Site Logo */}
-        <div className="flex items-center gap-1.5 animate-fade-in shrink-0" onClick={() => navigate('/')} role="button">
+        <div className="flex items-center gap-1.5 animate-fade-in shrink-0 cursor-pointer" onClick={() => navigate('/')} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === 'Enter') navigate('/'); }}>
           <img src="/__l5e/assets-v1/e013b595-501d-44f1-8ddb-13183d360966/fortuna-logo.png" alt="Fortune Bridge" className="w-9 h-9 rounded-xl transition-transform duration-200 active:scale-95 shrink-0" />
-          <img src="/__l5e/assets-v1/21420f7f-e55f-4739-8be4-45b24b061c9a/fortunalink-name.png" alt="FortunaLink" className="h-5 object-contain hidden min-[360px]:inline-block max-w-[100px] shrink-0" />
+          <img src="/__l5e/assets-v1/21420f7f-e55f-4739-8be4-45b24b061c9a/fortunalink-name.png" alt="FortunaLink" className="h-5 object-contain max-w-[78px] min-[390px]:max-w-[100px] shrink-0" />
         </div>
 
         {/* Right side - Notification and FC Balance/Sign Up */}
-        <div className="flex items-center gap-1.5 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+        <div className="flex items-center gap-1 animate-fade-in min-w-0" style={{ animationDelay: '0.1s' }}>
           {/* Notification Bell */}
           <NotificationBell />
 
@@ -96,7 +97,7 @@ export function MobileHeader() {
 
               <Button variant="ghost" onClick={handleReferralClick} className="relative overflow-hidden chip-blue-3d flex items-center gap-1 h-9 px-2.5 rounded-full transition-all duration-200 active:scale-95 hover:bg-transparent">
                 <Gift className="w-3.5 h-3.5 relative z-10" />
-                <span className="text-xs font-semibold relative z-10">
+                 <span className="text-xs font-semibold relative z-10 hidden min-[380px]:inline">
                   Refer
                 </span>
               </Button>
@@ -104,9 +105,10 @@ export function MobileHeader() {
 
         <Button size="sm" onClick={handleSignUpPrompt} className="relative overflow-hidden btn-gold-3d font-bold h-9 px-3.5 text-xs rounded-full transition-all duration-200 active:scale-95 shrink-0">
               <Gift className="w-3.5 h-3.5 mr-1.5" />
-              <span>Get 50 FC Free</span>
+               <span className="hidden min-[390px]:inline">Get 50 FC Free</span><span className="min-[390px]:hidden">Get 50 FC</span>
             </Button>)}
         </div>
       </div>
+      <div className="flex h-[48px] items-center px-4"><ModeSwitch mode="coupons" /></div>
     </header>;
 }

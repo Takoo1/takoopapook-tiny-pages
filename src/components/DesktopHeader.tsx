@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { AuthButton } from "@/components/AuthButton";
+import { ModeSwitch } from "@/components/ModeSwitch";
 import { LogOut, Gift, MessageCircle, Menu, Home, Video, Trophy, Ticket, FileText } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import type { User as SupabaseUser } from '@supabase/supabase-js';
@@ -77,6 +78,7 @@ export function DesktopHeader() {
         <div className="flex items-center gap-3">
           <img src="/__l5e/assets-v1/e013b595-501d-44f1-8ddb-13183d360966/fortuna-logo.png" alt="Fortune Bridge" className="w-14 h-14 rounded-xl shadow-lg" />
           <img src="/__l5e/assets-v1/21420f7f-e55f-4739-8be4-45b24b061c9a/fortunalink-name.png" alt="FortunaLink" className="h-7 object-contain" />
+          <ModeSwitch mode="coupons" className="ml-3" />
         </div>
 
         {/* Right side - FC Balance, Auth, Menu */}

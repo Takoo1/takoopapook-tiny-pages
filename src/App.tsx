@@ -28,6 +28,7 @@ import Wallet from "./pages/Wallet";
 import NotFound from "./pages/NotFound";
 import NotificationDetail from "./pages/NotificationDetail";
 import OAuthConsent from "./pages/OAuthConsent";
+import Passes from "./pages/Passes";
 import { MobileLayout } from "./components/MobileLayout";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
@@ -63,6 +64,8 @@ const App = () => (
               <MobileLayout>
                 <Routes>
                   <Route path="/" element={<Home />} />
+                  <Route path="/passes" element={<Passes />} />
+                  <Route path="/passes/:section" element={<Passes />} />
                   <Route path="/lottery/:gameId" element={<LotteryDetail />} />
                   <Route path="/lottery/:gameId/buy" element={<TicketBuying />} />
                   <Route path="/admin" element={<Admin />} />
