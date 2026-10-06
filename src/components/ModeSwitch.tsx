@@ -7,14 +7,14 @@ export function ModeSwitch({ mode, className = "", segmented = false }: { mode: 
 
   if (segmented) {
     return (
-      <div role="group" aria-label="Explore Fortuna Link" className={cn("mode-segmented flex w-full items-center rounded-2xl bg-muted p-1", className)}>
+      <div role="group" aria-label="Explore Fortuna Link" className={cn("mode-segmented flex w-full items-center rounded-2xl bg-muted p-[3px]", className)}>
         <Button type="button" variant="ghost" aria-pressed={mode === "coupons"} onClick={() => navigate("/")}
-          className={cn("mode-segment flex-1 h-10 rounded-xl text-sm font-semibold hover:bg-transparent", mode === "coupons" && "mode-segment-active mode-segment-coupons")}>
-          Coupons
+          className={cn("mode-segment chip-gold-3d flex-1 h-8 rounded-xl text-[13px] font-bold hover:bg-transparent", mode === "coupons" ? "mode-segment-active" : "mode-segment-muted")}>
+          <span className="relative z-10">Coupons</span>
         </Button>
         <Button type="button" variant="ghost" aria-pressed={mode === "passes"} onClick={() => navigate("/passes")}
-          className={cn("mode-segment flex-1 h-10 rounded-xl text-sm font-semibold hover:bg-transparent", mode === "passes" && "mode-segment-active mode-segment-passes")}>
-          Passes
+          className={cn("mode-segment chip-blue-3d flex-1 h-8 rounded-xl text-[13px] font-bold hover:bg-transparent", mode === "passes" ? "mode-segment-active" : "mode-segment-muted")}>
+          <span className="relative z-10">Passes</span>
         </Button>
       </div>
     );
