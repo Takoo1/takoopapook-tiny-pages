@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { NotificationBell } from "@/components/NotificationBell";
 import { ModeSwitch } from "@/components/ModeSwitch";
@@ -73,42 +72,42 @@ export function MobileHeader() {
       });
     }, 100);
   };
-  return <header className="fixed top-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl border-b border-border pt-safe-top h-[100px]">
-      <div className="flex items-center justify-between gap-1 px-4 h-[51px] relative">
+  return <header className="fixed top-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl border-b border-border pt-safe-top h-[116px] shadow-sm">
+      <div className="flex items-center justify-between gap-2 px-4 h-[58px] relative">
         {/* Left side - Site Logo */}
-        <div className="flex items-center gap-1.5 animate-fade-in shrink-0 cursor-pointer" onClick={() => navigate('/')} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === 'Enter') navigate('/'); }}>
+        <div className="flex min-w-0 items-center gap-2 animate-fade-in shrink cursor-pointer" onClick={() => navigate('/')} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === 'Enter') navigate('/'); }}>
           <img src="/__l5e/assets-v1/e013b595-501d-44f1-8ddb-13183d360966/fortuna-logo.png" alt="Fortune Bridge" className="w-9 h-9 rounded-xl transition-transform duration-200 active:scale-95 shrink-0" />
-          <img src="/__l5e/assets-v1/21420f7f-e55f-4739-8be4-45b24b061c9a/fortunalink-name.png" alt="FortunaLink" className="h-5 object-contain max-w-[78px] min-[390px]:max-w-[100px] shrink-0" />
+          <img src="/__l5e/assets-v1/21420f7f-e55f-4739-8be4-45b24b061c9a/fortunalink-name.png" alt="FortunaLink" className="h-5 w-auto object-contain max-w-[70px] min-[360px]:max-w-[92px] shrink" />
         </div>
 
         {/* Right side - Notification and FC Balance/Sign Up */}
-        <div className="flex items-center gap-1 animate-fade-in min-w-0" style={{ animationDelay: '0.1s' }}>
+        <div className="flex shrink-0 items-center gap-1 animate-fade-in" style={{ animationDelay: '0.1s' }}>
           {/* Notification Bell */}
           <NotificationBell />
 
           {user ? (
         <>
-              <Button variant="ghost" onClick={handleWalletClick} className="relative overflow-hidden chip-gold-3d flex items-center gap-1.5 h-9 px-3 rounded-full transition-all duration-200 active:scale-95 hover:bg-transparent">
+              <Button variant="ghost" onClick={handleWalletClick} aria-label={`FC balance ${fcBalance.toLocaleString()}`} className="relative overflow-hidden chip-gold-3d flex items-center gap-1 h-9 px-2.5 rounded-full transition-all duration-200 active:scale-95 hover:bg-transparent">
                 <img src={fcCoin} alt="FC" className="w-4 h-4 relative z-10" />
                 <span className="text-sm font-bold relative z-10">
                   {fcBalance.toLocaleString()}
                 </span>
               </Button>
 
-              <Button variant="ghost" onClick={handleReferralClick} className="relative overflow-hidden chip-blue-3d flex items-center gap-1 h-9 px-2.5 rounded-full transition-all duration-200 active:scale-95 hover:bg-transparent">
+              <Button variant="ghost" onClick={handleReferralClick} aria-label="Refer and earn FC" className="relative overflow-hidden chip-blue-3d flex items-center gap-1 h-9 px-2.5 rounded-full transition-all duration-200 active:scale-95 hover:bg-transparent">
                 <Gift className="w-3.5 h-3.5 relative z-10" />
-                 <span className="text-xs font-semibold relative z-10 hidden min-[380px]:inline">
+                 <span className="text-xs font-semibold relative z-10 hidden min-[390px]:inline">
                   Refer
                 </span>
               </Button>
             </>) : (
 
-        <Button size="sm" onClick={handleSignUpPrompt} className="relative overflow-hidden btn-gold-3d font-bold h-9 px-3.5 text-xs rounded-full transition-all duration-200 active:scale-95 shrink-0">
+        <Button size="sm" onClick={handleSignUpPrompt} className="relative overflow-hidden btn-gold-3d font-bold h-9 px-2.5 min-[360px]:px-3.5 text-xs rounded-full transition-all duration-200 active:scale-95 shrink-0">
               <Gift className="w-3.5 h-3.5 mr-1.5" />
-               <span className="hidden min-[390px]:inline">Get 50 FC Free</span><span className="min-[390px]:hidden">Get 50 FC</span>
+               <span className="hidden min-[360px]:inline">Get 50 FC Free</span><span className="min-[360px]:hidden">50 FC</span>
             </Button>)}
         </div>
       </div>
-      <div className="flex h-[48px] items-center px-4"><ModeSwitch mode="coupons" /></div>
+      <div className="flex h-[58px] items-start px-4 pt-1"><ModeSwitch mode="coupons" segmented /></div>
     </header>;
 }
