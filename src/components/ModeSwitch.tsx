@@ -1,8 +1,25 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
-export function ModeSwitch({ mode, className = "" }: { mode: "coupons" | "passes"; className?: string }) {
+export function ModeSwitch({ mode, className = "", segmented = false }: { mode: "coupons" | "passes"; className?: string; segmented?: boolean }) {
   const navigate = useNavigate();
+
+  if (segmented) {
+    return (
+      <div role="group" aria-label="Explore Fortuna Link" className={cn("mode-segmented flex w-full items-center rounded-2xl bg-muted p-1", className)}>
+        <Button type="button" variant="ghost" aria-pressed={mode === "coupons"} onClick={() => navigate("/")}
+          className={cn("mode-segment flex-1 h-10 rounded-xl text-sm font-semibold hover:bg-transparent", mode === "coupons" && "mode-segment-active mode-segment-coupons")}>
+          Coupons
+        </Button>
+        <Button type="button" variant="ghost" aria-pressed={mode === "passes"} onClick={() => navigate("/passes")}
+          className={cn("mode-segment flex-1 h-10 rounded-xl text-sm font-semibold hover:bg-transparent", mode === "passes" && "mode-segment-active mode-segment-passes")}>
+          Passes
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div role="group" aria-label="Explore Fortuna Link" className={`flex items-center gap-2 ${className}`}>
       <Button type="button" variant="ghost" aria-pressed={mode === "coupons"} onClick={() => navigate("/")}
