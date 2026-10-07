@@ -72,8 +72,8 @@ export function MobileHeader() {
       });
     }, 100);
   };
-  return <header className="fixed top-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl border-b border-border pt-safe-top h-[116px] shadow-sm">
-      <div className="flex items-center justify-between gap-2 px-4 h-[58px] relative">
+  return <header className="fixed top-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl border-b border-border pt-safe-top h-[92px] shadow-sm">
+      <div className="flex items-center justify-between gap-2 px-4 h-[46px] relative">
         {/* Left side - Site Logo */}
         <div className="flex min-w-0 items-center gap-2 animate-fade-in shrink cursor-pointer" onClick={() => navigate('/')} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === 'Enter') navigate('/'); }}>
           <img src="/__l5e/assets-v1/e013b595-501d-44f1-8ddb-13183d360966/fortuna-logo.png" alt="Fortune Bridge" className="w-9 h-9 rounded-xl transition-transform duration-200 active:scale-95 shrink-0" />
@@ -108,6 +108,6 @@ export function MobileHeader() {
             </Button>)}
         </div>
       </div>
-      <div className="flex h-[58px] items-start px-4 pt-1"><ModeSwitch mode="coupons" segmented /></div>
+      <div className="flex h-[46px] items-center px-4"><ModeSwitch mode="coupons" segmented /></div>
     </header>;
 }

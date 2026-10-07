@@ -41,8 +41,8 @@ export function MobileLayout({ children }: MobileLayoutProps) {
         key={location.pathname}
         className={cn(
           "flex-1 relative z-10 animate-fade-in",
-           isPasses && isMobile ? "pt-[116px] pb-[76px]" :
-           !hideHeader && isMobile ? "pt-[116px] pb-[76px]" :
+           isPasses && isMobile ? "pt-[92px] pb-[76px]" :
+           !hideHeader && isMobile ? "pt-[92px] pb-[76px]" :
           !hideHeader ? "pt-0" :
           isMobile ? "pb-[76px]" : "pt-0"
         )}
